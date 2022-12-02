@@ -2,6 +2,7 @@
 #define JOB_HPP
 
 #include "defines.hpp"
+using namespace std;
 
 class Job
 {
