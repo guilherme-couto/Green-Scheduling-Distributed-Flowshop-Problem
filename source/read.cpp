@@ -1,11 +1,31 @@
 #include "read.hpp"
+#include "Matrices.hpp"
 #include <iostream>
 
 
 using namespace std;
 
-vector<float> vectorFromText(string text){
+vector<float> floatVectorFromText(string text){
     vector<float> result;
+    string part;
+
+    for(int i=0; i< text.size(); i++){
+
+        if(text[i]==' ' || text[i]=='\n' || text[i]=='\r'){
+            result.push_back(stof(part));
+            part = "";
+        }else{
+            part+=(text[i]);
+        }
+
+    }
+
+    return result;
+
+}
+
+vector<int> intVectorFromText(string text){
+    vector<int> result;
     string part;
 
     for(int i=0; i< text.size(); i++){
@@ -26,40 +46,40 @@ vector<float> vectorFromText(string text){
 //Teste de leitura da instância
 void readFile(string path){
     ifstream input(path);
-    string text;
+    string textAux;
     int numFactories;
     int numMachines;
     int numJobs;
-    vector<vector<float>> processingTimes;
+    vector<vector<int>> processingTimes;
     vector<float> speedModes;
-    vector<float> vectorFromFile;
+    vector<int> vectorFromFile;
 
-    getline(input, text);
-    numFactories = stoi(text);
+    getline(input, textAux);
+    numFactories = stoi(textAux);
 
-    getline(input, text);
-    numMachines = stoi(text);
+    getline(input, textAux);
+    numMachines = stoi(textAux);
 
-    getline(input, text);
-    numJobs = stoi(text);
-    getline(input, text);
+    getline(input, textAux);
+    numJobs = stoi(textAux);
+    getline(input, textAux);
 
-    speedModes = vectorFromText(text);
-    getline(input, text);
+    speedModes = floatVectorFromText(textAux);
+    getline(input, textAux);
+    input.close();
 
-    vectorFromFile = vectorFromText(text);
+    vectorFromFile = intVectorFromText(textAux);
     processingTimes.reserve(numMachines);
 
     for(int i=0; i< numMachines;i++){
-        vector<float> line(numJobs);
+        vector<int> line(numJobs);
         for(int j=0; j< numJobs; j++){
             line[j] = vectorFromFile[i*numJobs + j];
         }
         processingTimes.push_back(line);
     }
 
-    cout<<numFactories<<" "<<numMachines<<" "<< numJobs<<endl;
+    Matrices instance = Matrices(numFactories, numJobs, numMachines, processingTimes);
 
-    input.close();
 
 }
