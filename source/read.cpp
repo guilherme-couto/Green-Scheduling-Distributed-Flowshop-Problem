@@ -1,9 +1,4 @@
-#include "read.hpp"
-#include "Matrices.hpp"
-#include <iostream>
-
-
-using namespace std;
+#include "defines.hpp"
 
 vector<float> floatVectorFromText(string text){
     vector<float> result;
@@ -79,7 +74,7 @@ void readFile(string path){
         processingTimes.push_back(line);
     }
 
-    Matrices instance = Matrices(numFactories, numJobs, numMachines, processingTimes);
+    Instance instance = Instance(numFactories, numJobs, numMachines, processingTimes);
 
 
 }

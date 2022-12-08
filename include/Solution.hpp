@@ -14,6 +14,8 @@ private:
     vector<float> FT_f;                 // Flow time of each factory    
     vector<int> job_allocation;         // Factory id of each job
 
+    vector<Factory> factories;          // List of factories
+
 public:
     Solution(int n, int m, int F);      // Constructor (n = number of jobs, m = number of machines, F = number of factories)  
     ~Solution();
@@ -30,6 +32,15 @@ public:
     void setEC_f(int f_id, float ec);
     void setFT_f(int f_id, float ft);
     void setJobAllocation(int job_id, int f_id);
+
+    // Operators
+    void speedUp(int f_id);
+    void randSpeedUp(int f_id);
+    void speedDown(int f_id);
+    void randSpeedDown(int f_id);
+    void rightShift(int f_id);
+    void insert(int f1_id, int f2_id, int job1_id, int job2_id);
+    void swap(int f1_id, int f2_id, int job1_id, int job2_id);
 
 };
 

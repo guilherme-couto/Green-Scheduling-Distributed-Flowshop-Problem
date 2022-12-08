@@ -12,9 +12,14 @@
 #include <chrono>
 #include <ctime>
 
+#include "random/Xoshiro256plus.h"
+
 #include "Job.hpp"
 #include "Machine.hpp"  
 #include "Factory.hpp"
+#include "Instance.hpp"
+#include "read.hpp"
+#include "Solution.hpp"
 
 using namespace std;
 
