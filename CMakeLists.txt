@@ -10,9 +10,9 @@ add_executable(Green_Scheduling_Distributed_Flowshop_Problem
         include/Factory.hpp
         include/Job.hpp
         include/Machine.hpp
+        include/Solution.hpp
         include/Instance.hpp
         include/read.hpp
-        include/Solution.hpp
         source/Factory.cpp
         source/Job.cpp
         source/Machine.cpp
