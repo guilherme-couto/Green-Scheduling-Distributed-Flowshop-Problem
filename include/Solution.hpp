@@ -18,7 +18,7 @@ private:
 
 public:
     Solution(int n, int m, int F);      // Constructor (n = number of jobs, m = number of machines, F = number of factories)  
-    ~Solution();
+    ~Solution(){};
 
     vector<vector<int>> getDistribution();
     vector<vector<float>> getV();
