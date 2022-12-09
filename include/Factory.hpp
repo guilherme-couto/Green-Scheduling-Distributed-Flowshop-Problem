@@ -15,7 +15,7 @@ private:
 
 public:
     Factory(int id);
-    ~Factory();
+    ~Factory(){};
 
     int getID();
     vector<int> getJobs();
