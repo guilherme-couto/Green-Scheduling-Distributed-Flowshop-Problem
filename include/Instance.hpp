@@ -2,6 +2,7 @@
 #define MATRICES_HPP
 
 #include "defines.hpp"
+#include "Solution.hpp"
 
 class Instance
 {
