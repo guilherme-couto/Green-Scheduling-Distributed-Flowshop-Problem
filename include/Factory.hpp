@@ -13,6 +13,7 @@ private:
     int total_jobs;         // Total number of jobs assigned to the factory
     float TEC;              // Total energy consumption of the factory
     float TFT;              // Total flow time of the factory
+    int m;
 
 public:
     Factory(int id){this->id = id;}
@@ -26,9 +27,11 @@ public:
     int getTotalJobs();
     float getTEC();
     float getTFT();
-
+    float getTFTTest(vector<Job> testJobsList);
+    void setM(int m){this->m = m;}
     void addJobId(int i);
     void addJob(Job j){this->jobs.push_back(j);}
+    Factory minTFTAfterInsertion(Job job);
 
 };
 
