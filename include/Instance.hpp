@@ -18,9 +18,9 @@ public:
     Instance(int F, int n, int m, vector<vector<int>> t);      // Constructor (F = number of factories, n = number of jobs, m = number of machines)
     ~Instance();
 
-    int getF();
-    int get_n();
-    int get_m();
+    int getF(){return F;};
+    int get_n(){return n;};
+    int get_m(){return m;};
     vector<vector<int>> getMatrix_t();
     vector<float> getVectorSpeeds();
     vector<Solution> getPopulation();
@@ -30,6 +30,8 @@ public:
     int getSpeed(int i);
 
     void construtivo();
+
+    Solution* maxSMinTFT();
 };
 
 

@@ -13,8 +13,10 @@ private:
     vector<float> EC_f;                 // Energy consumption of each factory
     vector<float> FT_f;                 // Flow time of each factory    
     vector<int> job_allocation;         // Factory id of each job
-
-    vector<Factory> factories;          // List of factories
+    vector<Factory> factories;
+    int n;
+    int m;
+    int F;// List of factories
 
 public:
     Solution(int n, int m, int F);      // Constructor (n = number of jobs, m = number of machines, F = number of factories)  

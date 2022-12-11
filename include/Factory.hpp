@@ -7,25 +7,28 @@ class Factory
 {
 private:
     int id;                 // Factory index
-    vector<int> jobs;       // Jobs assigned to the factory
+    vector<Job> jobs;       //List of jobs assigned to the factory
+    vector<int> jobs_ids;    // Jobs assigned to the factory
     vector<int> jobs_seq;   // Jobs sequence
     int total_jobs;         // Total number of jobs assigned to the factory
     float TEC;              // Total energy consumption of the factory
     float TFT;              // Total flow time of the factory
 
 public:
-    Factory(int id);
+    Factory(int id){this->id = id;}
+    Factory(){}
     ~Factory(){};
 
     int getID();
-    vector<int> getJobs();
+    vector<Job> getJobs(){return this->jobs;}
     vector<int> getJobsSeq();
     int getJob_pos(int pos);
     int getTotalJobs();
     float getTEC();
     float getTFT();
 
-    void addJob(int i);
+    void addJobId(int i);
+    void addJob(Job j){this->jobs.push_back(j);}
 
 };
 
