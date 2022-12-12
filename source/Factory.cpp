@@ -52,7 +52,7 @@ Factory Factory::minTFTAfterInsertion(Job job) {
     Factory testFactory = *this;
 
     for(int i=0; i<=this->jobs.size(); i++){
-        testJobs.insert(this->jobs.begin()+i, job);
+        testJobs.insert(testJobs.begin()+i, job);
 
         float testFactoryTFT = this->getTFTTest(testJobs);
         if(testFactoryTFT <=minTFT){
