@@ -5,7 +5,7 @@ int main(){
 
     // criar instancia
 
-  //  readFile("../instances/2-4-20__0.txt");
+    readFile("../instances/928/2-4-20__0.txt");
 
     vector<float> t1 = {1.0,3.0,1.0};
     vector<float> v1 = {1.0,1.0,1.0};

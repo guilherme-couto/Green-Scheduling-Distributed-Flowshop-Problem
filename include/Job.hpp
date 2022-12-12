@@ -19,7 +19,7 @@ public:
     Job(){}
     ~Job(){};
 
-    float getP(int j){ return t[j]/v[j];}   //Get actual processing time of this job on machine j
+    float getP(int j);  //Get actual processing time of this job on machine j
     float getTotalP();
     int getID();
     int getFactoryID();

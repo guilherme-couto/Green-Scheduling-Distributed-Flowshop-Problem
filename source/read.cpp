@@ -66,10 +66,10 @@ Instance readFile(string path){
     vectorFromFile = intVectorFromText(textAux);
     processingTimes.reserve(numMachines);
 
-    for(int i=0; i< numMachines;i++){
-        vector<int> line(numJobs);
-        for(int j=0; j< numJobs; j++){
-            line[j] = vectorFromFile[i*numJobs + j];
+    for(int i=0; i< numJobs;i++){
+        vector<int> line(numMachines);
+        for(int j=0; j< numMachines; j++){
+            line[j] = vectorFromFile[i*numMachines + j];
         }
         processingTimes.push_back(line);
     }
