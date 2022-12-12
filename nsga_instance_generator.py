@@ -15,28 +15,28 @@ v = [1, 1.3, 1.55, 1.75, 2.10]
 # Jobs
 # Velocidades
 # Matriz MaquinasxJobs:
-#       Cada linha i é uma máquina
-#       Cada coluna j é um job
+#       Cada linha i é um job
+#       Cada coluna j é uma máquina
 
 
 class Instance:
-    factories = 0
-    machines = 0
+    num_factories = 0
+    num_machines = 0
     num_jobs = 0
     time_matrix = []
 
     def __init__(self, factories, machines, jobs):
-        self.factories = factories
-        self.machines = machines
+        self.num_factories = factories
+        self.num_machines = machines
         self.num_jobs = jobs
-        self.time_matrix = [[None]*jobs for i in range(machines)]
+        self.time_matrix = [[None]*machines for i in range(jobs)]
 
     def to_text(self):
-        instance_string = f"{self.factories}\n{self.machines}\n{self.num_jobs}\n"
+        instance_string = f"{self.num_factories}\n{self.num_machines}\n{self.num_jobs}\n"
         speed_modes_str = " ".join(map(str, v))
         instance_string += f"{speed_modes_str}\n"
-        for i in range(self.machines):
-            for j in range(self.num_jobs):
+        for i in range(self.num_jobs):
+            for j in range(self.num_machines):
                 instance_string += f"{self.time_matrix[i][j]} "
         return instance_string
 
@@ -50,8 +50,8 @@ def generate(seed=0):
                 for n in nums_jobs:
                     instance = Instance(f, m, n)
 
-                    for i in range(m):
-                        for j in range(n):
+                    for i in range(n):
+                        for j in range(m):
                             instance.time_matrix[i][j] = int(random.uniform(5, 50))
 
                     instance_list.append(instance)
@@ -69,7 +69,7 @@ def main():
 
 def generate_instance_files(path="", instance_list=[]):
     for i, instance in enumerate(instance_list):
-        file = open(f"{path}/{instance.factories}-{instance.machines}-{instance.num_jobs}__{i}.txt", mode='x')
+        file = open(f"{path}/{instance.num_factories}-{instance.num_machines}-{instance.num_jobs}__{i}.txt", mode='x')
         file.write(instance.to_text())
         file.close()
 
