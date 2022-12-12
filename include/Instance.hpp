@@ -31,7 +31,7 @@ public:
 
     void construtivo();
 
-    Solution* maxSMinTFT();
+    Solution maxSMinTFT();
 };
 
 

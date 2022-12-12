@@ -35,7 +35,7 @@ bool compareJobsByTotalProcessingTime(Job a, Job b) {
 }
 
 
-Solution *Instance::maxSMinTFT() {
+Solution Instance::maxSMinTFT() {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job> jobs(this->get_n());
     vector<Factory> factories(this->getF());
@@ -56,7 +56,7 @@ Solution *Instance::maxSMinTFT() {
 
 
     sort(jobs.begin(), jobs.end(),
-         compareJobsByTotalProcessingTime);     // generate job permutation lambda according to non-descending order of Ti (total job i processing time)
+         compareJobsByTotalProcessingTime); // generate job permutation lambda according to non-descending order of Ti (total job i processing time)
 
 
     for (int i = 0; i < this->getF(); i++) { //assign the first f jobs to each one of the factories
