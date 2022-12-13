@@ -5,11 +5,11 @@ int main(){
 
     // criar instancia
 
-    Instance* instance = readFile("../instances/928/2-4-20__0.txt");
-    Solution* test = instance->maxSMinTFT();
+    // Instance* instance = readFile("../instances/928/2-4-20__0.txt");
+    // Solution* test = instance->maxSMinTFT();
 
-    delete instance;
-    delete test;
+    // delete instance;
+    // delete test;
 
     vector<float> t1 = {1.0,3.0,1.0};
     vector<float> v1 = {1.0,1.0,1.0};
@@ -40,7 +40,7 @@ int main(){
     // Leitura retorna uma instancia
 
     cout << "Iniciando leitura da instância...\n" << endl;
-    Instance* inst = readFile("./instances/294/2-4-20__0.txt");
+    Instance* inst = readFile("./instances/294/3-4-20__15.txt");
     cout << "Instância lida com sucesso!\n" << endl;
 
     cout << "F = " << inst->getF() << endl;
@@ -50,7 +50,7 @@ int main(){
     inst->construtivo();
     inst->printPopulation();
 
-    cout << "FIM\n";
+    cout << "\nFIM\n";
 
     return 0;
     

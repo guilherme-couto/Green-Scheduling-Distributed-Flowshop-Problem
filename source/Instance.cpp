@@ -38,7 +38,7 @@ int Instance::get_t(int machine_id, int job_id) {
 
 void Instance::construtivo() {
 
-    for(int i = 0; i < 6; i++)
+    for(int i = 0; i < 4; i++)
     {
         this->randomSolutionGenerator(i);
     }
@@ -120,22 +120,23 @@ void Instance::randomSolutionGenerator(int s)
 {
     Xoshiro256plus rand(time(NULL)+s);
 
-    Solution* sol = new Solution(this->n, this->m, this->F); cout<<"112"<<endl;
+    Solution* sol = new Solution(this->n, this->m, this->F); 
 
     // Vector that indicates if a job (id = index) has already been allocated
-    vector<bool> job_allocated(this->n, false); cout<<"115"<<endl;
+    vector<bool> job_allocated(this->n, false); 
 
-    // Allocate one job for each factory
-    for (int i = 0; i < this->F; i++)
+    vector<int> jobs_to_allocate;
+    for (size_t i = 0; i < this->n; i++)
     {
-        int random_num = rand.next() % this->n;
-        
-        while (job_allocated[random_num])
-        {
-            random_num = rand.next() % this->n;
-        }
-        
-        Job* job = new Job(random_num);
+        jobs_to_allocate.push_back(i);
+    }
+    
+    // Allocate the jobs equally to the factories
+    int f_id = 0;
+    while (jobs_to_allocate.size())
+    {
+        int random_num = rand.next() % jobs_to_allocate.size();
+        Job* job = new Job(jobs_to_allocate[random_num]);
 
         // Set a random speed for each machine
         for (int j = 0; j < this->m; j++)
@@ -144,32 +145,17 @@ void Instance::randomSolutionGenerator(int s)
             sol->setV(job->getId(), j, this->speeds[random_num]);
         }
 
-        sol->getFactory(i)->addJobAtLastPosition(job);
-        job_allocated[random_num] = true;
-    }
-
-    // Allocate the remaining jobs
-    for (int i = 0; i < this->n; i++)
-    {
-        if (!job_allocated[i])
+        if (f_id == this->F)
         {
-            Job* job = new Job(i);
-
-            // Set a random speed for each machine
-            for (int j = 0; j < this->m; j++)
-            {
-                int random_num = rand.next() % this->speeds.size();
-                sol->setV(job->getId(), j, this->speeds[random_num]);
-            }
-
-            // Choose a random factory to allocate the job
-            int random_factory = rand.next() % this->F;
-
-            // Choose a random position to allocate the job
-            int random_position = rand.next() % (sol->getFactory(random_factory)->getJobs().size() + 1);
-            sol->getFactory(random_factory)->addJobAtPosition(job, random_position);
-            job_allocated[i] = true;
+            f_id = 0;
         }
+
+        // Choose a random position to allocate the job
+        int random_position = rand.next() % (sol->getFactory(f_id)->getJobs().size() + 1);
+        sol->getFactory(f_id)->addJobAtPosition(job, random_position);
+
+        jobs_to_allocate.erase(jobs_to_allocate.begin() + random_num);
+        f_id ++;
     }
 
     // Add solution to population
@@ -178,7 +164,7 @@ void Instance::randomSolutionGenerator(int s)
 
 void Instance::printPopulation()
 {
-    cout << "\nPOPULATION " << "(with " << this->population.size() << " solutions) ---------------\n" << endl;
+    cout << "\nPOPULATION " << "(with " << this->population.size() << " solutions)" << endl;
 
     for (size_t i = 0; i < this->population.size(); i++)
     {
