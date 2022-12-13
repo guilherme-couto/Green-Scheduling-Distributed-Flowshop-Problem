@@ -15,6 +15,9 @@ Instance::Instance(int F, int n, int m, vector<vector<int>> t) {
 
 
 Instance::~Instance() {
+    for(int i=0; i< this->population.size(); i++){
+        delete this->population[i];
+    }
 }
 
 int Instance::getF() {
@@ -50,7 +53,7 @@ bool compareJobsByTotalProcessingTime(Job* a, Job* b) {
 Solution* Instance::maxSMinTFT() {
     Solution* solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job*> jobs(this->get_n());
-    vector<Factory*> factories(this->getF());
+    //vector<Factory*> factories(this->getF());
     int highestSpeed = this->speeds.size() - 1;
 
     for (int i = 0; i < this->get_n(); i++) {
@@ -72,35 +75,43 @@ Solution* Instance::maxSMinTFT() {
 
 
     for (int i = 0; i < this->getF(); i++) { //assign the first f jobs to each one of the factories
-        factories[i] = new Factory(i, this->m);
-        factories[i]->addJobAtLastPosition(jobs[i]);
+        //factories[i] = new Factory(i, this->m);
+        solution->getFactory(i)->addJobAtLastPosition(jobs[i]);
     }
 
     //remove the assigned jobs from lambda
 
     Factory* testFactory;
     float testFactoryTFT;
+    float tftVariation;
+    float previousTFT;
     Factory* minTFTFactory;
-    float minTFT = INFINITY;
-    float minTFTPos = 0;
-
 
     //for each factory f
-    for (int j = this->getF(); j < jobs.size(); j++) {    //test job j at all the possible positions of PI_k (the factory)
+    for (int j = this->getF(); j < jobs.size(); j++) {//test job j at all the possible positions of PI_k (the factory)
+        float minIncreaseTFT = INFINITY;
+        float minTFTPos = 0;
+
         for (int f = 0; f < this->getF(); f++) {
-            testFactory = factories[f]->minTFTAfterInsertion(jobs[j]);
+            testFactory = solution->getFactory(f)->minTFTAfterInsertion(jobs[j]);
             testFactoryTFT = testFactory->getTFT();
-            if (testFactoryTFT < minTFT) {
-                minTFT = testFactoryTFT;
+            previousTFT = solution->getFactory(f)->getTFT();
+            tftVariation = testFactoryTFT - previousTFT;
+
+            if (tftVariation < minIncreaseTFT) {
+                minIncreaseTFT = tftVariation;
                 minTFTFactory = testFactory;
                 minTFTPos = f;
+            }else{
+                delete testFactory;
             }
         }
 
-        factories[minTFTPos] = minTFTFactory;
+        //factories[minTFTPos] = minTFTFactory;
+        solution->replaceFactory(minTFTPos, minTFTFactory); // replaces old factory and deletes it
     }
 
-
+    //todo: speedDown for each factory
 
     return solution;
 }

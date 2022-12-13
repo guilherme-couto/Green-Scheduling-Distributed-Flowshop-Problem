@@ -9,6 +9,12 @@ Factory::Factory(int id, int m)
     this->TFT = 0.0;
 }
 
+Factory::~Factory() {
+    /*for(int i=0; i< this->jobs.size(); i++){
+        delete jobs[i];
+    }*/
+}
+
 vector<Job*> Factory::getJobs()
 {
     return this->jobs;
@@ -42,14 +48,14 @@ float Factory::getTFT() {
 
 float Factory::getTFTTest(vector<Job*> testJobsList) {
     float tft=0.0;
-    vector<float> partialFTByJob(this->jobs.size(), 0.0);
+    vector<float> partialFTByJob(testJobsList.size(), 0.0);
 
     for(int i=0; i<this->m; i++){
-        for(int j=0; j<this->jobs.size(); j++){
+        for(int j=0; j<testJobsList.size(); j++){
             if(j==0 ||  partialFTByJob[j] > partialFTByJob[j-1]){
-                partialFTByJob[j] = partialFTByJob[j] + this->jobs[j]->getP(i);
+                partialFTByJob[j] = partialFTByJob[j] + testJobsList[j]->getP(i);
             }else{
-                partialFTByJob[j] = partialFTByJob[j-1] + this->jobs[j]->getP(i);;
+                partialFTByJob[j] = partialFTByJob[j-1] + testJobsList[j]->getP(i);;
             }
         }
     }
@@ -62,20 +68,24 @@ float Factory::getTFTTest(vector<Job*> testJobsList) {
 }
 
 Factory* Factory::minTFTAfterInsertion(Job* job) {
-    float minTFT = INFINITY;
-    int minTFTPos = 0;
-
+    float tftBeforeInsertion = this->getTFT();
+    float minIncreaseTFT = INFINITY;
+    float tftVariation;
     vector<Job*> auxJobs = this->jobs;
     vector<Job*> testJobs = this->jobs;
     vector<Job*> minTFTJobs = this->jobs;
-    Factory* testFactory = this;
+    Factory* testFactory = new Factory();
+    *testFactory = *this;
 
     for(int i=0; i<=this->jobs.size(); i++){
-        testJobs.insert(testJobs.begin()+i, job);
 
+        testJobs = this->jobs;
+        testJobs.insert(testJobs.begin()+i, job);
         float testFactoryTFT = this->getTFTTest(testJobs);
-        if(testFactoryTFT <=minTFT){
-            minTFT = testFactoryTFT;
+
+        tftVariation = testFactoryTFT - tftBeforeInsertion;
+        if(tftVariation < minIncreaseTFT){
+            minIncreaseTFT = tftVariation;
             minTFTJobs = testJobs;
         }
     }

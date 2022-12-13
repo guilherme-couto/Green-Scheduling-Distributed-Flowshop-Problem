@@ -5,8 +5,11 @@ int main(){
 
     // criar instancia
 
-    //Instance instance = readFile("../instances/928/2-4-20__0.txt");
-    //Solution test = instance.maxSMinTFT();
+    Instance* instance = readFile("../instances/928/2-4-20__0.txt");
+    Solution* test = instance->maxSMinTFT();
+
+    delete instance;
+    delete test;
 
     vector<float> t1 = {1.0,3.0,1.0};
     vector<float> v1 = {1.0,1.0,1.0};

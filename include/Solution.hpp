@@ -33,6 +33,7 @@ public:
     int getJobAllocation(int job_id);
     Factory* getFactory(int f_id);
 
+    void replaceFactory(int f_id, Factory* factory);
     void setSequence(int f_id, vector<int> seq);
     void setV(int job_id, int mach_id, float v);
     void setEC_f(int f_id, float ec);

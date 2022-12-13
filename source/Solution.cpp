@@ -54,6 +54,11 @@ void Solution::setV(int job_id, int mach_id, float v)
     this->V[job_id][mach_id] = v;
 }
 
+void Solution::replaceFactory(int f_id, Factory* factory) {
+    delete this->factories[f_id];
+    this->factories[f_id] = factory;
+}
+
 void Solution::printSolution()
 {
     for(int f = 0; f < this->F; f++)

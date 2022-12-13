@@ -18,7 +18,7 @@ private:
 public:
     Factory(int id, int m);         // Constructor (id = factory index, m = number of machines)
     Factory(){};
-    ~Factory(){};
+    ~Factory();
 
     int getID();
     vector<Job*> getJobs();
