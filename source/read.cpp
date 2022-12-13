@@ -39,7 +39,7 @@ vector<int> intVectorFromText(string text){
 }
 
 //Teste de leitura da instância
-Instance readFile(string path){
+Instance* readFile(string path){
     ifstream input(path);
     string textAux;
     int numFactories;
@@ -74,7 +74,7 @@ Instance readFile(string path){
         processingTimes.push_back(line);
     }
 
-    Instance instance = Instance(numFactories, numJobs, numMachines, processingTimes);
+    Instance* instance = new Instance(numFactories, numJobs, numMachines, processingTimes);
     return instance;
 
 }

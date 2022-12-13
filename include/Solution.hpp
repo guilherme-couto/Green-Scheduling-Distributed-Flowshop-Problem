@@ -13,14 +13,17 @@ private:
     vector<float> EC_f;                 // Energy consumption of each factory
     vector<float> FT_f;                 // Flow time of each factory    
     vector<int> job_allocation;         // Factory id of each job
-    vector<Factory> factories;
+    vector<Factory*> factories;
     int n;
     int m;
     int F;// List of factories
+    vector<vector<float>> p;            // Actual processing time of each job in each machine
+    vector<float> PP;                   // Energy consumption when processing of each machine
+    vector<float> SP;                   // Energy consumption when stand-by of each machine
 
 public:
     Solution(int n, int m, int F);      // Constructor (n = number of jobs, m = number of machines, F = number of factories)  
-    ~Solution(){};
+    ~Solution();
 
     vector<vector<int>> getDistribution();
     vector<vector<float>> getV();
@@ -28,9 +31,10 @@ public:
     float getTFT();
     vector<int> getAllJobsAllocation();
     int getJobAllocation(int job_id);
+    Factory* getFactory(int f_id);
 
     void setSequence(int f_id, vector<int> seq);
-    void setV(int i, int j, float v);
+    void setV(int job_id, int mach_id, float v);
     void setEC_f(int f_id, float ec);
     void setFT_f(int f_id, float ft);
     void setJobAllocation(int job_id, int f_id);
@@ -43,6 +47,9 @@ public:
     void rightShift(int f_id);
     void insert(int f1_id, int f2_id, int job1_id, int job2_id);
     void swap(int f1_id, int f2_id, int job1_id, int job2_id);
+
+    // Auxiliar functions
+    void printSolution();
 
 };
 

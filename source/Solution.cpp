@@ -1,4 +1,70 @@
 #include "defines.hpp"
 
-Solution::Solution(int n, int m, int F) {}
+Solution::Solution(int n, int m, int F)
+{
+    this->F = F;
+    this->n = n;
+    this->m = m;
 
+    this->distribution.resize(F);
+    this->V.resize(n);
+    this->EC_f.resize(F);
+    this->FT_f.resize(F);
+    this->job_allocation.resize(n);
+    this->p.resize(n);
+
+    for (int i = 0; i < m; i++)
+    {
+        this->PP.push_back(0);
+        this->SP.push_back(0);
+    }
+
+    for (int i = 0; i < F; i++)
+    {
+        this->EC_f[i] = 0;
+        this->FT_f[i] = 0;
+
+        Factory* f = new Factory(i, m);
+        this->factories.push_back(f);
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        this->V[i].resize(m);
+        this->p[i].resize(m);
+
+        this->job_allocation[i] = -1;
+    }
+
+    this->TEC = 0;
+    this->TFT = 0;
+}
+
+Solution::~Solution()
+{
+}
+
+Factory* Solution::getFactory(int f_id)
+{
+    return this->factories[f_id];
+}
+
+void Solution::setV(int job_id, int mach_id, float v)
+{
+    this->V[job_id][mach_id] = v;
+}
+
+void Solution::printSolution()
+{
+    for(int f = 0; f < this->F; f++)
+    {
+        cout << "Factory " << f << " -> ";
+        
+        for(int i = 0; i < this->factories[f]->getTotalJobs(); i++)
+        {
+            cout << this->factories[f]->getJobs()[i]->getId() << " ";
+        }
+
+        cout << endl;
+    }
+}

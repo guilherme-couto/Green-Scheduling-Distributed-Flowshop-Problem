@@ -1,5 +1,15 @@
 #include "defines.hpp"
 
+Job::Job(int id)
+{
+    this->id = id;
+}
+
+int Job::getId()
+{ 
+    return this->id;
+}
+
 float Job::getTotalP(){
     float total = 0.0;
 

@@ -15,14 +15,13 @@ private:
     float C;         // Completion time
 
 public:
-    Job(int id){this->id=id;}
-    Job(){}
+    Job(int id);
     ~Job(){};
 
     float getP(int j);  //Get actual processing time of this job on machine j
     float getTotalP();
-    int getID();
-    int getFactoryID();
+    int getId();
+    int getFactoryId();
     int getPosition();
     vector<float> getT();
     float getT_j(int j);
