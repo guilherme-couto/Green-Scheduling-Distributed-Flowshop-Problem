@@ -44,6 +44,24 @@ Solution::~Solution()
 {
 }
 
+float Solution::getTEC() {
+    float tft = 0.0;
+    for(int i=0; i< this->factories.size(); i++){
+        tft+=this->factories[i]->getTEC();
+    }
+
+    return tft;
+}
+
+float Solution::getTFT() {
+    float tft = 0.0;
+    for(int i=0; i< this->factories.size(); i++){
+        tft+=this->factories[i]->getTFT();
+    }
+
+    return tft;
+}
+
 Factory* Solution::getFactory(int f_id)
 {
     return this->factories[f_id];

@@ -25,6 +25,10 @@ int Factory::getTotalJobs()
     return this->total_jobs;
 }
 
+
+float Factory::getTEC() {
+    return 0.0;
+}
 float Factory::getTFT() {
     float tft=0.0;
     vector<float> partialFTByJob(this->jobs.size(), 0.0);

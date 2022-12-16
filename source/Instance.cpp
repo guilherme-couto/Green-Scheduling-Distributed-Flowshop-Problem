@@ -172,3 +172,14 @@ void Instance::printPopulation()
         this->population[i]->printSolution();
     }
 }
+
+string Instance::generateSolutionsString(){
+    string str = "name, TFT, TEC\n";
+    Solution* solution;
+
+    for (size_t i = 0; i < this->population.size(); i++)
+    {   solution = this->population[i];
+        str += i+ "," + to_string(solution->getTFT()) + "," + to_string(solution->getTEC()) + "\n";
+    }
+    return str;
+}
