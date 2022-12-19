@@ -11,6 +11,7 @@ Instance::Instance(int F, int n, int m, vector<vector<int>> t) {
     this->speeds.push_back(1.55);
     this->speeds.push_back(1.75);
     this->speeds.push_back(2.1);
+    Factory::setSpeeds(this->speeds);
 }
 
 
@@ -111,7 +112,9 @@ Solution* Instance::maxSMinTFT() {
         solution->replaceFactory(minTFTPos, minTFTFactory); // replaces old factory and deletes it
     }
 
-    //todo: speedDown for each factory
+    for(int i=0; i < this->getF(); i++){
+        solution->getFactory(i)->speedDown();
+    }
 
     return solution;
 }

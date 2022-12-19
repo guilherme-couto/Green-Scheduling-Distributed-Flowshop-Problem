@@ -26,12 +26,14 @@ public:
     vector<float> getT();
     float getT_j(int j);
     float getC();
+    vector<float> getV();
 
     void setFactoryID(int id);
     void setPosition(int pos);
     void setC(float C);
     void setT(vector<float> t){this->t = t;}
     void setV(vector<float> v){this->v = v;}
+    void setVForMachine(int j, float v);
 };
 
 #endif // JOB_HPP

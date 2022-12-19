@@ -1,5 +1,7 @@
 #include "defines.hpp"
 
+vector<float> Factory::speeds(1, 0.0);
+
 Factory::Factory(int id, int m)
 {
     this->id = id;
@@ -13,6 +15,10 @@ Factory::~Factory() {
     /*for(int i=0; i< this->jobs.size(); i++){
         delete jobs[i];
     }*/
+}
+
+void Factory::setSpeeds(vector<float> s) {
+    Factory::speeds = s;
 }
 
 vector<Job*> Factory::getJobs()
@@ -125,4 +131,25 @@ void Factory::addJobAtPosition(Job* job, int pos)
 cout << "total jobs: " << this->total_jobs << endl;
     this->jobs.insert(this->jobs.begin()+pos, job);
     this->total_jobs++;
+}
+
+void Factory::speedDown() {
+    Job *job;
+    float previousTFT = this->getTFT();
+    float previousSpeed;
+
+    for (int i = 0; i < this->jobs.size() - 1; i++) {
+        job = this->jobs[i];
+
+        for (int j = 1; j < this->m; j++) {
+            previousSpeed = job->getV()[j];
+
+            for (int v = this->speeds.size() - 1; v > 1; v--) {//todo: pegar vetor de velocidades possíveis, talvez usar um campo estático na Factory
+                job->setVForMachine(j, this->speeds[v - 1]); //diminui para a próxima velocidade
+                if (this->getTFT() > previousTFT) {
+                    job->setVForMachine(j, previousSpeed); //retorna à velocidade anterior
+                }
+            }
+        }
+    }
 }

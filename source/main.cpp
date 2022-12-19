@@ -5,8 +5,8 @@ int main(){
 
     // criar instancia
 
-    // Instance* instance = readFile("../instances/928/2-4-20__0.txt");
-    // Solution* test = instance->maxSMinTFT();
+     Instance* instance = readFile("../instances/928/2-4-20__0.txt");
+     Solution* test = instance->maxSMinTFT();
 
     // delete instance;
     // delete test;

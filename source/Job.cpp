@@ -21,3 +21,11 @@ float Job::getTotalP(){
 }
 
 float Job::getP(int j){ return this->t[j]/this->v[j];}
+
+vector<float> Job::getV() {
+    return this->v;
+}
+
+void Job::setVForMachine(int j, float v) {
+    this->v[j] = v;
+}

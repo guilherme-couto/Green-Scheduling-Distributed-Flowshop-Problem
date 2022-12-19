@@ -14,6 +14,7 @@ private:
     float TEC;                  // Total energy consumption of the factory
     float TFT;                  // Total flow time of the factory
     int m;                      // Number of machines
+    static vector<float> speeds;
 
 public:
     Factory(int id, int m);         // Constructor (id = factory index, m = number of machines)
@@ -32,7 +33,8 @@ public:
     void addJobId(int i);
     void addJobAtLastPosition(Job* job);
     void addJobAtPosition(Job* job, int pos);
-
+    void speedDown();
+    static void setSpeeds(vector<float> s);
     Factory* minTFTAfterInsertion(Job* job);
 
 };
