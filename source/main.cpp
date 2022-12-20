@@ -6,9 +6,11 @@ void test(){
 
     Instance* instance = readFile("../instances/928/2-4-20__0.txt");
     Solution* test = instance->maxSMinTFT();
+    Solution* test2 = instance->randSMinTFT(0);
 
     delete instance;
     delete test;
+    delete test2;
 
     Solution* s = new Solution(6, 3, 2);
 
