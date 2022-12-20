@@ -32,6 +32,7 @@ public:
     void construtivo();
 
     Solution* maxSMinTFT();
+    Solution* randSMinTFT(int seed);
     void randomSolutionGenerator(int s);
 
     void printPopulation();

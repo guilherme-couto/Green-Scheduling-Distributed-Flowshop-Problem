@@ -54,7 +54,6 @@ bool compareJobsByTotalProcessingTime(Job* a, Job* b) {
 Solution* Instance::maxSMinTFT() {
     Solution* solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job*> jobs(this->get_n());
-    //vector<Factory*> factories(this->getF());
     int highestSpeed = this->speeds.size() - 1;
 
     for (int i = 0; i < this->get_n(); i++) {
@@ -65,6 +64,76 @@ Solution* Instance::maxSMinTFT() {
         for (int j = 0; j < this->get_m(); j++) {
             jobTimeByMachine[j] = this->t[i][j];
             jobSpeedByMachine[j] = this->speeds[highestSpeed];
+        }
+        jobs[i]->setT(jobTimeByMachine);
+        jobs[i]->setV(jobSpeedByMachine);
+    }
+
+
+    sort(jobs.begin(), jobs.end(),
+         compareJobsByTotalProcessingTime); // generate job permutation lambda according to non-descending order of Ti (total job i processing time)
+
+
+    for (int i = 0; i < this->getF(); i++) { //assign the first f jobs to each one of the factories
+        //factories[i] = new Factory(i, this->m);
+        solution->getFactory(i)->addJobAtLastPosition(jobs[i]);
+    }
+
+    //remove the assigned jobs from lambda
+
+    Factory* testFactory;
+    float testFactoryTFT;
+    float tftVariation;
+    float previousTFT;
+    Factory* minTFTFactory;
+
+    //for each factory f
+    for (int j = this->getF(); j < jobs.size(); j++) {//test job j at all the possible positions of PI_k (the factory)
+        float minIncreaseTFT = INFINITY;
+        float minTFTPos = 0;
+
+        for (int f = 0; f < this->getF(); f++) {
+            testFactory = solution->getFactory(f)->minTFTAfterInsertion(jobs[j]);
+            testFactoryTFT = testFactory->getTFT();
+            previousTFT = solution->getFactory(f)->getTFT();
+            tftVariation = testFactoryTFT - previousTFT;
+
+            if (tftVariation < minIncreaseTFT) {
+                minIncreaseTFT = tftVariation;
+                minTFTFactory = testFactory;
+                minTFTPos = f;
+            }else{
+                delete testFactory;
+            }
+        }
+
+        //factories[minTFTPos] = minTFTFactory;
+        solution->replaceFactory(minTFTPos, minTFTFactory); // replaces old factory and deletes it
+    }
+
+    for(int i=0; i < this->getF(); i++){
+        solution->getFactory(i)->speedDown();
+    }
+
+    return solution;
+}
+
+Solution* Instance::randSMinTFT(int seed) {
+    Solution* solution = new Solution(this->get_n(), this->get_m(), this->getF());
+    vector<Job*> jobs(this->get_n());
+    Xoshiro256plus rand(time(NULL)+seed);
+    int highestSpeed = this->speeds.size() - 1;
+
+    for (int i = 0; i < this->get_n(); i++) {
+
+        jobs[i] = new Job(i);
+        vector<float> jobTimeByMachine(this->get_m());
+        vector<float> jobSpeedByMachine(this->get_m());
+
+        for (int j = 0; j < this->get_m(); j++) {
+            int randomIndex = rand.next() % 5;
+            jobTimeByMachine[j] = this->t[i][j];
+            jobSpeedByMachine[j] = this->speeds[randomIndex];
         }
         jobs[i]->setT(jobTimeByMachine);
         jobs[i]->setV(jobSpeedByMachine);

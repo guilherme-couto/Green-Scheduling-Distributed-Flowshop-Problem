@@ -137,6 +137,8 @@ void Factory::speedDown() {
     Job *job;
     float previousTFT = this->getTFT();
     float previousSpeed;
+    float newSpeed;
+    float newTFT;
 
     for (int i = 0; i < this->jobs.size() - 1; i++) {
         job = this->jobs[i];
@@ -145,9 +147,17 @@ void Factory::speedDown() {
             previousSpeed = job->getV()[j];
 
             for (int v = this->speeds.size() - 1; v > 1; v--) {//todo: pegar vetor de velocidades possíveis, talvez usar um campo estático na Factory
-                job->setVForMachine(j, this->speeds[v - 1]); //diminui para a próxima velocidade
-                if (this->getTFT() > previousTFT) {
+                newSpeed = this->speeds[v - 1];
+                job->setVForMachine(j, newSpeed); //diminui para a próxima velocidade
+                newTFT = this->getTFT();
+
+                if (newTFT > previousTFT) {
                     job->setVForMachine(j, previousSpeed); //retorna à velocidade anterior
+                    break;
+                }
+                else{
+                    previousSpeed = newSpeed;
+                    previousTFT = newTFT;
                 }
             }
         }
