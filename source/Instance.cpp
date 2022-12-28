@@ -246,7 +246,7 @@ void Instance::printPopulation()
 }
 
 string Instance::generateSolutionsString(){
-    string str = "name, TFT, TEC\n";
+    string str = "id, TFT, TEC\n";
     Solution* solution;
 
     for (size_t i = 0; i < this->population.size(); i++)
