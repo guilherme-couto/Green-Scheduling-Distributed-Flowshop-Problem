@@ -36,7 +36,7 @@ public:
     void randomSolutionGenerator(int s);
 
     void printPopulation();
-    string generateSolutionsString();
+    string generatePopulationCSVString();
 };
 
 

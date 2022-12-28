@@ -32,9 +32,50 @@ int Factory::getTotalJobs()
 }
 
 
-float Factory::getTEC() {
-    return 0.0;
+float Factory::getTEC()
+{
+    float tec = 0.0;
+
+    // Get the energy consumption of each job when processing in each machine
+    for(int i = 0; i < this->jobs.size(); i++){
+        for (int j = 0; j < this->m; j++){
+            tec += 4 * this->jobs[i]->getV(j) * this->jobs[i]->getV(j);     // 4 * v^2
+        }
+    }
+
+    // Get the energy consumption of the standby times of each machine
+    for (int i = 1; i < this->jobs.size(); i++)
+    {
+        float job_time = 0.0;
+        float prev_job_time = 0.0;
+
+        // Get the processing time on the first machine
+        for (int j = 0; j < i; j++)
+        {
+            prev_job_time += this->jobs[j]->getP(0);
+        }
+        job_time = prev_job_time + this->jobs[i]->getP(0);
+
+        for (int j = 1; j < this->m; j++)
+        {
+            // Check if standby time between jobs is greater than 0
+            prev_job_time += this->jobs[i - 1]->getP(j);
+            if (prev_job_time < job_time)
+            {
+                // Get the standby time
+                tec += job_time - prev_job_time;
+                job_time += this->jobs[i]->getP(j);
+            }
+            else
+            {
+                job_time += prev_job_time + this->jobs[i]->getP(j);
+            }
+        }
+    }
+    return tec;
 }
+
+
 float Factory::getTFT() {
     float tft=0.0;
     vector<float> partialFTByJob(this->jobs.size(), 0.0);
@@ -144,7 +185,7 @@ void Factory::speedDown() {
         job = this->jobs[i];
 
         for (int j = 1; j < this->m; j++) {
-            previousSpeed = job->getV()[j];
+            previousSpeed = job->getV(j);
 
             for (int v = this->speeds.size() - 1; v > 1; v--) {//todo: pegar vetor de velocidades possíveis, talvez usar um campo estático na Factory
                 newSpeed = this->speeds[v - 1];

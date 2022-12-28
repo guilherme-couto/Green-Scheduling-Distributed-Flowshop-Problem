@@ -58,7 +58,7 @@ Solution* Instance::maxSMinTFT() {
 
     for (int i = 0; i < this->get_n(); i++) {
         jobs[i] = new Job(i);
-        vector<float> jobTimeByMachine(this->get_m());
+        vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
         for (int j = 0; j < this->get_m(); j++) {
@@ -114,6 +114,7 @@ Solution* Instance::maxSMinTFT() {
     for(int i=0; i < this->getF(); i++){
         solution->getFactory(i)->speedDown();
     }
+    this->population.push_back(solution);
 
     return solution;
 }
@@ -127,7 +128,7 @@ Solution* Instance::randSMinTFT(int seed) {
     for (int i = 0; i < this->get_n(); i++) {
 
         jobs[i] = new Job(i);
-        vector<float> jobTimeByMachine(this->get_m());
+        vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
         for (int j = 0; j < this->get_m(); j++) {
@@ -184,6 +185,7 @@ Solution* Instance::randSMinTFT(int seed) {
     for(int i=0; i < this->getF(); i++){
         solution->getFactory(i)->speedDown();
     }
+    this->population.push_back(solution);
 
     return solution;
 }
@@ -192,29 +194,33 @@ void Instance::randomSolutionGenerator(int s)
 {
     Xoshiro256plus rand(time(NULL)+s);
 
-    Solution* sol = new Solution(this->n, this->m, this->F); 
+    Solution* sol = new Solution(this->n, this->m, this->F);
 
     // Vector that indicates if a job (id = index) has already been allocated
-    vector<bool> job_allocated(this->n, false); 
+    vector<bool> job_allocated(this->n, false);
 
     vector<int> jobs_to_allocate;
     for (size_t i = 0; i < this->n; i++)
     {
         jobs_to_allocate.push_back(i);
     }
-    
+
     // Allocate the jobs equally to the factories
     int f_id = 0;
     while (jobs_to_allocate.size())
     {
         int random_num = rand.next() % jobs_to_allocate.size();
         Job* job = new Job(jobs_to_allocate[random_num]);
+        job->setT(this->t[jobs_to_allocate[random_num]]);
 
+        vector<float> v(this->get_m()); //todo: colocar isso em algum construtor
+        job->setV(v);
         // Set a random speed for each machine
         for (int j = 0; j < this->m; j++)
         {
             int random_num = rand.next() % this->speeds.size();
             sol->setV(job->getId(), j, this->speeds[random_num]);
+            job->setVForMachine(j, this->speeds[random_num]);
         }
 
         if (f_id == this->F)
@@ -245,13 +251,13 @@ void Instance::printPopulation()
     }
 }
 
-string Instance::generateSolutionsString(){
+string Instance::generatePopulationCSVString(){
     string str = "id, TFT, TEC\n";
     Solution* solution;
 
     for (size_t i = 0; i < this->population.size(); i++)
     {   solution = this->population[i];
-        str += i+ "," + to_string(solution->getTFT()) + "," + to_string(solution->getTEC()) + "\n";
+        str += to_string(i)+ "," + to_string(solution->getTFT()) + "," + to_string(solution->getTEC()) + "\n";
     }
     return str;
 }
