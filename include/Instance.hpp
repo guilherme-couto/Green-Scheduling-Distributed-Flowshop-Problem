@@ -32,6 +32,7 @@ public:
     void construtivo();
 
     Solution* maxSMinTFT();
+    Solution* minSMinTEC();
     void randomSolutionGenerator(int s);
 
     void printPopulation();

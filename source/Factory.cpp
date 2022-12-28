@@ -25,6 +25,49 @@ int Factory::getTotalJobs()
     return this->total_jobs;
 }
 
+float Factory::getTEC()
+{
+    float tec = 0.0;
+
+    // Get the energy consumption of each job when processing in each machine
+    for(int i = 0; i < this->jobs.size(); i++){
+        for (int j = 0; j < this->m; j++){
+            tec += 4 * this->jobs[i]->getV(j) * this->jobs[i]->getV(j);     // 4 * v^2
+        }
+    }
+
+    // Get the energy consumption of the standby times of each machine
+    for (int i = 1; i < this->jobs.size(); i++)
+    {
+        float job_time = 0.0;
+        float prev_job_time = 0.0;
+
+        // Get the processing time on the first machine
+        for (int j = 0; j < i; j++)
+        {
+            prev_job_time += this->jobs[j]->getP(0);
+        }
+        job_time = prev_job_time + this->jobs[i]->getP(0);
+
+        for (int j = 1; j < this->m; j++)
+        {
+            // Check if standby time between jobs is greater than 0
+            prev_job_time += this->jobs[i - 1]->getP(j);
+            if (prev_job_time < job_time)
+            {
+                // Get the standby time
+                tec += job_time - prev_job_time;
+                job_time += this->jobs[i]->getP(j);
+            }
+            else
+            {
+                job_time += prev_job_time + this->jobs[i]->getP(j);
+            }
+        }
+    }
+    return tec;
+}
+
 float Factory::getTFT() {
     float tft=0.0;
     vector<float> partialFTByJob(this->jobs.size(), 0.0);
@@ -96,6 +139,40 @@ Factory* Factory::minTFTAfterInsertion(Job* job) {
 
 }
 
+Factory* Factory::minTECAfterInsertion(Job* job)
+{
+    float tecBeforeInsertion = this->getTEC();
+    float minIncreaseTEC = INFINITY;
+    float tecVariation;
+
+    vector<Job*> auxJobs = this->jobs;
+    vector<Job*> testJobs = this->jobs;
+    vector<Job*> minTECJobs = this->jobs;
+
+    for(int i=0; i<=this->jobs.size(); i++)
+    {
+        testJobs = this->jobs;
+        testJobs.insert(testJobs.begin()+i, job);
+
+        Factory* auxFactory = new Factory();
+        auxFactory->setMachines(this->m);
+        auxFactory->setJobs(testJobs);
+        
+        float testFactoryTEC = auxFactory->getTEC();
+
+        tecVariation = testFactoryTEC - tecBeforeInsertion;
+        if(tecVariation < minIncreaseTEC)
+        {
+            minIncreaseTEC = tecVariation;
+            minTECJobs = testJobs;
+        }
+    }
+
+    this->jobs = minTECJobs;
+
+    return this;
+}
+
 void Factory::addJobAtLastPosition(Job* job)
 {
 
@@ -121,4 +198,14 @@ void Factory::addJobAtPosition(Job* job, int pos)
 cout << "total jobs: " << this->total_jobs << endl;
     this->jobs.insert(this->jobs.begin()+pos, job);
     this->total_jobs++;
+}
+
+void Factory::setJobs(vector<Job*> jobs)
+{
+    this->jobs = jobs;
+}
+
+void Factory::setMachines(int m)
+{
+    this->m = m;
 }

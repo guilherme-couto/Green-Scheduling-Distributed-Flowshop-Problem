@@ -32,8 +32,11 @@ public:
     void addJobId(int i);
     void addJobAtLastPosition(Job* job);
     void addJobAtPosition(Job* job, int pos);
+    void setJobs(vector<Job*> jobs);
+    void setMachines(int m);
 
     Factory* minTFTAfterInsertion(Job* job);
+    Factory* minTECAfterInsertion(Job* job);
 
 };
 

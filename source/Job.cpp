@@ -21,3 +21,5 @@ float Job::getTotalP(){
 }
 
 float Job::getP(int j){ return this->t[j]/this->v[j];}
+
+float Job::getV(int j){ return this->v[j];}
