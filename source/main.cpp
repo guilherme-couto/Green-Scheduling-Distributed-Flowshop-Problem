@@ -6,9 +6,12 @@ void test2(){
     for (int i=0; i<100; i++){
         instance->randomSolutionGenerator(i);
     }
+    vector<vector<Solution*>>fronts = instance->fastNonDominatedSort();
+
     ofstream output("../analysis/pop_output.csv");
     output << instance->generatePopulationCSVString();
     output.close();
+    instance->assignCrowdingDistance();
 
     delete instance;
 

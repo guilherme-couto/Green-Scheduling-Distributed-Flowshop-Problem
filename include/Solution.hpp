@@ -21,6 +21,11 @@ private:
     vector<float> PP;                   // Energy consumption when processing of each machine
     vector<float> SP;                   // Energy consumption when stand-by of each machine
 
+    //auxiliar attributes
+    int dominationRank;
+    int dominationCounter;
+    float crowdingDistance;
+
 public:
     Solution(int n, int m, int F);      // Constructor (n = number of jobs, m = number of machines, F = number of factories)  
     ~Solution();
@@ -32,6 +37,8 @@ public:
     vector<int> getAllJobsAllocation();
     int getJobAllocation(int job_id);
     Factory* getFactory(int f_id);
+    bool dominates(Solution* other); // true if this instance dominates other
+    bool crowdedCompare(Solution* other);
 
     void replaceFactory(int f_id, Factory* factory);
     void setSequence(int f_id, vector<int> seq);
@@ -39,6 +46,13 @@ public:
     void setEC_f(int f_id, float ec);
     void setFT_f(int f_id, float ft);
     void setJobAllocation(int job_id, int f_id);
+    void setDominationRank(int val);
+    int getDominationRank();
+    void setDominationCounter(int val);
+    int getDominationCounter();
+    void setCrowdingDistance(float val);
+    int getCrowdingDistance();
+    void incrementCrowdingDistance(float val);
 
     // Operators
     void speedUp(int f_id);

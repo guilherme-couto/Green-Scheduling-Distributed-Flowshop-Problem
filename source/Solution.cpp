@@ -61,6 +61,31 @@ float Solution::getTFT() {
 
     return tft;
 }
+void Solution::setDominationRank(int val){
+    this->dominationRank = val;
+}
+void Solution::setDominationCounter(int val){
+    this->dominationCounter = val;
+
+}
+void Solution::setCrowdingDistance(float val){
+    this->crowdingDistance = val;
+}
+
+int Solution::getDominationRank(){
+    return dominationRank;
+}
+int Solution::getDominationCounter(){
+    return dominationCounter;
+}
+int Solution::getCrowdingDistance(){
+    return crowdingDistance;
+}
+
+void Solution::incrementCrowdingDistance(float val){
+    this->crowdingDistance +=val;
+};
+
 
 Factory* Solution::getFactory(int f_id)
 {
@@ -75,6 +100,27 @@ void Solution::setV(int job_id, int mach_id, float v)
 void Solution::replaceFactory(int f_id, Factory* factory) {
     delete this->factories[f_id];
     this->factories[f_id] = factory;
+}
+
+
+bool Solution::dominates(Solution *other) {
+    if(this->getTFT() < other->getTFT() && this->getTEC() < other->getTEC()){
+        return true;
+    }
+
+    return false;
+}
+
+bool Solution::crowdedCompare(Solution *other) {
+
+    if(this->getDominationRank() < other->getDominationRank()){
+        return true;
+    }else if(this->getDominationRank() == other->getDominationRank()){
+        if(this->getCrowdingDistance() > other->getCrowdingDistance()){
+            return true;
+        }
+        return false;
+    }
 }
 
 void Solution::printSolution()

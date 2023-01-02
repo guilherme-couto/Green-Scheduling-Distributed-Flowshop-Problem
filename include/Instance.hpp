@@ -13,6 +13,7 @@ private:
     vector<vector<int>> t;              // Standard processing time matrix (line = machine, column = job)
     vector<float> speeds;               // Available processing speeds
     vector<Solution*> population;        // Population of solutions
+    vector<vector<Solution*>> dominationFronts;
 
 public:
     Instance(int F, int n, int m, vector<vector<int>> t);      // Constructor (F = number of factories, n = number of jobs, m = number of machines)
@@ -25,6 +26,8 @@ public:
     vector<float> getVectorSpeeds();
     vector<Solution*> getPopulation();
     Solution* getSolution(int i);
+    void assignCrowdingDistance();
+    vector<vector<Solution*>> fastNonDominatedSort();
 
     int get_t(int machine_id, int job_id);
     int getSpeed(int i);
