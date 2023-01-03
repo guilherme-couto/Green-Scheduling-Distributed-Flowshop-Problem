@@ -6,28 +6,28 @@
 class Solution
 {
 private:
-    vector<vector<int>> distribution;   // Sequence of jobs in each factory
-    vector<vector<float>> V;            // Speed matrix of each job in each machine
-    float TEC;                          // Total energy consumption  
-    float TFT;                          // Total flow time  
-    vector<float> EC_f;                 // Energy consumption of each factory
-    vector<float> FT_f;                 // Flow time of each factory    
-    vector<int> job_allocation;         // Factory id of each job
-    vector<Factory*> factories;
+    vector<vector<int>> distribution; // Sequence of jobs in each factory
+    vector<vector<float>> V;          // Speed matrix of each job in each machine
+    float TEC;                        // Total energy consumption
+    float TFT;                        // Total flow time
+    vector<float> EC_f;               // Energy consumption of each factory
+    vector<float> FT_f;               // Flow time of each factory
+    vector<int> job_allocation;       // Factory id of each job
+    vector<Factory *> factories;
     int n;
     int m;
-    int F;// List of factories
-    vector<vector<float>> p;            // Actual processing time of each job in each machine
-    vector<float> PP;                   // Energy consumption when processing of each machine
-    vector<float> SP;                   // Energy consumption when stand-by of each machine
+    int F;                   // List of factories
+    vector<vector<float>> p; // Actual processing time of each job in each machine
+    vector<float> PP;        // Energy consumption when processing of each machine
+    vector<float> SP;        // Energy consumption when stand-by of each machine
 
-    //auxiliar attributes
+    // auxiliar attributes
     int dominationRank;
     int dominationCounter;
     float crowdingDistance;
 
 public:
-    Solution(int n, int m, int F);      // Constructor (n = number of jobs, m = number of machines, F = number of factories)  
+    Solution(int n, int m, int F); // Constructor (n = number of jobs, m = number of machines, F = number of factories)
     ~Solution();
 
     vector<vector<int>> getDistribution();
@@ -36,11 +36,12 @@ public:
     float getTFT();
     vector<int> getAllJobsAllocation();
     int getJobAllocation(int job_id);
-    Factory* getFactory(int f_id);
-    bool dominates(Solution* other); // true if this instance dominates other
-    bool crowdedCompare(Solution* other);
+    Factory *getFactory(int f_id);
 
-    void replaceFactory(int f_id, Factory* factory);
+    bool dominates(Solution *other); // true if this instance dominates other
+    bool crowdedCompare(Solution *other);
+
+    void replaceFactory(int f_id, Factory *factory);
     void setSequence(int f_id, vector<int> seq);
     void setV(int job_id, int mach_id, float v);
     void setEC_f(int f_id, float ec);
@@ -66,7 +67,6 @@ public:
 
     // Auxiliar functions
     void printSolution();
-
 };
 
 #endif // SOLUTION_HPP

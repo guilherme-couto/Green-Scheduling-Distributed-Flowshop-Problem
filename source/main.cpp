@@ -1,12 +1,13 @@
 #include "defines.hpp"
 
-
-void test2(){
-    Instance* instance = readFile("../instances/928/2-4-20__0.txt");
-    for (int i=0; i<100; i++){
+void test2()
+{
+    Instance *instance = readFile("../instances/928/2-4-20__0.txt");
+    for (int i = 0; i < 100; i++)
+    {
         instance->randomSolutionGenerator(i);
     }
-    vector<vector<Solution*>>fronts = instance->fastNonDominatedSort();
+    vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
 
     ofstream output("../analysis/pop_output.csv");
     output << instance->generatePopulationCSVString();
@@ -15,8 +16,7 @@ void test2(){
 
     delete instance;
 
-
-    Instance* instance2 = readFile("../instances/928/2-4-20__0.txt");
+    Instance *instance2 = readFile("../instances/928/2-4-20__0.txt");
     instance2->maxSMinTFT();
     ofstream output2("../analysis/max_s_min_tft.csv");
     output2 << instance2->generatePopulationCSVString();
@@ -24,8 +24,9 @@ void test2(){
 
     delete instance2;
 
-    Instance* instance3 = readFile("../instances/928/2-4-20__0.txt");
-    for (int i=0; i<100; i++){
+    Instance *instance3 = readFile("../instances/928/2-4-20__0.txt");
+    for (int i = 0; i < 100; i++)
+    {
         instance3->randSMinTFT(i);
     }
     ofstream output3("../analysis/rand_s_min_tft.csv");
@@ -33,17 +34,18 @@ void test2(){
     output3.close();
 
     delete instance3;
-
 }
 
-void test(){
+void test()
+{
     // criar instancia
 
-    Instance* instance = readFile("../instances/928/2-4-20__0.txt");
-    Solution* test = instance->maxSMinTFT();
-    Solution* test2 = instance->randSMinTFT(0);
+    Instance *instance = readFile("../instances/928/2-4-20__0.txt");
+    Solution *test = instance->maxSMinTFT();
+    Solution *test2 = instance->randSMinTFT(0);
 
-    for (int i=0; i<100; i++){
+    for (int i = 0; i < 100; i++)
+    {
         instance->randomSolutionGenerator(i);
     }
     ofstream output("../pop_output.csv");
@@ -54,64 +56,62 @@ void test(){
     delete test;
     delete test2;
 
-    Solution* s = new Solution(6, 3, 2);
+    Solution *s = new Solution(6, 3, 2);
 
-    vector<int> t1 = {4,2,1};
-    vector<float> v1 = {1.0,1.0,1.0};
-    Job* job1 = new Job(0);
+    vector<int> t1 = {4, 2, 1};
+    vector<float> v1 = {1.0, 1.0, 1.0};
+    Job *job1 = new Job(0);
     job1->setT(t1);
     job1->setV(v1);
 
-    vector<int> t2 = {2,1,2};
-    vector<float> v2 = {1.0,1.0,1.0};
-    Job* job2 = new Job(1);
+    vector<int> t2 = {2, 1, 2};
+    vector<float> v2 = {1.0, 1.0, 1.0};
+    Job *job2 = new Job(1);
     job2->setT(t2);
     job2->setV(v2);
 
-    vector<int> t3 = {3,2,3};
-    vector<float> v3 = {1.0,1.0,1.0};
-    Job* job3 = new Job(2);
+    vector<int> t3 = {3, 2, 3};
+    vector<float> v3 = {1.0, 1.0, 1.0};
+    Job *job3 = new Job(2);
     job3->setT(t3);
     job3->setV(v3);
 
-    vector<int> t4 = {2,2,4};
-    vector<float> v4 = {1.0,1.0,1.0};
-    Job* job4 = new Job(3);
+    vector<int> t4 = {2, 2, 4};
+    vector<float> v4 = {1.0, 1.0, 1.0};
+    Job *job4 = new Job(3);
     job4->setT(t4);
     job4->setV(v4);
 
-    vector<int> t5 = {2,1,3};
-    vector<float> v5 = {1.0,1.0,1.0};
-    Job* job5 = new Job(4);
+    vector<int> t5 = {2, 1, 3};
+    vector<float> v5 = {1.0, 1.0, 1.0};
+    Job *job5 = new Job(4);
     job5->setT(t5);
     job5->setV(v5);
 
-    vector<int> t6 = {3,3,2};
-    vector<float> v6 = {1.0,1.0,1.0};
-    Job* job6 = new Job(5);
+    vector<int> t6 = {3, 3, 2};
+    vector<float> v6 = {1.0, 1.0, 1.0};
+    Job *job6 = new Job(5);
     job6->setT(t6);
     job6->setV(v6);
 
-    Factory* f = s->getFactory(0);
+    Factory *f = s->getFactory(0);
     f->addJobAtLastPosition(job5);
     f->addJobAtLastPosition(job2);
     f->addJobAtLastPosition(job1);
 
-    Factory* f2 = s->getFactory(1);
+    Factory *f2 = s->getFactory(1);
     f2->addJobAtLastPosition(job4);
     f2->addJobAtLastPosition(job3);
     f2->addJobAtLastPosition(job6);
 
-
-
     delete s;
 
-    //float tft = f->getTFT();
-
+    // float tft = f->getTFT();
 }
 
-int main(){
-    cout << "Hello"<<endl;
+int main()
+{
+    cout << "Hello" << endl;
     test2();
     return 0;
 
@@ -119,9 +119,11 @@ int main(){
 
     // Leitura retorna uma instancia
 
-    cout << "Iniciando leitura da instância...\n" << endl;
-    Instance* inst = readFile("./instances/294/3-4-20__15.txt");
-    cout << "Instância lida com sucesso!\n" << endl;
+    cout << "Iniciando leitura da instância...\n"
+         << endl;
+    Instance *inst = readFile("./instances/294/3-4-20__15.txt");
+    cout << "Instância lida com sucesso!\n"
+         << endl;
 
     cout << "F = " << inst->getF() << endl;
     cout << "n = " << inst->get_n() << endl;
@@ -133,6 +135,4 @@ int main(){
     cout << "\nFIM\n";
 
     return 0;
-    
 }
-

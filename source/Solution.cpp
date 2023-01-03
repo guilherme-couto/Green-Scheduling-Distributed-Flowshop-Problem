@@ -24,7 +24,7 @@ Solution::Solution(int n, int m, int F)
         this->EC_f[i] = 0;
         this->FT_f[i] = 0;
 
-        Factory* f = new Factory(i, m);
+        Factory *f = new Factory(i, m);
         this->factories.push_back(f);
     }
 
@@ -44,54 +44,64 @@ Solution::~Solution()
 {
 }
 
-float Solution::getTEC() {
+float Solution::getTEC()
+{
     float tft = 0.0;
-    for(int i=0; i< this->factories.size(); i++){
-        tft+=this->factories[i]->getTEC();
+    for (int i = 0; i < this->factories.size(); i++)
+    {
+        tft += this->factories[i]->getTEC();
     }
 
     return tft;
 }
 
-float Solution::getTFT() {
+float Solution::getTFT()
+{
     float tft = 0.0;
-    for(int i=0; i< this->factories.size(); i++){
-        tft+=this->factories[i]->getTFT();
+    for (int i = 0; i < this->factories.size(); i++)
+    {
+        tft += this->factories[i]->getTFT();
     }
 
     return tft;
 }
-void Solution::setDominationRank(int val){
+void Solution::setDominationRank(int val)
+{
     this->dominationRank = val;
 }
-void Solution::setDominationCounter(int val){
+void Solution::setDominationCounter(int val)
+{
     this->dominationCounter = val;
-
 }
-void Solution::setCrowdingDistance(float val){
+void Solution::setCrowdingDistance(float val)
+{
     this->crowdingDistance = val;
 }
 
-int Solution::getDominationRank(){
+int Solution::getDominationRank()
+{
     return dominationRank;
 }
-int Solution::getDominationCounter(){
+int Solution::getDominationCounter()
+{
     return dominationCounter;
 }
-int Solution::getCrowdingDistance(){
+int Solution::getCrowdingDistance()
+{
     return crowdingDistance;
 }
 
-void Solution::incrementCrowdingDistance(float val){
-    this->crowdingDistance +=val;
+void Solution::incrementCrowdingDistance(float val)
+{
+    this->crowdingDistance += val;
 }
 
-void Solution::incrementDominationCounter(int val) {
+void Solution::incrementDominationCounter(int val)
+{
     this->dominationCounter += val;
 }
 
-
-Factory* Solution::getFactory(int f_id)
+Factory *Solution::getFactory(int f_id)
 {
     return this->factories[f_id];
 }
@@ -101,26 +111,33 @@ void Solution::setV(int job_id, int mach_id, float v)
     this->V[job_id][mach_id] = v;
 }
 
-void Solution::replaceFactory(int f_id, Factory* factory) {
+void Solution::replaceFactory(int f_id, Factory *factory)
+{
     delete this->factories[f_id];
     this->factories[f_id] = factory;
 }
 
-
-bool Solution::dominates(Solution *other) {
-    if(this->getTFT() < other->getTFT() && this->getTEC() < other->getTEC()){
+bool Solution::dominates(Solution *other)
+{
+    if (this->getTFT() < other->getTFT() && this->getTEC() < other->getTEC())
+    {
         return true;
     }
 
     return false;
 }
 
-bool Solution::crowdedCompare(Solution *other) {
+bool Solution::crowdedCompare(Solution *other)
+{
 
-    if(this->getDominationRank() < other->getDominationRank()){
+    if (this->getDominationRank() < other->getDominationRank())
+    {
         return true;
-    }else if(this->getDominationRank() == other->getDominationRank()){
-        if(this->getCrowdingDistance() > other->getCrowdingDistance()){
+    }
+    else if (this->getDominationRank() == other->getDominationRank())
+    {
+        if (this->getCrowdingDistance() > other->getCrowdingDistance())
+        {
             return true;
         }
         return false;
@@ -129,11 +146,11 @@ bool Solution::crowdedCompare(Solution *other) {
 
 void Solution::printSolution()
 {
-    for(int f = 0; f < this->F; f++)
+    for (int f = 0; f < this->F; f++)
     {
         cout << "Factory " << f << " -> ";
-        
-        for(int i = 0; i < this->factories[f]->getTotalJobs(); i++)
+
+        for (int i = 0; i < this->factories[f]->getTotalJobs(); i++)
         {
             cout << this->factories[f]->getJobs()[i]->getId() << " ";
         }
@@ -141,4 +158,3 @@ void Solution::printSolution()
         cout << endl;
     }
 }
-

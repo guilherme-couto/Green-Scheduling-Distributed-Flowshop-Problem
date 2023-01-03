@@ -1,45 +1,52 @@
 #include "defines.hpp"
 
-vector<float> floatVectorFromText(string text){
+vector<float> floatVectorFromText(string text)
+{
     vector<float> result;
     string part;
 
-    for(int i=0; i< text.size(); i++){
+    for (int i = 0; i < text.size(); i++)
+    {
 
-        if(text[i]==' ' || text[i]=='\n' || text[i]=='\r'){
+        if (text[i] == ' ' || text[i] == '\n' || text[i] == '\r')
+        {
             result.push_back(stof(part));
             part = "";
-        }else{
-            part+=(text[i]);
         }
-
+        else
+        {
+            part += (text[i]);
+        }
     }
 
     return result;
-
 }
 
-vector<int> intVectorFromText(string text){
+vector<int> intVectorFromText(string text)
+{
     vector<int> result;
     string part;
 
-    for(int i=0; i< text.size(); i++){
+    for (int i = 0; i < text.size(); i++)
+    {
 
-        if(text[i]==' ' || text[i]=='\n' || text[i]=='\r'){
+        if (text[i] == ' ' || text[i] == '\n' || text[i] == '\r')
+        {
             result.push_back(stof(part));
             part = "";
-        }else{
-            part+=(text[i]);
         }
-
+        else
+        {
+            part += (text[i]);
+        }
     }
 
     return result;
-
 }
 
-//Teste de leitura da instância
-Instance* readFile(string path){
+// Teste de leitura da instância
+Instance *readFile(string path)
+{
     ifstream input(path);
     string textAux;
     int numFactories;
@@ -66,15 +73,16 @@ Instance* readFile(string path){
     vectorFromFile = intVectorFromText(textAux);
     processingTimes.reserve(numMachines);
 
-    for(int i=0; i< numJobs;i++){
+    for (int i = 0; i < numJobs; i++)
+    {
         vector<int> line(numMachines);
-        for(int j=0; j< numMachines; j++){
-            line[j] = vectorFromFile[i*numMachines + j];
+        for (int j = 0; j < numMachines; j++)
+        {
+            line[j] = vectorFromFile[i * numMachines + j];
         }
         processingTimes.push_back(line);
     }
 
-    Instance* instance = new Instance(numFactories, numJobs, numMachines, processingTimes);
+    Instance *instance = new Instance(numFactories, numJobs, numMachines, processingTimes);
     return instance;
-
 }

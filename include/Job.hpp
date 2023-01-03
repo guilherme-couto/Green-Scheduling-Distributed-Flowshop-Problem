@@ -10,7 +10,7 @@ private:
     int id;          // Job index
     int factory_id;  // Factory index
     int position;    // Position in processing flow
-    vector<int> t; // Standard processing time of operation on each machine j
+    vector<int> t;   // Standard processing time of operation on each machine j
     vector<float> v; // Processing speed of this job on each machine
     float C;         // Completion time
 
@@ -18,8 +18,8 @@ public:
     Job(int id);
     ~Job(){};
 
-    float getP(int j);  //Get actual processing time of this job on machine j
-    float getV(int j);  // Get actual processing speed of this job on machine j
+    float getP(int j); // Get actual processing time of this job on machine j
+    float getV(int j); // Get actual processing speed of this job on machine j
     float getTotalP();
     int getId();
     int getFactoryId();
@@ -27,13 +27,12 @@ public:
     vector<float> getT();
     float getT_j(int j);
     float getC();
-    //vector<float> getV();
 
     void setFactoryID(int id);
     void setPosition(int pos);
     void setC(float C);
-    void setT(vector<int> t){this->t = t;}
-    void setV(vector<float> v){this->v = v;}
+    void setT(vector<int> t) { this->t = t; }
+    void setV(vector<float> v) { this->v = v; }
     void setVForMachine(int j, float v);
 };
 
