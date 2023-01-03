@@ -84,7 +84,11 @@ int Solution::getCrowdingDistance(){
 
 void Solution::incrementCrowdingDistance(float val){
     this->crowdingDistance +=val;
-};
+}
+
+void Solution::incrementDominationCounter(int val) {
+    this->dominationCounter += val;
+}
 
 
 Factory* Solution::getFactory(int f_id)

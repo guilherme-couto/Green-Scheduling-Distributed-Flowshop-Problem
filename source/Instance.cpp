@@ -197,7 +197,7 @@ Solution *Instance::randSMinTFT(int seed) {
 }
 
 void Instance::randomSolutionGenerator(int s) {
-    Xoshiro256plus rand(time(NULL) + s);
+    Xoshiro256plus rand(/*time(NULL) +*/ s);
 
     Solution *sol = new Solution(this->n, this->m, this->F);
 
@@ -267,35 +267,40 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
     //todo: não está funcionando, investigar. Parece gerar apenas primeira fronteira
 
 
-    vector<vector<Solution*>> fronts(1);
-    vector<vector<Solution*>> dominatedBy(population.size());
+    vector<vector<int>> fronts(1);
+    vector<vector<int>> dominatedBy(population.size());
+
 
     for(int i=0; i< population.size(); i++){
         population[i]->setDominationCounter(0);
+        //population[i]->setDominationRank(-1);
 
         for(int j=0; j< population.size(); j++){
             if(population[i]->dominates(population[j])){
-                dominatedBy[i].push_back(population[j]);
+                dominatedBy[i].push_back(j);
             }else if(population[j]->dominates(population[i])){
-                population[i]->setDominationCounter(population[i]->getDominationCounter() + 1);
+                population[i]->incrementDominationCounter(1);
             }
         }
 
         if(population[i]->getDominationCounter()==0){
             population[i]->setDominationRank(1);
-            fronts[0].push_back(population[i]);
+            fronts[0].push_back(i);
         }
 
     }
 
     int i =0;
     while(!fronts[i].empty()){
-        vector<Solution*> nextFront;
+        vector<int> nextFront;
         for(int j=0; j<fronts[i].size(); j++){
             for(int k=0; k<dominatedBy[j].size(); k++){
-                dominatedBy[j][k]->setDominationCounter(dominatedBy[j][k]->getDominationCounter() - 1);
-                if(dominatedBy[j][k]->getDominationCounter()==0){
-                    dominatedBy[j][k]->setDominationRank(i+2);
+                Solution *s = population[dominatedBy[j][k]]; // cada solução k que j domina
+
+                s->incrementDominationCounter(-1);
+
+                if(s->getDominationCounter()==0){
+                    s->setDominationRank(i+2);
                     nextFront.push_back(dominatedBy[j][k]);
                 }
             }
@@ -304,8 +309,16 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
         fronts.push_back(nextFront);
     }
 
-    this->dominationFronts = fronts;
-    return fronts;
+    vector<vector<Solution*>> solutionFronts(fronts.size());
+    /*for(int i=0; i< fronts.size(); i++){
+        vector<Solution*> front(fronts[i].size());
+        for(int j=0; fronts[i].size(); j++){
+            front[j] = population(fronts[i][j])
+        }
+    }*/
+
+   // this->dominationFronts = fronts;
+    return solutionFronts;
 }
 
 void Instance::assignCrowdingDistance() {

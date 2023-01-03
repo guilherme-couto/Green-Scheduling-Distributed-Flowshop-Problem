@@ -53,6 +53,7 @@ public:
     void setCrowdingDistance(float val);
     int getCrowdingDistance();
     void incrementCrowdingDistance(float val);
+    void incrementDominationCounter(int val);
 
     // Operators
     void speedUp(int f_id);
