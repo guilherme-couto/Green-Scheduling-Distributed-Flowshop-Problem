@@ -294,14 +294,18 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
     while(!fronts[i].empty()){
         vector<int> nextFront;
         for(int j=0; j<fronts[i].size(); j++){
-            for(int k=0; k<dominatedBy[j].size(); k++){
-                Solution *s = population[dominatedBy[j][k]]; // cada solução k que j domina
+            int frontSolId =  fronts[i][j]; //id (indices) de cada solução na fronteira atual
+
+            for(int k=0; k<dominatedBy[frontSolId].size(); k++){ //itera por cada solução dominada pela de indice frontSolId
+                int dominatedSolIndex = dominatedBy[frontSolId][k]; // id de cada solução dominada por frontSolId
+
+                Solution *s = population[dominatedSolIndex]; // cada solução dominada por frontSolId
 
                 s->incrementDominationCounter(-1);
 
                 if(s->getDominationCounter()==0){
                     s->setDominationRank(i+2);
-                    nextFront.push_back(dominatedBy[j][k]);
+                    nextFront.push_back(dominatedSolIndex);
                 }
             }
         }

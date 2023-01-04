@@ -125,6 +125,7 @@ bool Solution::crowdedCompare(Solution *other) {
         }
         return false;
     }
+    return false;
 }
 
 void Solution::printSolution()
