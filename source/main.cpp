@@ -3,7 +3,7 @@
 void test2()
 {
     Instance *instance = readFile("../instances/928/2-4-20__0.txt");
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 1000; i++)
     {
         instance->randomSolutionGenerator(i);
     }
