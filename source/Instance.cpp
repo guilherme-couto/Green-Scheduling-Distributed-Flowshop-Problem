@@ -291,7 +291,12 @@ Solution *Instance::minSMinTEC()
         solution->replaceFactory(minTECPos, minTECFactory); // replaces old factory and deletes it
     }
 
-    // TODO: rightShift for each factory
+    // Initialize the start_times matrix of each factory and then right shift
+    for (int f = 0; f < this->getF(); f++)
+    {
+        solution->getFactory(f)->initializeStartTimesMatrix();
+        solution->getFactory(f)->rightShift();
+    }
 
     return solution;
 }

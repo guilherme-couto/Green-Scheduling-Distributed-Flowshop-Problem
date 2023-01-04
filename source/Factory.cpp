@@ -9,6 +9,7 @@ Factory::Factory(int id, int m)
     this->total_jobs = 0;
     this->TEC = 0.0;
     this->TFT = 0.0;
+    this->start_times_matrix_initialized = false;
 }
 
 Factory::~Factory()
@@ -35,47 +36,52 @@ int Factory::getTotalJobs()
 
 float Factory::getTEC()
 {
-    float tec = 0.0;
-
-    // Get the energy consumption of each job when processing in each machine
-    for (int i = 0; i < this->jobs.size(); i++)
+    if (!this->start_times_matrix_initialized)
     {
-        for (int j = 0; j < this->m; j++)
-        {
-            tec += 4 * this->jobs[i]->getV(j) * this->jobs[i]->getV(j); // 4 * v^2
-        }
-    }
+        float tec = 0.0;
 
-    // Get the energy consumption of the standby times of each machine
-    for (int i = 1; i < this->jobs.size(); i++)
-    {
-        float job_time = 0.0;
-        float prev_job_time = 0.0;
-
-        // Get the processing time on the first machine
-        for (int j = 0; j < i; j++)
+        // Get the energy consumption of each job when processing in each machine
+        for (int i = 0; i < this->jobs.size(); i++)
         {
-            prev_job_time += this->jobs[j]->getP(0);
-        }
-        job_time = prev_job_time + this->jobs[i]->getP(0);
-
-        for (int j = 1; j < this->m; j++)
-        {
-            // Check if standby time between jobs is greater than 0
-            prev_job_time += this->jobs[i - 1]->getP(j);
-            if (prev_job_time < job_time)
+            for (int j = 0; j < this->m; j++)
             {
-                // Get the standby time
-                tec += job_time - prev_job_time;
-                job_time += this->jobs[i]->getP(j);
-            }
-            else
-            {
-                job_time += prev_job_time + this->jobs[i]->getP(j);
+                tec += 4 * this->jobs[i]->getV(j) * this->jobs[i]->getV(j) * this->jobs[i]->getP(j); // 4 * v^2 * p
             }
         }
+
+        // Get the energy consumption of the standby times of each machine
+        for (int i = 1; i < this->jobs.size(); i++)
+        {
+            float job_time = 0.0;
+            float prev_job_time = 0.0;
+
+            // Get the processing time on the first machine
+            for (int j = 0; j < i; j++)
+            {
+                prev_job_time += this->jobs[j]->getP(0);
+            }
+            job_time = prev_job_time + this->jobs[i]->getP(0);
+
+            for (int j = 1; j < this->m; j++)
+            {
+                // Check if standby time between jobs is greater than 0
+                prev_job_time += this->jobs[i - 1]->getP(j);
+                if (prev_job_time < job_time)
+                {
+                    // Get the standby time
+                    tec += job_time - prev_job_time;
+                    job_time += this->jobs[i]->getP(j);
+                }
+                else
+                {
+                    job_time += prev_job_time + this->jobs[i]->getP(j);
+                }
+            }
+        }
+        return tec;
     }
-    return tec;
+    else
+        return this->getTECAfterStartTimesMatrix();
 }
 
 float Factory::getTFT()
@@ -273,4 +279,91 @@ void Factory::setJobs(vector<Job *> jobs)
 void Factory::setMachines(int m)
 {
     this->m = m;
+}
+
+void Factory::initializeStartTimesMatrix()
+{
+    this->start_times.resize(this->m);
+
+    for (int j = 0; j < this->m; j++)
+    {
+        this->start_times[j].resize(this->jobs.size());
+    }
+
+    // The first job of the sequence starts at time 0 and it's executed with no standby time on the other machines
+    float global_sum = 0.0;
+    float individual_sum = 0.0;
+    for (int i = 0; i < this->jobs.size(); i++)
+    {
+        for (int j = 0; j < this->m; j++)
+        {
+            if (i > 0)
+                if (this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j) > individual_sum)
+                    individual_sum = this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j);
+
+            this->start_times[j][i] = individual_sum;
+            individual_sum += this->jobs[i]->getP(j);
+        }
+
+        // Update variables
+        global_sum += this->jobs[i]->getP(0);
+        individual_sum = global_sum;
+    }
+    this->start_times_matrix_initialized = true;
+}
+
+void Factory::rightShift()
+{
+    // Begin at the last machine
+    for (int j = this->m - 1; j > 0; j--)
+    {
+        // Begin with the last job and its predecessor
+        for (int i = this->jobs.size() - 1; i > 0; i--)
+        {
+            // If there is standby time between the job and its predecessor, shift the predecessor to the right, postponing it and reducing the standby time
+            if (this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j) < this->start_times[j][i])
+            {
+                // Shift the job to the right the maximum amount possible without overlapping the next machine start time
+                if (j != this->m - 1)
+                {
+                    if (this->start_times[j][i] - this->jobs[i - 1]->getP(j) > this->start_times[j + 1][i - 1])
+                        this->start_times[j][i - 1] = this->start_times[j + 1][i - 1] - this->jobs[i - 1]->getP(j);
+                    else
+                        this->start_times[j][i - 1] = this->start_times[j][i] - this->jobs[i - 1]->getP(j);
+                }
+                else
+                    this->start_times[j][i - 1] = this->start_times[j][i] - this->jobs[i - 1]->getP(j);
+            }
+        }
+    }
+}
+
+float Factory::getTECAfterStartTimesMatrix()
+{
+    if (this->start_times_matrix_initialized)
+    {
+        float tec = 0.0;
+
+        // First, calculate the processing consumption
+        for (int j = 0; j < this->m; j++)
+        {
+            for (int i = 0; i < this->jobs.size(); i++)
+            {
+                tec += 4 * this->jobs[i]->getV(j) * this->jobs[i]->getV(j) * this->jobs[i]->getP(j); // 4 * v^2 * p
+            }
+        }
+
+        // Then, calculate the standby consumption
+        for (int j = 0; j < this->m; j++)
+        {
+            for (int i = 1; i < this->jobs.size(); i++)
+            {
+                if (this->start_times[j][i] > this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j))
+                    tec += this->start_times[j][i] - this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j);
+            }
+        }
+        return tec;
+    }
+    else
+        return 0;
 }
