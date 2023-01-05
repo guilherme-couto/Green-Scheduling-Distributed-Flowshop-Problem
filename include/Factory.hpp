@@ -49,6 +49,8 @@ public:
     void rightShift();
     float getTECAfterStartTimesMatrix();
     void updateTEC();
+    void speedUp();
+    void randSpeedUp();
 };
 
 #endif // FACTORY_HPP
