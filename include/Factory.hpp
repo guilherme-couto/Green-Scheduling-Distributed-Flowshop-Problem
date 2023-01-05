@@ -36,6 +36,7 @@ public:
     void setJobs(vector<Job *> jobs);
     void setMachines(int m);
 
+    void randSpeedDown(int seed);
     void speedDown();
     static void setSpeeds(vector<float> s);
 

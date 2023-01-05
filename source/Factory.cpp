@@ -228,6 +228,15 @@ void Factory::addJobAtPosition(Job *job, int pos)
     this->total_jobs++;
 }
 
+int auxFindIndex(vector<float> v, float element){
+    for(int i=0; i<v.size(); i++){
+        if(v[i] == element){
+            return i;
+        }
+    }
+    return -1;
+}
+
 void Factory::speedDown()
 {
     Job *job;
@@ -235,6 +244,7 @@ void Factory::speedDown()
     float previousSpeed;
     float newSpeed;
     float newTFT;
+    int indexPreviousSpeed;
 
     for (int i = 0; i < this->jobs.size() - 1; i++)
     {
@@ -243,10 +253,11 @@ void Factory::speedDown()
         for (int j = 1; j < this->m; j++)
         {
             previousSpeed = job->getV(j);
+            indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
 
-            for (int v = this->speeds.size() - 1; v > 1; v--)
+            for (int v = indexPreviousSpeed/*this->speeds.size() - 1*/; v > 1; v--)
             { // todo: pegar vetor de velocidades possíveis, talvez usar um campo estático na Factory
-                newSpeed = this->speeds[v - 1];
+                newSpeed = Factory::speeds[v - 1];
                 job->setVForMachine(j, newSpeed); // diminui para a próxima velocidade
                 newTFT = this->getTFT();
 
@@ -264,6 +275,29 @@ void Factory::speedDown()
         }
     }
 }
+
+
+//obs, não testada ainda
+void Factory::randSpeedDown(int seed)
+{
+    Job *job;
+    Xoshiro256plus rand(seed);
+
+    for (int i = 0; i < this->jobs.size() - 1; i++)
+    {
+        job = this->jobs[i];
+
+        for (int j = 1; j < this->m; j++)
+        {
+            float previousSpeed = job->getV(j);
+            int indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
+            int indexNewSpeed = (int)rand.next()%indexPreviousSpeed;
+            job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+
+        }
+    }
+}
+
 
 void Factory::setJobs(vector<Job *> jobs)
 {
