@@ -298,6 +298,7 @@ Solution *Instance::minSMinTEC()
         solution->getFactory(f)->rightShift();
     }
 
+    this->population.push_back(solution);
     return solution;
 }
 

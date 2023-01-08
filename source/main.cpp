@@ -5,7 +5,7 @@ void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
     {
-       // instance->randomSolutionGenerator(i);
+       instance->randomSolutionGenerator(i);
     }
     instance->maxSMinTFT();
     vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
@@ -19,7 +19,7 @@ void test3(){
 
 void test2()
 {
-    Instance *instance = readFile("../instances/928/2-4-20__0.txt");
+    /*Instance *instance = readFile("../instances/928/2-4-20__0.txt");
     for (int i = 0; i < 1000; i++)
     {
         instance->randomSolutionGenerator(i);
@@ -50,7 +50,23 @@ void test2()
     output3 << instance3->generatePopulationCSVString();
     output3.close();
 
-    delete instance3;
+    delete instance3;*/
+
+    Instance *instance4 = readFile("../instances/928/2-4-20__0.txt");
+    instance4->minSMinTEC();
+    ofstream output4("../analysis/min_s_min_tec.csv");
+    output4 << instance4->generatePopulationCSVString();
+    output4.close();
+
+    delete instance4;
+
+    /*Instance *instance4 = readFile("../instances/928/2-4-20__0.txt");
+    instance4->minSMinTEC();
+    ofstream output4("../analysis/min_s_min_tec.csv");
+    output4 << instance4->generatePopulationCSVString();
+    output4.close();
+
+    delete instance4;*/
 }
 
 void test()
@@ -130,6 +146,7 @@ int main()
 {
     cout << "Hello" << endl;
     test3();
+    test2();
     return 0;
 
     // inicializa o construtivo
