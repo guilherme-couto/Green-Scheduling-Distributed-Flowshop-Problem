@@ -5,7 +5,7 @@ void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
     {
-        instance->randomSolutionGenerator(i);
+       // instance->randomSolutionGenerator(i);
     }
     instance->maxSMinTFT();
     vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();

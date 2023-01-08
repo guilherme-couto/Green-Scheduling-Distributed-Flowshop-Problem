@@ -34,6 +34,7 @@ public:
     vector<vector<float>> getV();
     float getTEC();
     float getTFT();
+    float getTFTUsingMatrix();
     vector<int> getAllJobsAllocation();
     int getJobAllocation(int job_id);
     Factory *getFactory(int f_id);
