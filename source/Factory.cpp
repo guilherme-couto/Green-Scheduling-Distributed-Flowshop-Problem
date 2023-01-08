@@ -211,11 +211,14 @@ Factory *Factory::minTECAfterInsertion(Job *job)
             minIncreaseTEC = tecVariation;
             minTECJobs = testJobs;
         }
+        delete auxFactory;
     }
 
-    this->jobs = minTECJobs;
+    Factory *testFactory = new Factory();
+    *testFactory = *this;
+    testFactory->jobs = minTECJobs;
 
-    return this;
+    return testFactory;
 }
 
 void Factory::addJobAtLastPosition(Job *job)
