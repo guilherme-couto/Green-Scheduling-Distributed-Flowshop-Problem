@@ -10,7 +10,7 @@ private:
     int F;                         // Number of factories
     int n;                         // Number of jobs
     int m;                         // Number of machines
-    vector<vector<int>> t;         // Standard processing time matrix (line = machine, column = job)
+    vector<vector<int>> t;         // Standard processing time matrix (line = job, column = machine)
     vector<float> speeds;          // Available processing speeds
     vector<Solution *> population; // Population of solutions
     vector<vector<Solution *>> dominationFronts;
