@@ -424,14 +424,15 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
     }
 
     vector<vector<Solution*>> solutionFronts(fronts.size());
-    /*for(int i=0; i< fronts.size(); i++){
+    for(int i=0; i< fronts.size(); i++){
         vector<Solution*> front(fronts[i].size());
-        for(int j=0; fronts[i].size(); j++){
-            front[j] = population(fronts[i][j])
+        for(int j=0; j < fronts[i].size(); j++){
+            front[j] = population[fronts[i][j]];
         }
-    }*/
+        solutionFronts[i] = front;
+    }
 
-    // this->dominationFronts = fronts;
+    this->dominationFronts = solutionFronts;
     return solutionFronts;
 }
 

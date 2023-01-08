@@ -1,5 +1,22 @@
 #include "defines.hpp"
 
+
+void test3(){
+    Instance *instance = readFile("../instances/test_instance1.txt");
+    for (int i = 0; i < 100; i++)
+    {
+        instance->randomSolutionGenerator(i);
+    }
+    instance->maxSMinTFT();
+    vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
+    instance->printPopulation();
+    ofstream output("../analysis/test_instance_pop.csv");
+    output << instance->generatePopulationCSVString();
+    output.close();
+
+    delete instance;
+}
+
 void test2()
 {
     Instance *instance = readFile("../instances/928/2-4-20__0.txt");
@@ -112,7 +129,7 @@ void test()
 int main()
 {
     cout << "Hello" << endl;
-    test2();
+    test3();
     return 0;
 
     // inicializa o construtivo
