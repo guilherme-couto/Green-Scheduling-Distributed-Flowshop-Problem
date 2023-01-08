@@ -380,53 +380,47 @@ string Instance::generatePopulationCSVString()
     return str;
 }
 
-vector<vector<Solution *>> Instance::fastNonDominatedSort()
-{
-    // todo: não está funcionando, investigar. Parece gerar apenas primeira fronteira
+vector<vector<Solution*>> Instance::fastNonDominatedSort() {
 
     vector<vector<int>> fronts(1);
     vector<vector<int>> dominatedBy(population.size());
 
-    for (int i = 0; i < population.size(); i++)
-    {
-        population[i]->setDominationCounter(0);
-        // population[i]->setDominationRank(-1);
 
-        for (int j = 0; j < population.size(); j++)
-        {
-            if (population[i]->dominates(population[j]))
-            {
+    for(int i=0; i< population.size(); i++){
+        population[i]->setDominationCounter(0);
+        //population[i]->setDominationRank(-1);
+
+        for(int j=0; j< population.size(); j++){
+            if(population[i]->dominates(population[j])){
                 dominatedBy[i].push_back(j);
-            }
-            else if (population[j]->dominates(population[i]))
-            {
+            }else if(population[j]->dominates(population[i])){
                 population[i]->incrementDominationCounter(1);
             }
         }
 
-        if (population[i]->getDominationCounter() == 0)
-        {
+        if(population[i]->getDominationCounter()==0){
             population[i]->setDominationRank(1);
             fronts[0].push_back(i);
         }
+
     }
 
-    int i = 0;
-    while (!fronts[i].empty())
-    {
+    int i =0;
+    while(!fronts[i].empty()){
         vector<int> nextFront;
-        for (int j = 0; j < fronts[i].size(); j++)
-        {
-            for (int k = 0; k < dominatedBy[j].size(); k++)
-            {
-                Solution *s = population[dominatedBy[j][k]]; // cada solução k que j domina
+        for(int j=0; j<fronts[i].size(); j++){
+            int frontSolId =  fronts[i][j]; //id (indices) de cada solução na fronteira atual
+
+            for(int k=0; k<dominatedBy[frontSolId].size(); k++){ //itera por cada solução dominada pela de indice frontSolId
+                int dominatedSolIndex = dominatedBy[frontSolId][k]; // id de cada solução dominada por frontSolId
+
+                Solution *s = population[dominatedSolIndex]; // cada solução dominada por frontSolId
 
                 s->incrementDominationCounter(-1);
 
-                if (s->getDominationCounter() == 0)
-                {
-                    s->setDominationRank(i + 2);
-                    nextFront.push_back(dominatedBy[j][k]);
+                if(s->getDominationCounter()==0){
+                    s->setDominationRank(i+2);
+                    nextFront.push_back(dominatedSolIndex);
                 }
             }
         }
@@ -434,15 +428,16 @@ vector<vector<Solution *>> Instance::fastNonDominatedSort()
         fronts.push_back(nextFront);
     }
 
-    vector<vector<Solution *>> solutionFronts(fronts.size());
-    /*for(int i=0; i< fronts.size(); i++){
+    vector<vector<Solution*>> solutionFronts(fronts.size());
+    for(int i=0; i< fronts.size(); i++){
         vector<Solution*> front(fronts[i].size());
-        for(int j=0; fronts[i].size(); j++){
-            front[j] = population(fronts[i][j])
+        for(int j=0; j < fronts[i].size(); j++){
+            front[j] = population[fronts[i][j]];
         }
-    }*/
+        solutionFronts[i] = front;
+    }
 
-    // this->dominationFronts = fronts;
+    this->dominationFronts = solutionFronts;
     return solutionFronts;
 }
 

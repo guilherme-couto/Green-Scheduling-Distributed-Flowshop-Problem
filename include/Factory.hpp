@@ -30,6 +30,7 @@ public:
     float getTEC();
     float getTFT();
     float getTFTTest(vector<Job *> testJobsList);
+    float getTFTAfterStartTimesMatrix();
 
     void addJobId(int i);
     void addJobAtLastPosition(Job *job);
@@ -37,6 +38,7 @@ public:
     void setJobs(vector<Job *> jobs);
     void setMachines(int m);
 
+    void randSpeedDown(int seed);
     void speedDown();
     static void setSpeeds(vector<float> s);
 
