@@ -113,12 +113,13 @@ float Factory::getTFT()
     return tft;
 }
 
+//todo: testar
 float Factory::getTFTAfterStartTimesMatrix(){
     float resultTFT = 0.0;
 
-    //for(int i=0; i< this->jobs.size(); i++){
-    //    resultTFT += this->jobs[i]->startTimes[this->m-1]*this->jobs[i]->getP(this->m-1);
-   // }
+    for(int i=0; i< this->jobs.size(); i++){
+        resultTFT += this->jobs[i]->getStartTimes()[this->m-1]*this->jobs[i]->getP(this->m-1);
+    }
 
     return resultTFT;
 }
