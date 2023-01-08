@@ -75,7 +75,7 @@ Solution *Instance::maxSMinTFT()
 
     for (int i = 0; i < this->get_n(); i++)
     {
-        jobs[i] = new Job(i);
+        jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
@@ -153,7 +153,7 @@ Solution *Instance::randSMinTFT(int seed)
     for (int i = 0; i < this->get_n(); i++)
     {
 
-        jobs[i] = new Job(i);
+        jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
@@ -230,7 +230,7 @@ Solution *Instance::minSMinTEC()
     // First, all the speeds set to the minimum value
     for (int i = 0; i < this->get_n(); i++)
     {
-        jobs[i] = new Job(i);
+        jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
@@ -294,7 +294,7 @@ Solution *Instance::minSMinTEC()
     // Initialize the start_times matrix of each factory and then right shift
     for (int f = 0; f < this->getF(); f++)
     {
-        solution->getFactory(f)->initializeStartTimesMatrix();
+        solution->getFactory(f)->initializeJobsStartTimes();
         solution->getFactory(f)->rightShift();
     }
 
@@ -325,10 +325,10 @@ void Instance::randomSolutionGenerator(int s)
     while (jobs_to_allocate.size())
     {
         int random_num = rand.next() % jobs_to_allocate.size();
-        Job *job = new Job(jobs_to_allocate[random_num]);
+        Job *job = new Job(jobs_to_allocate[random_num], this->m);
         job->setT(this->t[jobs_to_allocate[random_num]]);
 
-        vector<float> v(this->get_m()); // todo: colocar isso em algum construtor
+        vector<float> v(this->m); // todo: colocar isso em algum construtor
         job->setV(v);
         // Set a random speed for each machine
         for (int j = 0; j < this->m; j++)

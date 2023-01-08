@@ -13,9 +13,11 @@ private:
     vector<int> t;   // Standard processing time of operation on each machine j
     vector<float> v; // Processing speed of this job on each machine
     float C;         // Completion time
+    int m;           // Number of machines
+    vector<float> start_times; // Start time on each machine
 
 public:
-    Job(int id);
+    Job(int id, int m); // Constructor (id = job index, m = number of machines
     ~Job(){};
 
     float getP(int j); // Get actual processing time of this job on machine j
@@ -34,6 +36,10 @@ public:
     void setT(vector<int> t) { this->t = t; }
     void setV(vector<float> v) { this->v = v; }
     void setVForMachine(int j, float v);
+
+    void setStartTime(int j, float start_time);
+    float getStartTime(int j);
+    vector<float> getStartTimes();
 };
 
 #endif // JOB_HPP

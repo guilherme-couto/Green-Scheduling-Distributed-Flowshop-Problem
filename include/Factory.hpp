@@ -15,8 +15,7 @@ private:
     float TFT;            // Total flow time of the factory
     int m;                // Number of machines
     static vector<float> speeds;
-    vector<vector<float>> start_times; // Start time of each job in each machine. start_times[machine][job]. jobs column will be at the same order of jobs vector
-    bool start_times_matrix_initialized;
+    bool jobs_start_times_initialized;
 
 public:
     Factory(int id, int m); // Constructor (id = factory index, m = number of machines)
@@ -45,9 +44,9 @@ public:
     Factory *minTECAfterInsertion(Job *job);
 
     // Auxiliar functions
-    void initializeStartTimesMatrix();
+    void initializeJobsStartTimes();
     void rightShift();
-    float getTECAfterStartTimesMatrix();
+    float getTECAfterStartTimesSet();
     void updateTEC();
     void speedUp();
     void randSpeedUp();

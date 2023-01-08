@@ -9,7 +9,7 @@ Factory::Factory(int id, int m)
     this->total_jobs = 0;
     this->TEC = 0.0;
     this->TFT = 0.0;
-    this->start_times_matrix_initialized = false;
+    this->jobs_start_times_initialized = false;
 }
 
 Factory::~Factory()
@@ -36,7 +36,7 @@ int Factory::getTotalJobs()
 
 float Factory::getTEC()
 {
-    if (!this->start_times_matrix_initialized)
+    if (!this->jobs_start_times_initialized)
     {
         float tec = 0.0;
 
@@ -81,7 +81,7 @@ float Factory::getTEC()
         return tec;
     }
     else
-        return this->getTECAfterStartTimesMatrix();
+        return this->getTECAfterStartTimesSet();
 }
 
 float Factory::getTFT()
@@ -281,15 +281,8 @@ void Factory::setMachines(int m)
     this->m = m;
 }
 
-void Factory::initializeStartTimesMatrix()
+void Factory::initializeJobsStartTimes()
 {
-    this->start_times.resize(this->m);
-
-    for (int j = 0; j < this->m; j++)
-    {
-        this->start_times[j].resize(this->jobs.size());
-    }
-
     // The first job of the sequence starts at time 0 and it's executed with no standby time on the other machines
     float global_sum = 0.0;
     float individual_sum = 0.0;
@@ -298,10 +291,10 @@ void Factory::initializeStartTimesMatrix()
         for (int j = 0; j < this->m; j++)
         {
             if (i > 0)
-                if (this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j) > individual_sum)
-                    individual_sum = this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j);
+                if (this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j) > individual_sum)
+                    individual_sum = this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j);
 
-            this->start_times[j][i] = individual_sum;
+            this->jobs[i]->setStartTime(j, individual_sum);
             individual_sum += this->jobs[i]->getP(j);
         }
 
@@ -309,7 +302,7 @@ void Factory::initializeStartTimesMatrix()
         global_sum += this->jobs[i]->getP(0);
         individual_sum = global_sum;
     }
-    this->start_times_matrix_initialized = true;
+    this->jobs_start_times_initialized = true;
 }
 
 void Factory::rightShift()
@@ -321,26 +314,35 @@ void Factory::rightShift()
         for (int i = this->jobs.size() - 1; i > 0; i--)
         {
             // If there is standby time between the job and its predecessor, shift the predecessor to the right, postponing it and reducing the standby time
-            if (this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j) < this->start_times[j][i])
+            if (this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j) < this->jobs[i]->getStartTime(j))
             {
                 // Shift the job to the right the maximum amount possible without overlapping the next machine start time
                 if (j != this->m - 1)
                 {
-                    if (this->start_times[j][i] - this->jobs[i - 1]->getP(j) > this->start_times[j + 1][i - 1])
-                        this->start_times[j][i - 1] = this->start_times[j + 1][i - 1] - this->jobs[i - 1]->getP(j);
+                    if (this->jobs[i]->getStartTime(j) - this->jobs[i - 1]->getP(j) > this->jobs[i - 1]->getStartTime(j + 1))
+                    {
+                        float time = this->jobs[i - 1]->getStartTime(j + 1) - this->jobs[i - 1]->getP(j);
+                        this->jobs[i - 1]->setStartTime(j, time);
+                    }
                     else
-                        this->start_times[j][i - 1] = this->start_times[j][i] - this->jobs[i - 1]->getP(j);
+                    {
+                        float time = this->jobs[i]->getStartTime(j) - this->jobs[i - 1]->getP(j);
+                        this->jobs[i - 1]->setStartTime(j, time);
+                    }
                 }
                 else
-                    this->start_times[j][i - 1] = this->start_times[j][i] - this->jobs[i - 1]->getP(j);
+                {
+                    float time = this->jobs[i]->getStartTime(j) - this->jobs[i - 1]->getP(j);
+                    this->jobs[i - 1]->setStartTime(j, time);
+                }
             }
         }
     }
 }
 
-float Factory::getTECAfterStartTimesMatrix()
+float Factory::getTECAfterStartTimesSet()
 {
-    if (this->start_times_matrix_initialized)
+    if (this->jobs_start_times_initialized)
     {
         float tec = 0.0;
 
@@ -358,8 +360,8 @@ float Factory::getTECAfterStartTimesMatrix()
         {
             for (int i = 1; i < this->jobs.size(); i++)
             {
-                if (this->start_times[j][i] > this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j))
-                    tec += this->start_times[j][i] - this->start_times[j][i - 1] + this->jobs[i - 1]->getP(j);
+                if (this->jobs[i]->getStartTime(j) > this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j))
+                    tec += this->jobs[i]->getStartTime(j) - this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j);
             }
         }
         return tec;
@@ -379,7 +381,7 @@ void Factory::speedUp()
     // Find where is the smallest idle time between the critical job and its predecessor
     for (int j = 1; j < this->m; j++)
     {
-        float idle_time = this->start_times[j][critical_job_id] - (this->start_times[j][critical_job_id - 1] + this->jobs[critical_job_id - 1]->getP(j));
+        float idle_time = this->jobs[critical_job_id]->getStartTime(j) - (this->jobs[critical_job_id - 1]->getStartTime(j) + this->jobs[critical_job_id - 1]->getP(j));
         if (idle_time < min_idle_time && idle_time > 0)
         {
             min_idle_time = idle_time;
@@ -396,7 +398,7 @@ void Factory::speedUp()
             float speed = this->jobs[critical_job_id]->getV(j);
 
             // If the job isnt at the maximum speed for the machine, speed it up and left shift the criticaç job on the following machines
-            if (speed < this->speeds[4])
+            if (speed < this->speeds[this->speeds.size() - 1])
             {
                 float new_speed;
 
@@ -425,7 +427,8 @@ void Factory::speedUp()
                     // Left shift the critical job on the following machines
                     for (int k = j + 1; k < this->m; k++)
                     {
-                        this->start_times[k][critical_job_id] -= reduction;
+                        float new_start_time = this->jobs[critical_job_id]->getStartTime(k) - reduction;
+                        this->jobs[critical_job_id]->setStartTime(k, new_start_time);
                     }
                     return;
                 }
@@ -440,7 +443,6 @@ void Factory::randSpeedUp()
     // Choose a random job
     Xoshiro256plus rand(time(NULL));
 
-
     int job_id;
     do
     {
@@ -453,7 +455,7 @@ void Factory::randSpeedUp()
     // Find where is the smallest idle time between the critical job and its predecessor
     for (int j = 1; j < this->m; j++)
     {
-        float idle_time = this->start_times[j][job_id] - (this->start_times[j][job_id - 1] + this->jobs[job_id - 1]->getP(j));
+        float idle_time = this->jobs[job_id]->getStartTime(j) - (this->jobs[job_id - 1]->getStartTime(j) + this->jobs[job_id - 1]->getP(j));
 
         if (idle_time < min_idle_time && idle_time > 0)
         {
@@ -471,7 +473,7 @@ void Factory::randSpeedUp()
             float speed = this->jobs[job_id]->getV(j);
 
             // If the job isnt at the maximum speed for the machine, speed it up and left shift the criticaç job on the following machines
-            if (speed < this->speeds[4])
+            if (speed < this->speeds[this->speeds.size() - 1])
             {
                 float new_speed;
 
@@ -500,7 +502,8 @@ void Factory::randSpeedUp()
                     // Left shift the critical job on the following machines
                     for (int k = j + 1; k < this->m; k++)
                     {
-                        this->start_times[k][job_id] -= reduction;
+                        float new_start_time = this->jobs[job_id]->getStartTime(k) - reduction;
+                        this->jobs[job_id]->setStartTime(k, new_start_time);
                     }
                     return;
                 }

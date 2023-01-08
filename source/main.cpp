@@ -60,37 +60,37 @@ void test()
 
     vector<int> t1 = {4, 2, 1};
     vector<float> v1 = {1.0, 1.0, 1.0};
-    Job *job1 = new Job(0);
+    Job *job1 = new Job(0, 3);
     job1->setT(t1);
     job1->setV(v1);
 
     vector<int> t2 = {2, 1, 2};
     vector<float> v2 = {1.0, 1.0, 1.0};
-    Job *job2 = new Job(1);
+    Job *job2 = new Job(1, 3);
     job2->setT(t2);
     job2->setV(v2);
 
     vector<int> t3 = {3, 2, 3};
     vector<float> v3 = {1.0, 1.0, 1.0};
-    Job *job3 = new Job(2);
+    Job *job3 = new Job(2, 3);
     job3->setT(t3);
     job3->setV(v3);
 
     vector<int> t4 = {2, 2, 4};
     vector<float> v4 = {1.0, 1.0, 1.0};
-    Job *job4 = new Job(3);
+    Job *job4 = new Job(3, 3);
     job4->setT(t4);
     job4->setV(v4);
 
     vector<int> t5 = {2, 1, 3};
     vector<float> v5 = {1.0, 1.0, 1.0};
-    Job *job5 = new Job(4);
+    Job *job5 = new Job(4, 3);
     job5->setT(t5);
     job5->setV(v5);
 
     vector<int> t6 = {3, 3, 2};
     vector<float> v6 = {1.0, 1.0, 1.0};
-    Job *job6 = new Job(5);
+    Job *job6 = new Job(5, 3);
     job6->setT(t6);
     job6->setV(v6);
 
