@@ -86,12 +86,12 @@ void test()
     output.close();
 
     delete instance;
-    delete test;
-    delete test2;
+   // delete test;
+    //delete test2;
 
     Solution *s = new Solution(6, 3, 2);
 
-    vector<int> t1 = {4, 2, 1};
+    vector<int> t1 = {1, 3, 1};
     vector<float> v1 = {1.0, 1.0, 1.0};
     Job *job1 = new Job(0, 3);
     job1->setT(t1);
@@ -103,7 +103,7 @@ void test()
     job2->setT(t2);
     job2->setV(v2);
 
-    vector<int> t3 = {3, 2, 3};
+    vector<int> t3 = {3, 2, 1};
     vector<float> v3 = {1.0, 1.0, 1.0};
     Job *job3 = new Job(2, 3);
     job3->setT(t3);
@@ -128,13 +128,13 @@ void test()
     job6->setV(v6);
 
     Factory *f = s->getFactory(0);
-    f->addJobAtLastPosition(job5);
-    f->addJobAtLastPosition(job2);
     f->addJobAtLastPosition(job1);
+    f->addJobAtLastPosition(job2);
+    f->addJobAtLastPosition(job3);
 
     Factory *f2 = s->getFactory(1);
     f2->addJobAtLastPosition(job4);
-    f2->addJobAtLastPosition(job3);
+    f2->addJobAtLastPosition(job5);
     f2->addJobAtLastPosition(job6);
 
     delete s;
@@ -145,6 +145,7 @@ void test()
 int main()
 {
     cout << "Hello" << endl;
+    test();
     test3();
     test2();
     return 0;
