@@ -114,7 +114,7 @@ float Factory::getTFT()
 }
 
 //todo: testar
-float Factory::getTFTAfterStartTimesMatrix(){
+float Factory::getTFTAfterStartTimesSet(){
     float resultTFT = 0.0;
 
     for(int i=0; i< this->jobs.size(); i++){

@@ -70,7 +70,7 @@ float Solution::getTFTUsingMatrix(){
     float tft = 0.0;
     for (int i = 0; i < this->factories.size(); i++)
     {   this->factories[i]->initializeJobsStartTimes();
-        tft += this->factories[i]->getTFTAfterStartTimesMatrix();
+        tft += this->factories[i]->getTFTAfterStartTimesSet();
     }
 
     return tft;

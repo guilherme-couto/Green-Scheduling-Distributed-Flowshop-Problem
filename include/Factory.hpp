@@ -30,7 +30,7 @@ public:
     float getTEC();
     float getTFT();
     float getTFTTest(vector<Job *> testJobsList);
-    float getTFTAfterStartTimesMatrix();
+    float getTFTAfterStartTimesSet();
 
     void addJobId(int i);
     void addJobAtLastPosition(Job *job);
