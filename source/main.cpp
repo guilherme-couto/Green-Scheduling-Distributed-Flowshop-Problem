@@ -19,8 +19,11 @@ void test3(){
 
 void test2()
 {
-    /*Instance *instance = readFile("../instances/928/2-4-20__0.txt");
-    for (int i = 0; i < 1000; i++)
+
+    string path =  "../instances/test_instance1.txt";
+    //string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 100; i++)
     {
         instance->randomSolutionGenerator(i);
     }
@@ -33,7 +36,7 @@ void test2()
 
     delete instance;
 
-    Instance *instance2 = readFile("../instances/928/2-4-20__0.txt");
+    Instance *instance2 = readFile(path);
     instance2->maxSMinTFT();
     ofstream output2("../analysis/max_s_min_tft.csv");
     output2 << instance2->generatePopulationCSVString();
@@ -41,7 +44,7 @@ void test2()
 
     delete instance2;
 
-    Instance *instance3 = readFile("../instances/928/2-4-20__0.txt");
+    Instance *instance3 = readFile(path);
     for (int i = 0; i < 100; i++)
     {
         instance3->randSMinTFT(i);
@@ -50,9 +53,9 @@ void test2()
     output3 << instance3->generatePopulationCSVString();
     output3.close();
 
-    delete instance3;*/
+    delete instance3;
 
-    Instance *instance4 = readFile("../instances/928/2-4-20__0.txt");
+    Instance *instance4 = readFile(path);
     instance4->minSMinTEC();
     ofstream output4("../analysis/min_s_min_tec.csv");
     output4 << instance4->generatePopulationCSVString();
@@ -60,13 +63,6 @@ void test2()
 
     delete instance4;
 
-    /*Instance *instance4 = readFile("../instances/928/2-4-20__0.txt");
-    instance4->minSMinTEC();
-    ofstream output4("../analysis/min_s_min_tec.csv");
-    output4 << instance4->generatePopulationCSVString();
-    output4.close();
-
-    delete instance4;*/
 }
 
 void test()
@@ -86,8 +82,6 @@ void test()
     output.close();
 
     delete instance;
-   // delete test;
-    //delete test2;
 
     Solution *s = new Solution(6, 3, 2);
 
