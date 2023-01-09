@@ -113,7 +113,6 @@ float Factory::getTFT()
     return tft;
 }
 
-//todo: testar
 float Factory::getTFTAfterStartTimesSet(){
     float resultTFT = 0.0;
 
