@@ -559,3 +559,25 @@ void Factory::randSpeedUp()
         }
     }
 }
+
+string Factory::generateCSV() {
+    this->initializeJobsStartTimes();
+    string csvString = "";
+
+    for(int i=0; i< this->jobs.size(); i++){
+        csvString += "tj" + to_string(i) +",td"+ to_string(i)+",";
+    }
+    csvString.pop_back();
+    csvString +="\n";
+
+    for(int i=0; i< this->m; i++){
+        for(int j=0; j<this->jobs.size(); j++){
+            csvString += to_string(this->jobs[j]->getStartTime(i)) + "," + to_string(this->jobs[j]->getP(i)) + ",";
+        }
+        csvString.pop_back();
+        csvString +="\n";
+    }
+
+    return csvString;
+
+}

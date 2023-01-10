@@ -1,6 +1,12 @@
 #include "defines.hpp"
 
 
+void outputToFile(string path, string text){
+    ofstream outputf(path);
+    outputf << text;
+    outputf.close();
+}
+
 void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
@@ -108,19 +114,19 @@ void test()
     Solution *s = new Solution(6, 3, 2);
 
     vector<int> t1 = {1, 3, 1};
-    vector<float> v1 = {1.0, 1.0, 1.0};
+    vector<float> v1 = {2.1, 2.1, 2.1};
     Job *job1 = new Job(0, 3);
     job1->setT(t1);
     job1->setV(v1);
 
     vector<int> t2 = {2, 1, 2};
-    vector<float> v2 = {1.0, 1.0, 1.0};
+    vector<float> v2 = {2.1, 2.1, 2.1};
     Job *job2 = new Job(1, 3);
     job2->setT(t2);
     job2->setV(v2);
 
     vector<int> t3 = {3, 2, 1};
-    vector<float> v3 = {1.0, 1.0, 1.0};
+    vector<float> v3 = {2.1, 2.1, 2.1};
     Job *job3 = new Job(2, 3);
     job3->setT(t3);
     job3->setV(v3);
@@ -147,6 +153,18 @@ void test()
     f->addJobAtLastPosition(job1);
     f->addJobAtLastPosition(job2);
     f->addJobAtLastPosition(job3);
+
+    ofstream outputf("../analysis/factory_test.csv");
+    outputf << f->generateCSV();
+    outputf.close();
+
+    /*ofstream outputf2("../analysis/factory_test_speed_up.csv");
+    f->speedUp();
+    outputf2 << f->generateCSV();
+    outputf2.close();*/
+
+    f->speedDown();
+    outputToFile("../analysis/factory_test_speed_down.csv", f->generateCSV());
 
     Factory *f2 = s->getFactory(1);
     f2->addJobAtLastPosition(job4);

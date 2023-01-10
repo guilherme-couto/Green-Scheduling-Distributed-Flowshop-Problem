@@ -52,6 +52,7 @@ public:
     void updateTEC();
     void speedUp();
     void randSpeedUp();
+    string generateCSV();
 };
 
 #endif // FACTORY_HPP
