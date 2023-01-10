@@ -46,6 +46,7 @@ public:
     string generatePopulationCSVString();
     void NSGA3NextGen();
     void NSGA2NextGen();
+    vector<Solution*> makeNewPop(vector<Solution*> parents);
 };
 
 #endif // MATRICES_HPP

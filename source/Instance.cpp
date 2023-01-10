@@ -664,6 +664,13 @@ void Instance::NSGA3NextGen(){
 }
 
 
+vector<Solution*> Instance::makeNewPop(vector<Solution*> parents){
+    vector<Solution*> children;
+
+    return children;
+}
+
+
 void Instance::NSGA2NextGen(){
     vector<Solution*> parents = this->population;
     vector<Solution*> nextGen;
