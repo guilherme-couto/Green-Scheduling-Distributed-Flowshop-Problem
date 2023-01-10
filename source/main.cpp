@@ -19,7 +19,6 @@ void test3(){
 
 void test2()
 {
-
     string path =  "../instances/test_instance1.txt";
     //string path =  "../instances/928/2-4-20__0.txt";
     Instance *instance = readFile(path);
@@ -35,6 +34,8 @@ void test2()
     instance->assignCrowdingDistance();
 
     delete instance;
+
+
 
     Instance *instance2 = readFile(path);
     instance2->maxSMinTFT();
@@ -55,6 +56,25 @@ void test2()
 
     delete instance3;
 
+
+
+
+    Instance *instance5 = readFile(path);
+    for (int i = 0; i < 100; i++)
+    {
+        instance5->randSMinTEC(i);
+    }
+    instance5->fastNonDominatedSort();
+
+    ofstream output5("../analysis/rand_s_min_tec.csv");
+    output5 << instance5->generatePopulationCSVString();
+    output5.close();
+    instance5->assignCrowdingDistance();
+
+    delete instance5;
+
+
+
     Instance *instance4 = readFile(path);
     instance4->minSMinTEC();
     ofstream output4("../analysis/min_s_min_tec.csv");
@@ -62,6 +82,8 @@ void test2()
     output4.close();
 
     delete instance4;
+
+
 
 }
 

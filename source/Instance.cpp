@@ -304,7 +304,7 @@ Solution *Instance::minSMinTEC()
 
 Solution *Instance::randSMinTEC(int seed)
 {
-    Xoshiro256plus rand(time(NULL) + seed);
+    Xoshiro256plus rand(/*time(NULL) +*/ seed);
 
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
