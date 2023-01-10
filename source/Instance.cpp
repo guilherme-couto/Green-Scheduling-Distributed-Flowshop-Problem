@@ -147,7 +147,7 @@ Solution *Instance::randSMinTFT(int seed)
 {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
-    Xoshiro256plus rand(time(NULL) + seed);
+    Xoshiro256plus rand(/*time(NULL) +*/ seed);
     int highestSpeed = this->speeds.size() - 1;
 
     for (int i = 0; i < this->get_n(); i++)
@@ -559,6 +559,147 @@ void Instance::assignCrowdingDistance()
                 float normalizedDistance = (population[j + 1]->getTEC() - population[j - 1]->getTEC()) / (maxTEC - minTEC);
                 population[j]->incrementCrowdingDistance(normalizedDistance);
             }
+        }
+    }
+}
+
+void assignCrowdingDistance(vector<Solution*> population)
+{
+    int numObjectives = 2;
+
+    for (int i = 0; i < population.size(); i++)
+    {
+        population[i]->setCrowdingDistance(0);
+    }
+
+    for (int i = 0; i < numObjectives; i++)
+    {
+
+        if (i == 0)
+        {
+            sort(population.begin(), population.end(), compareSolutionsByTFT);
+            population[0]->setCrowdingDistance(INFINITY);
+            population[population.size() - 1]->setCrowdingDistance(INFINITY);
+            float maxTFT = population[population.size() - 1]->getTFT();
+            float minTFT = population[0]->getTFT();
+            for (int j = 1; j < population.size() - 1; j++)
+            {
+                float normalizedDistance = (population[j + 1]->getTFT() - population[j - 1]->getTFT()) / (maxTFT - minTFT);
+                population[j]->incrementCrowdingDistance(normalizedDistance);
+            }
+        }
+        else
+        {
+            sort(population.begin(), population.end(), compareSolutionsByTEC);
+            population[0]->setCrowdingDistance(INFINITY);
+            population[population.size() - 1]->setCrowdingDistance(INFINITY);
+            float maxTEC = population[population.size() - 1]->getTEC();
+            float minTEC = population[0]->getTEC();
+
+            for (int j = 1; j < population.size() - 1; j++)
+            {
+                float normalizedDistance = (population[j + 1]->getTEC() - population[j - 1]->getTEC()) / (maxTEC - minTEC);
+                population[j]->incrementCrowdingDistance(normalizedDistance);
+            }
+        }
+    }
+}
+
+bool crowdedCompare(Solution *s1, Solution* s2)
+{
+
+    if (s1->getDominationRank() < s2->getDominationRank())
+    {
+        return true;
+    }
+    else if (s1->getDominationRank() == s2->getDominationRank())
+    {
+        if (s1->getCrowdingDistance() > s2->getCrowdingDistance())
+        {
+            return true;
+        }
+        return false;
+    }
+
+    return false;
+}
+
+void Instance::NSGA3NextGen(){
+    vector<Solution*> parents = this->population;
+    vector<Solution*> nextGen;
+
+    //todo: vector of reference points
+
+    //todo: Recombine and mutate parents into this vector
+    vector<Solution*> children;
+
+    //todo: join parents and children into this vector
+    vector<Solution*> all;
+    this->population = all;
+
+    vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
+
+    int inserted = 0;
+    int n = 0;
+
+    //insere enquanto o numero de elementos inseridos for menor q n
+    for(int i=0; inserted < n and i < fronts.size()-1; i++){
+        nextGen.reserve(nextGen.size() + fronts[i].size());
+        for(int j=0; j < fronts[i].size() ; j++){
+            nextGen.push_back(fronts[i][j]);
+            inserted++;
+        }
+    }
+
+    if(nextGen.size() + fronts.back().size() == n){
+        nextGen.reserve(fronts.back().size());
+        nextGen.insert(nextGen.end(), fronts.back().begin(), fronts.back().end());
+    }else{
+        // Points to be chosen from Fl: K = N − |Pt+1|
+        // Normalize objectives and create reference set Zr
+        // Associate each member s of St with a reference point
+        // Compute niche count of reference point j ∈ Zr
+        // Choose K members one at a time from Fl to construct Pt+1: Niching
+    }
+}
+
+
+void Instance::NSGA2NextGen(){
+    vector<Solution*> parents = this->population;
+    vector<Solution*> nextGen;
+
+
+    //todo: Recombine and mutate parents into this vector
+    vector<Solution*> children;
+
+    //todo: join parents and children into this vector
+    vector<Solution*> all;
+    this->population = all;
+
+    vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
+
+    int inserted = 0;
+    int n = parents.size();
+
+    //insere enquanto o numero de elementos inseridos for menor q n
+    for(int i=0; inserted < n and i < fronts.size()-1; i++){
+        nextGen.reserve(nextGen.size() + fronts[i].size());
+        ::assignCrowdingDistance(fronts[i]);
+
+        for(int j=0; j < fronts[i].size() ; j++){
+            nextGen.push_back(fronts[i][j]);
+            inserted++;
+        }
+    }
+
+    ::assignCrowdingDistance(fronts.back());
+    if(nextGen.size() + fronts.back().size() == n){
+        nextGen.reserve(fronts.back().size());
+        nextGen.insert(nextGen.end(), fronts.back().begin(), fronts.back().end());
+    }else{
+        sort(fronts.back().begin(), fronts.back().end(), crowdedCompare);
+        for(int i=0; nextGen.size() + i< n; i++){
+            nextGen.push_back(fronts.back()[i]);
         }
     }
 }

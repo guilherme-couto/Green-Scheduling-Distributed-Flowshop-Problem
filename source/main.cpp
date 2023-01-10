@@ -19,8 +19,8 @@ void test3(){
 
 void test2()
 {
-    string path =  "../instances/test_instance1.txt";
-    //string path =  "../instances/928/2-4-20__0.txt";
+    //string path =  "../instances/test_instance1.txt";
+    string path =  "../instances/928/2-4-20__0.txt";
     Instance *instance = readFile(path);
     for (int i = 0; i < 100; i++)
     {

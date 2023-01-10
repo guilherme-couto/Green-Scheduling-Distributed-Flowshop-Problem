@@ -44,6 +44,8 @@ public:
 
     void printPopulation();
     string generatePopulationCSVString();
+    void NSGA3NextGen();
+    void NSGA2NextGen();
 };
 
 #endif // MATRICES_HPP
