@@ -48,6 +48,7 @@ public:
     void NSGA3NextGen();
     void NSGA2NextGen();
     vector<Solution*> makeNewPop(vector<Solution*> parents);
+    int nMetric();
 };
 
 #endif // MATRICES_HPP

@@ -762,6 +762,7 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents){
 }
 
 
+
 void Instance::NSGA2NextGen(){
     vector<Solution*> parents = this->population;
     vector<Solution*> nextGen;
@@ -800,4 +801,8 @@ void Instance::NSGA2NextGen(){
             nextGen.push_back(fronts.back()[i]);
         }
     }
+}
+
+int Instance::nMetric() {
+    return this->dominationFronts[0].size();
 }

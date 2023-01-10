@@ -54,6 +54,7 @@ public:
     void randSpeedUp();
     void removeJob(int job_id);
     void insertJobAtPos(Job *job, int pos);
+    string generateCSV();
 };
 
 #endif // FACTORY_HPP
