@@ -29,6 +29,17 @@ vector<Job *> Factory::getJobs()
     return this->jobs;
 }
 
+int Factory::getJobPosAtSeq(int job_id)
+{
+    for (int i = 0; i < this->jobs.size(); i++)
+    {
+        if (this->jobs[i]->getId() == job_id)
+        {
+            return i;
+        }
+    }
+}
+
 int Factory::getTotalJobs()
 {
     return this->total_jobs;
@@ -113,11 +124,13 @@ float Factory::getTFT()
     return tft;
 }
 
-float Factory::getTFTAfterStartTimesSet(){
+float Factory::getTFTAfterStartTimesSet()
+{
     float resultTFT = 0.0;
 
-    for(int i=0; i< this->jobs.size(); i++){
-        resultTFT += this->jobs[i]->getStartTimes()[this->m-1] + this->jobs[i]->getP(this->m-1);
+    for (int i = 0; i < this->jobs.size(); i++)
+    {
+        resultTFT += this->jobs[i]->getStartTimes()[this->m - 1] + this->jobs[i]->getP(this->m - 1);
     }
 
     return resultTFT;
@@ -247,9 +260,12 @@ void Factory::addJobAtPosition(Job *job, int pos)
     this->total_jobs++;
 }
 
-int auxFindIndex(vector<float> v, float element){
-    for(int i=0; i<v.size(); i++){
-        if(v[i] == element){
+int auxFindIndex(vector<float> v, float element)
+{
+    for (int i = 0; i < v.size(); i++)
+    {
+        if (v[i] == element)
+        {
             return i;
         }
     }
@@ -274,7 +290,7 @@ void Factory::speedDown()
             previousSpeed = job->getV(j);
             indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
 
-            for (int v = indexPreviousSpeed/*this->speeds.size() - 1*/; v > 1; v--)
+            for (int v = indexPreviousSpeed /*this->speeds.size() - 1*/; v > 1; v--)
             { // todo: pegar vetor de velocidades possíveis, talvez usar um campo estático na Factory
                 newSpeed = Factory::speeds[v - 1];
                 job->setVForMachine(j, newSpeed); // diminui para a próxima velocidade
@@ -295,8 +311,7 @@ void Factory::speedDown()
     }
 }
 
-
-//obs, não testada ainda
+// obs, não testada ainda
 void Factory::randSpeedDown(int seed)
 {
     Job *job;
@@ -310,13 +325,11 @@ void Factory::randSpeedDown(int seed)
         {
             float previousSpeed = job->getV(j);
             int indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
-            int indexNewSpeed = (int)rand.next()%indexPreviousSpeed;
+            int indexNewSpeed = (int)rand.next() % indexPreviousSpeed;
             job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
-
         }
     }
 }
-
 
 void Factory::setJobs(vector<Job *> jobs)
 {
@@ -557,5 +570,100 @@ void Factory::randSpeedUp()
             }
             j++;
         }
+    }
+}
+
+void Factory::removeJob(int job_id)
+{
+    for (int i = 0; i < this->jobs.size(); i++)
+    {
+        if (this->jobs[i]->getId() == job_id)
+        {
+            // Update the jobs start times before removing the job
+            for (int k = i; k < this->jobs.size(); k++)
+            {
+                for (int j = 0; j < this->m; j++)
+                {
+                    this->jobs[k]->setStartTime(j, this->jobs[k]->getStartTime(j) - this->jobs[i]->getP(j));
+                }
+            }
+
+            // Remove the job
+            this->jobs.erase(this->jobs.begin() + i);
+            break;
+        }
+    }
+}
+
+void Factory::insertJobAtPos(Job *job, int pos)
+{
+    if (pos >= this->jobs.size())
+    {
+        // Update the start times of the job
+        int index = this->jobs.size() - 1;
+        for (int j = 0; j < this->m; j++)
+        {
+            job->setStartTime(j, this->jobs[index]->getStartTime(j) + this->jobs[index]->getP(j));
+        }
+
+        // Insert the job at the last position
+        this->jobs.push_back(job);
+    }
+    else
+    {
+        // Update the start times of the job and the jobs after it
+        if (pos == 0)
+        {
+            for (int j = 0; j < this->m; j++)
+            {
+                job->setStartTime(j, this->jobs[pos]->getStartTime(j));
+                for (int i = 0; i < this->jobs.size(); i++)
+                {
+                    this->jobs[i]->setStartTime(j, this->jobs[i]->getStartTime(j) + job->getP(j));
+                }
+            }
+        }
+        else
+        {
+            float individual_sum = this->jobs[pos]->getStartTime(0);
+
+            for (int j = 0; j < this->m; j++)
+            {
+                bool have_to_change_jobs_after = false;
+
+                if (j > 0)
+                {
+                    if (individual_sum + job->getP(j - 1) < this->jobs[pos - 1]->getStartTime(j) + this->jobs[pos - 1]->getP(j))
+                    {
+                        individual_sum = this->jobs[pos - 1]->getStartTime(j) + this->jobs[pos - 1]->getP(j);
+                    }
+                    else
+                    {
+                        individual_sum += job->getP(j - 1);
+                    }
+                }
+
+                job->setStartTime(j, individual_sum);
+
+                if (job->getStartTime(j) + job->getP(j) > this->jobs[pos]->getStartTime(j))
+                    have_to_change_jobs_after = true;
+
+                if (have_to_change_jobs_after)
+                {
+                    for (int i = pos; i < this->jobs.size(); i++)
+                    {
+                        if (i > pos)
+                        {
+                            if (this->jobs[i]->getStartTime(j) > this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j))
+                                break;
+                        }
+                        this->jobs[i]->setStartTime(j, this->jobs[i]->getStartTime(j) + job->getP(j));
+                    }
+                }
+            }
+        }
+
+        // Insert the job
+        this->jobs.insert(this->jobs.begin() + pos, job);
     }
 }

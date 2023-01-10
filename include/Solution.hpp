@@ -63,8 +63,8 @@ public:
     void speedDown(int f_id);
     void randSpeedDown(int f_id);
     void rightShift(int f_id);
-    void insert(int f1_id, int f2_id, int job1_id, int job2_id);
-    void swap(int f1_id, int f2_id, int job1_id, int job2_id);
+    void insert(int from_f_id, int to_f_id, Job *job, int pos);
+    void swap(int f1_id, int f2_id, Job *job1, Job *job2);
 
     // Auxiliar functions
     void printSolution();

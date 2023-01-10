@@ -25,7 +25,7 @@ public:
     int getID();
     vector<Job *> getJobs();
     vector<int> getJobsSeq();
-    int getJob_pos(int pos);
+    int getJobPosAtSeq(int job_id);
     int getTotalJobs();
     float getTEC();
     float getTFT();
@@ -52,6 +52,8 @@ public:
     void updateTEC();
     void speedUp();
     void randSpeedUp();
+    void removeJob(int job_id);
+    void insertJobAtPos(Job *job, int pos);
 };
 
 #endif // FACTORY_HPP

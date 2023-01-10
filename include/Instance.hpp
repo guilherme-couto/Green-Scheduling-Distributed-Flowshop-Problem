@@ -41,6 +41,7 @@ public:
     Solution *randSMinTEC(int seed);
 
     void randomSolutionGenerator(int s);
+    void totalRandomSolutionGenerator(int s);
 
     void printPopulation();
     string generatePopulationCSVString();

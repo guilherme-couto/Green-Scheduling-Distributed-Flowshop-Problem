@@ -170,3 +170,21 @@ void Solution::printSolution()
         cout << endl;
     }
 }
+
+void Solution::insert(int from_f_id, int to_f_id, Job *job, int pos)
+{
+    this->factories[from_f_id]->removeJob(job->getId());
+    this->factories[to_f_id]->insertJobAtPos(job, pos);
+}
+
+void Solution::swap(int f1_id, int f2_id, Job *job1, Job *job2)
+{
+    int pos1 = this->factories[f1_id]->getJobPosAtSeq(job1->getId());
+    int pos2 = this->factories[f2_id]->getJobPosAtSeq(job2->getId());
+
+    this->factories[f1_id]->removeJob(job1->getId());
+    this->factories[f2_id]->removeJob(job2->getId());
+
+    this->factories[f1_id]->insertJobAtPos(job2, pos1);
+    this->factories[f2_id]->insertJobAtPos(job1, pos2);
+}
