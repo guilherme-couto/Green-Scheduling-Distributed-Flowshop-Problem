@@ -113,7 +113,7 @@ void test()
 
     Solution *s = new Solution(6, 3, 2);
 
-    vector<int> t1 = {1, 3, 1};
+    vector<int> t1 = {1, 3, 3};
     vector<float> v1 = {2.1, 2.1, 2.1};
     Job *job1 = new Job(0, 3);
     job1->setT(t1);
@@ -162,6 +162,7 @@ void test()
     f->speedUp();
     outputf2 << f->generateCSV();
     outputf2.close();*/
+
 
     f->speedDown();
     outputToFile("../analysis/factory_test_speed_down.csv", f->generateCSV());

@@ -285,13 +285,13 @@ void Factory::speedDown()
     {
         job = this->jobs[i];
 
-        for (int j = 1; j < this->m; j++)
+        for (int j = 1; j < this->m-1; j++)
         {
             previousSpeed = job->getV(j);
             indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
 
             for (int v = indexPreviousSpeed /*this->speeds.size() - 1*/; v > 1; v--)
-            { // todo: pegar vetor de velocidades possíveis, talvez usar um campo estático na Factory
+            {
                 newSpeed = Factory::speeds[v - 1];
                 job->setVForMachine(j, newSpeed); // diminui para a próxima velocidade
                 newTFT = this->getTFT();
