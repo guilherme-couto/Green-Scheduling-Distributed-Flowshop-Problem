@@ -18,6 +18,7 @@ private:
 
 public:
     Job(int id, int m); // Constructor (id = job index, m = number of machines
+    Job(Job* j);
     ~Job(){};
 
     float getP(int j); // Get actual processing time of this job on machine j

@@ -755,8 +755,27 @@ void Instance::NSGA3NextGen(){
 }
 
 
-vector<Solution*> Instance::makeNewPop(vector<Solution*> parents){
+
+
+vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
     vector<Solution*> children;
+    Xoshiro256plus rand(seed);
+
+    for(int i =0; i< parents.size(); i++){
+
+        Solution sol = new Solution(parents[i]);
+        for(int j=0; j< 100; j++){
+            int factory1 = rand.next() % this->getF();
+            int factory2 = rand.next() % this->getF();
+            int job1 = rand.next() % sol.getFactory(factory1)->getNumJobs();
+            int job2 = rand.next() % sol.getFactory(factory2)->getNumJobs();
+
+
+        }
+
+
+    }
+
 
     return children;
 }

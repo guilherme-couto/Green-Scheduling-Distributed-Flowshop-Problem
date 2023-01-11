@@ -19,6 +19,7 @@ private:
 
 public:
     Factory(int id, int m); // Constructor (id = factory index, m = number of machines)
+    Factory(Factory* f);
     Factory(){};
     ~Factory();
 
@@ -31,6 +32,7 @@ public:
     float getTFT();
     float getTFTTest(vector<Job *> testJobsList);
     float getTFTAfterStartTimesSet();
+    int getNumJobs();
 
     void addJobId(int i);
     void addJobAtLastPosition(Job *job);

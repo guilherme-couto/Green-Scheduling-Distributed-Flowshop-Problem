@@ -1,5 +1,20 @@
 #include "defines.hpp"
 
+
+Solution::Solution(Solution *sol) {
+    this->V = sol->V;
+    this->EC_f = sol->EC_f;
+    this->FT_f = sol->FT_f;
+    this->n = sol->n;
+    this->m = sol->n;
+    this->F = sol->n;
+    this->factories.resize(F);
+    for(int i=0; i< sol->factories.size(); i++){
+        this->factories.push_back(new Factory(sol->factories[i]));
+    }
+
+}
+
 Solution::Solution(int n, int m, int F)
 {
     this->F = F;
@@ -187,4 +202,8 @@ void Solution::swap(int f1_id, int f2_id, Job *job1, Job *job2)
 
     this->factories[f1_id]->insertJobAtPos(job2, pos1);
     this->factories[f2_id]->insertJobAtPos(job1, pos2);
+}
+
+int Solution::getNumFactories() {
+    return this->factories.size();
 }

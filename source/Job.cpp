@@ -1,5 +1,17 @@
 #include "defines.hpp"
 
+
+Job::Job(Job *j) {
+    this->id = j->id;
+    this->factory_id = j->factory_id;
+    this->position = j->position;
+    this->t = j->t;
+    this->v = j->v;
+    this->C = j->C;
+    this->m = j->m;
+    this->start_times = j->start_times;
+}
+
 Job::Job(int id, int m)
 {
     this->id = id;

@@ -28,6 +28,7 @@ private:
 
 public:
     Solution(int n, int m, int F); // Constructor (n = number of jobs, m = number of machines, F = number of factories)
+    Solution(Solution* sol);
     ~Solution();
 
     vector<vector<int>> getDistribution();
@@ -38,6 +39,7 @@ public:
     vector<int> getAllJobsAllocation();
     int getJobAllocation(int job_id);
     Factory *getFactory(int f_id);
+    int getNumFactories();
 
     bool dominates(Solution *other); // true if this instance dominates other
     bool crowdedCompare(Solution *other);

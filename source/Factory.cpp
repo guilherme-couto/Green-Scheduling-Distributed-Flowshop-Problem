@@ -2,6 +2,22 @@
 
 vector<float> Factory::speeds(1, 0.0);
 
+Factory::Factory(Factory* f){
+    this->id = f->id;
+    //vector<Job *> jobs;
+    this->total_jobs = f->total_jobs;
+    this->TEC = f->TEC;
+    this->TFT = f->TFT;
+    this->m = f->m;
+    //static vector<float> speeds;
+    this->jobs_start_times_initialized = f->jobs_start_times_initialized;
+
+    this->jobs.resize(f->jobs.size());
+    for(int i=0; i< f->jobs.size(); i++){
+        this->jobs.push_back(new Job(f->jobs[i]));
+    }
+}
+
 Factory::Factory(int id, int m)
 {
     this->id = id;
@@ -687,4 +703,9 @@ string Factory::generateCSV() {
 
     return csvString;
 
+}
+
+int Factory::getNumJobs(){
+
+    return this->jobs.size();
 }
