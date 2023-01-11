@@ -33,6 +33,7 @@ public:
     float getTFTTest(vector<Job *> testJobsList);
     float getTFTAfterStartTimesSet();
     int getNumJobs();
+    Job* getJob(int id);
 
     void addJobId(int i);
     void addJobAtLastPosition(Job *job);

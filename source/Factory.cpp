@@ -709,3 +709,7 @@ int Factory::getNumJobs(){
 
     return this->jobs.size();
 }
+
+Job* Factory::getJob(int id){
+    return this->jobs[id];
+}

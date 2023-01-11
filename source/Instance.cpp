@@ -763,16 +763,19 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
 
     for(int i =0; i< parents.size(); i++){
 
-        Solution sol = new Solution(parents[i]);
-        for(int j=0; j< 100; j++){
-            int factory1 = rand.next() % this->getF();
-            int factory2 = rand.next() % this->getF();
-            int job1 = rand.next() % sol.getFactory(factory1)->getNumJobs();
-            int job2 = rand.next() % sol.getFactory(factory2)->getNumJobs();
+        Solution* sol = new Solution(parents[i]);
 
-
+        for(int j=0; j< 30; j++){
+            int factory1Id = rand.next() % this->getF();
+            int factory2Id = rand.next() % this->getF();
+            Factory* factory1 = sol->getFactory(factory1Id);
+            Factory* factory2 = sol->getFactory(factory2Id);
+            int job1 = rand.next() % factory1->getNumJobs();
+            int job2 = rand.next() % factory2->getNumJobs();
+            sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
         }
 
+        children.push_back(sol);
 
     }
 
@@ -782,13 +785,13 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
 
 
 
-void Instance::NSGA2NextGen(){
+void Instance::NSGA2NextGen(int seed){
     vector<Solution*> parents = this->population;
     vector<Solution*> nextGen;
 
 
     //todo: Recombine and mutate parents into this vector
-    vector<Solution*> children;
+    vector<Solution*> children = this->makeNewPop(parents, seed);
 
     //todo: join parents and children into this vector
     vector<Solution*> all;
