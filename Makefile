@@ -1,6 +1,6 @@
 CXX				:= g++
 INCLUDE_DIRS	:= -I./include
-CXX_FLAGS		:= -g -Wall -std=c++2a -O3 $(INCLUDE_DIRS)
+CXX_FLAGS		:= -g -std=c++2a -O3 $(INCLUDE_DIRS)
 
 BIN		:= bin
 SRC		:= source
