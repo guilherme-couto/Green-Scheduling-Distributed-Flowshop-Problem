@@ -177,7 +177,7 @@ void test()
     f->addJobAtLastPosition(job2);
     f->addJobAtLastPosition(job3);
 
-    ofstream outputf("../analysis/factory_test.csv");
+    ofstream outputf("../analysis/factory_test_right_shift_before.csv");
     outputf << f->generateCSV();
     outputf.close();
 
@@ -187,8 +187,9 @@ void test()
     outputf2.close();*/
 
 
-    f->speedDown();
-    outputToFile("../analysis/factory_test_speed_down.csv", f->generateCSV());
+    //f->speedDown();
+    f->rightShift();
+    outputToFile("../analysis/factory_test_right_shift_after.csv", f->generateCSV());
 
     Factory *f2 = s->getFactory(1);
     f2->addJobAtLastPosition(job4);
@@ -203,8 +204,8 @@ void test()
 int main()
 {
     cout << "Hello" << endl;
-    //test2();
-    test4();
+    test();
+    //test4();
     return 0;
 
     // inicializa o construtivo
