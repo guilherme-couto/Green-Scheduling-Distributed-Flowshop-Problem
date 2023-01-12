@@ -443,6 +443,12 @@ void Instance::randomSolutionGenerator(int s)
         // Erase the allocated job from the list
         jobs_to_allocate.erase(jobs_to_allocate.begin() + random_num);
         f_id++;
+
+        // Time control
+        gettimeofday(&this->end, 0);
+        long seconds = this->end.tv_sec - this->begin.tv_sec;
+        if (seconds > this->n/2)
+            return;
     }
 
     // Add solution to population
@@ -514,6 +520,12 @@ void Instance::totalRandomSolutionGenerator(int s)
 
         // Erase the allocated job from the list
         jobs_to_allocate.erase(jobs_to_allocate.begin() + random_num);
+
+        // Time control
+        gettimeofday(&this->end, 0);
+        long seconds = this->end.tv_sec - this->begin.tv_sec;
+        if (seconds > this->n/2)
+            return;
     }
 
     // Add solution to population
@@ -789,15 +801,32 @@ void Instance::NSGA2NextGen(int seed){
     vector<Solution*> parents = this->population;
     vector<Solution*> nextGen;
 
+    // Time control
+    gettimeofday(&this->end, 0);
+    long seconds = this->end.tv_sec - this->begin.tv_sec;
+    if (seconds > this->n/2)
+        return;
 
     //todo: Recombine and mutate parents into this vector
     vector<Solution*> children = this->makeNewPop(parents, seed);
+
+    // Time control
+    gettimeofday(&this->end, 0);
+    seconds = this->end.tv_sec - this->begin.tv_sec;
+    if (seconds > this->n/2)
+        return;
 
     //todo: join parents and children into this vector
     vector<Solution*> all;
     this->population = all;
 
     vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
+
+    // Time control
+    gettimeofday(&this->end, 0);
+    seconds = this->end.tv_sec - this->begin.tv_sec;
+    if (seconds > this->n/2)
+        return;
 
     int inserted = 0;
     int n = parents.size();
@@ -812,6 +841,12 @@ void Instance::NSGA2NextGen(int seed){
             inserted++;
         }
     }
+
+    // Time control
+    gettimeofday(&this->end, 0);
+    seconds = this->end.tv_sec - this->begin.tv_sec;
+    if (seconds > this->n/2)
+        return;
 
     ::assignCrowdingDistance(fronts.back());
     if(nextGen.size() + fronts.back().size() == n){

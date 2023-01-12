@@ -14,6 +14,7 @@ private:
     vector<float> speeds;          // Available processing speeds
     vector<Solution *> population; // Population of solutions
     vector<vector<Solution *>> dominationFronts;
+    struct timeval begin, end;
 
 public:
     Instance(int F, int n, int m, vector<vector<int>> t); // Constructor (F = number of factories, n = number of jobs, m = number of machines)

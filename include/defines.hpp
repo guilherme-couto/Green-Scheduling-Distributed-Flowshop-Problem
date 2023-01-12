@@ -11,6 +11,8 @@
 #include <algorithm>
 #include <chrono>
 #include <ctime>
+#include <sys/time.h>
+#include <time.h>
 
 #include "random/Xoshiro256plus.h"
 
