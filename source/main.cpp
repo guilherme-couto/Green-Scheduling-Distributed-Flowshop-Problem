@@ -56,9 +56,12 @@ string runExperiment(string path, int iterations, int nsgaIterations, float stop
             instance->NSGA2NextGen(its+baseSeed);
             its++;
         }
-
+        instance->fastNonDominatedSort();
         csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
 
+        if(instance->nMetric() > 32){
+            cout << "--";
+        }
         //allNonDominatedFronts.push_back(instance->getParetoFront())
         delete instance;
     }
