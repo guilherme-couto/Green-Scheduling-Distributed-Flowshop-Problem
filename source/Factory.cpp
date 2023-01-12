@@ -2,18 +2,20 @@
 
 vector<float> Factory::speeds(1, 0.0);
 
-Factory::Factory(Factory* f){
+Factory::Factory(Factory *f)
+{
     this->id = f->id;
-    //vector<Job *> jobs;
+    // vector<Job *> jobs;
     this->total_jobs = f->total_jobs;
     this->TEC = f->TEC;
     this->TFT = f->TFT;
     this->m = f->m;
-    //static vector<float> speeds;
+    // static vector<float> speeds;
     this->jobs_start_times_initialized = f->jobs_start_times_initialized;
 
     this->jobs.reserve(f->jobs.size());
-    for(int i=0; i< f->jobs.size(); i++){
+    for (int i = 0; i < f->jobs.size(); i++)
+    {
         this->jobs.push_back(new Job(f->jobs[i]));
     }
 }
@@ -114,7 +116,8 @@ float Factory::getTEC()
 float Factory::getTFT()
 {
 
-    if (!this->jobs_start_times_initialized){
+    if (!this->jobs_start_times_initialized)
+    {
         float tft = 0.0;
         vector<float> partialFTByJob(this->jobs.size(), 0.0);
 
@@ -140,7 +143,9 @@ float Factory::getTFT()
         }
 
         return tft;
-    }else{
+    }
+    else
+    {
         return this->getTFTAfterStartTimesSet();
     }
 }
@@ -305,7 +310,7 @@ void Factory::speedDown()
     {
         job = this->jobs[i];
 
-        for (int j = 1; j < this->m-1; j++)
+        for (int j = 1; j < this->m - 1; j++)
         {
             previousSpeed = job->getV(j);
             indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
@@ -600,7 +605,7 @@ void Factory::removeJob(int job_id)
         if (this->jobs[i]->getId() == job_id)
         {
             // Update the jobs start times before removing the job
-            for (int k = i; k < this->jobs.size(); k++)
+            for (int k = i + 1; k < this->jobs.size(); k++)
             {
                 for (int j = 0; j < this->m; j++)
                 {
@@ -623,7 +628,15 @@ void Factory::insertJobAtPos(Job *job, int pos)
         int index = this->jobs.size() - 1;
         for (int j = 0; j < this->m; j++)
         {
-            job->setStartTime(j, this->jobs[index]->getStartTime(j) + this->jobs[index]->getP(j));
+            if (j == 0)
+                job->setStartTime(j, this->jobs[index]->getStartTime(j) + this->jobs[index]->getP(j));
+            else
+            {
+                if (job->getStartTime(j - 1) + job->getP(j - 1) > this->jobs[index]->getStartTime(j) + this->jobs[index]->getP(j))
+                    job->setStartTime(j, job->getStartTime(j - 1) + job->getP(j - 1));
+                else
+                    job->setStartTime(j, this->jobs[index]->getStartTime(j) + this->jobs[index]->getP(j));
+            }
         }
 
         // Insert the job at the last position
@@ -632,53 +645,40 @@ void Factory::insertJobAtPos(Job *job, int pos)
     else
     {
         // Update the start times of the job and the jobs after it
-        if (pos == 0)
+
+        for (int j = 0; j < this->m; j++)
         {
-            for (int j = 0; j < this->m; j++)
+            job->setStartTime(j, this->jobs[pos]->getStartTime(j));
+            if (j == 0)
             {
-                job->setStartTime(j, this->jobs[pos]->getStartTime(j));
-                for (int i = 0; i < this->jobs.size(); i++)
+                for (int i = pos; i < this->jobs.size(); i++)
                 {
                     this->jobs[i]->setStartTime(j, this->jobs[i]->getStartTime(j) + job->getP(j));
                 }
             }
-        }
-        else
-        {
-            float individual_sum = this->jobs[pos]->getStartTime(0);
-
-            for (int j = 0; j < this->m; j++)
+            else
             {
-                bool have_to_change_jobs_after = false;
-
-                if (j > 0)
+                for (int i = pos; i < this->jobs.size(); i++)
                 {
-                    if (individual_sum + job->getP(j - 1) < this->jobs[pos - 1]->getStartTime(j) + this->jobs[pos - 1]->getP(j))
+                    if (i > pos)
                     {
-                        individual_sum = this->jobs[pos - 1]->getStartTime(j) + this->jobs[pos - 1]->getP(j);
+                        if (this->jobs[i]->getStartTime(j) >= this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j))
+                        {
+                            if (this->jobs[i]->getStartTime(j) >= this->jobs[i]->getStartTime(j - 1) + this->jobs[i]->getP(j - 1))
+                                break;
+                            else
+                                this->jobs[i]->setStartTime(j, this->jobs[i]->getStartTime(j - 1) + this->jobs[i]->getP(j - 1));
+                        }
+                        else
+                        {
+                            float time = this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j);
+                            if (time < this->jobs[i]->getStartTime(j - 1) + this->jobs[i]->getP(j - 1))
+                                time = this->jobs[i]->getStartTime(j - 1) + this->jobs[i]->getP(j - 1);
+                            this->jobs[i]->setStartTime(j, time);
+                        }
                     }
                     else
-                    {
-                        individual_sum += job->getP(j - 1);
-                    }
-                }
-
-                job->setStartTime(j, individual_sum);
-
-                if (job->getStartTime(j) + job->getP(j) > this->jobs[pos]->getStartTime(j))
-                    have_to_change_jobs_after = true;
-
-                if (have_to_change_jobs_after)
-                {
-                    for (int i = pos; i < this->jobs.size(); i++)
-                    {
-                        if (i > pos)
-                        {
-                            if (this->jobs[i]->getStartTime(j) > this->jobs[i - 1]->getStartTime(j) + this->jobs[i - 1]->getP(j))
-                                break;
-                        }
                         this->jobs[i]->setStartTime(j, this->jobs[i]->getStartTime(j) + job->getP(j));
-                    }
                 }
             }
         }
@@ -687,33 +687,38 @@ void Factory::insertJobAtPos(Job *job, int pos)
         this->jobs.insert(this->jobs.begin() + pos, job);
     }
 }
-string Factory::generateCSV() {
+string Factory::generateCSV()
+{
     this->initializeJobsStartTimes();
     string csvString = "";
 
-    for(int i=0; i< this->jobs.size(); i++){
-        csvString += "tj" + to_string(i) +",td"+ to_string(i)+",";
+    for (int i = 0; i < this->jobs.size(); i++)
+    {
+        csvString += "tj" + to_string(i) + ",td" + to_string(i) + ",";
     }
     csvString.pop_back();
-    csvString +="\n";
+    csvString += "\n";
 
-    for(int i=0; i< this->m; i++){
-        for(int j=0; j<this->jobs.size(); j++){
+    for (int i = 0; i < this->m; i++)
+    {
+        for (int j = 0; j < this->jobs.size(); j++)
+        {
             csvString += to_string(this->jobs[j]->getStartTime(i)) + "," + to_string(this->jobs[j]->getP(i)) + ",";
         }
         csvString.pop_back();
-        csvString +="\n";
+        csvString += "\n";
     }
 
     return csvString;
-
 }
 
-int Factory::getNumJobs(){
+int Factory::getNumJobs()
+{
 
     return this->jobs.size();
 }
 
-Job* Factory::getJob(int id){
+Job *Factory::getJob(int id)
+{
     return this->jobs[id];
 }
