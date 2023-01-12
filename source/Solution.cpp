@@ -8,7 +8,7 @@ Solution::Solution(Solution *sol) {
     this->n = sol->n;
     this->m = sol->n;
     this->F = sol->n;
-    this->factories.resize(F);
+    this->factories.reserve(F);
     for(int i=0; i< sol->factories.size(); i++){
         this->factories.push_back(new Factory(sol->factories[i]));
     }

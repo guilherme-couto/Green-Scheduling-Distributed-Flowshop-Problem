@@ -7,6 +7,29 @@ void outputToFile(string path, string text){
     outputf.close();
 }
 
+void test4(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 30; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->randSMinTEC(0);
+    instance->randSMinTFT(0);
+
+    //
+    outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString());
+    for (int i = 0; i < 2; i++)
+    {
+        instance->NSGA2NextGen(i);
+    }
+    outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString());
+
+
+}
+
 void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
@@ -30,7 +53,7 @@ void test2()
     Instance *instance = readFile(path);
     for (int i = 0; i < 100; i++)
     {
-        instance->balancedRandomSolutionGenerator(i);
+        instance->totalRandomSolutionGenerator(i);
     }
     vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
 
@@ -180,9 +203,8 @@ void test()
 int main()
 {
     cout << "Hello" << endl;
-    test();
-    test3();
     test2();
+    test4();
     return 0;
 
     // inicializa o construtivo

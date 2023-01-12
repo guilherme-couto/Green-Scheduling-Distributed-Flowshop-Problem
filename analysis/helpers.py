@@ -4,6 +4,19 @@ import matplotlib.colors as colors
 import csv
 
 
+def get_points_from_file(path):
+    x_array = []
+    y_array = []
+    with open(path, newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',', quotechar='\'')
+        next(reader, None)
+        for row in reader:
+            x_array.append(float(row[1]))
+            y_array.append(float(row[2]))
+
+    return x_array, y_array
+
+
 def get_timelines_from_file(path):
     timelines = []
     with open(path, newline='') as csv_file:

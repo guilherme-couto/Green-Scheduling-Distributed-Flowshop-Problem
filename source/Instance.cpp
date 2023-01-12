@@ -445,10 +445,10 @@ void Instance::balancedRandomSolutionGenerator(int s)
         f_id++;
 
         // Time control
-        gettimeofday(&this->end, 0);
-        long seconds = this->end.tv_sec - this->begin.tv_sec;
-        if (seconds > this->n/2)
-            return;
+        //gettimeofday(&this->end, 0);
+        //long seconds = this->end.tv_sec - this->begin.tv_sec;
+        //if (seconds > this->n/2)
+        //    return;
     }
 
     // Add solution to population
@@ -521,11 +521,6 @@ void Instance::totalRandomSolutionGenerator(int s)
         // Erase the allocated job from the list
         jobs_to_allocate.erase(jobs_to_allocate.begin() + random_num);
 
-        // Time control
-        gettimeofday(&this->end, 0);
-        long seconds = this->end.tv_sec - this->begin.tv_sec;
-        if (seconds > this->n/2)
-            return;
     }
 
     // Add solution to population
@@ -620,6 +615,7 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
         solutionFronts[i] = front;
     }
 
+    solutionFronts.pop_back();
     this->dominationFronts = solutionFronts;
     return solutionFronts;
 }
@@ -802,31 +798,36 @@ void Instance::NSGA2NextGen(int seed){
     vector<Solution*> nextGen;
 
     // Time control
-    gettimeofday(&this->end, 0);
+    /*gettimeofday(&this->end, 0);
     long seconds = this->end.tv_sec - this->begin.tv_sec;
     if (seconds > this->n/2)
-        return;
+        return;*/
 
     //todo: Recombine and mutate parents into this vector
     vector<Solution*> children = this->makeNewPop(parents, seed);
 
     // Time control
-    gettimeofday(&this->end, 0);
+    /*gettimeofday(&this->end, 0);
     seconds = this->end.tv_sec - this->begin.tv_sec;
     if (seconds > this->n/2)
-        return;
+        return;*/
 
     //todo: join parents and children into this vector
-    vector<Solution*> all;
+    vector<Solution*> all = parents;
+    //this->population = all;
+    all.reserve(this->population.size() + children.size());
+    all.insert(all.end(), children.begin(), children.end());
+    //std::remove(all.begin()+parents.size(), all.end(), )
     this->population = all;
+
 
     vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
 
     // Time control
-    gettimeofday(&this->end, 0);
+   /* gettimeofday(&this->end, 0);
     seconds = this->end.tv_sec - this->begin.tv_sec;
     if (seconds > this->n/2)
-        return;
+        return;*/
 
     int inserted = 0;
     int n = parents.size();
@@ -843,10 +844,10 @@ void Instance::NSGA2NextGen(int seed){
     }
 
     // Time control
-    gettimeofday(&this->end, 0);
+   /* gettimeofday(&this->end, 0);
     seconds = this->end.tv_sec - this->begin.tv_sec;
     if (seconds > this->n/2)
-        return;
+        return;*/
 
     ::assignCrowdingDistance(fronts.back());
     if(nextGen.size() + fronts.back().size() == n){
@@ -858,6 +859,8 @@ void Instance::NSGA2NextGen(int seed){
             nextGen.push_back(fronts.back()[i]);
         }
     }
+
+    this->population=nextGen;
 }
 
 int Instance::nMetric() {

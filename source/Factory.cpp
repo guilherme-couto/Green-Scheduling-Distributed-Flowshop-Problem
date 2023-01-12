@@ -12,7 +12,7 @@ Factory::Factory(Factory* f){
     //static vector<float> speeds;
     this->jobs_start_times_initialized = f->jobs_start_times_initialized;
 
-    this->jobs.resize(f->jobs.size());
+    this->jobs.reserve(f->jobs.size());
     for(int i=0; i< f->jobs.size(); i++){
         this->jobs.push_back(new Job(f->jobs[i]));
     }
@@ -113,31 +113,36 @@ float Factory::getTEC()
 
 float Factory::getTFT()
 {
-    float tft = 0.0;
-    vector<float> partialFTByJob(this->jobs.size(), 0.0);
 
-    for (int i = 0; i < this->m; i++)
-    {
-        for (int j = 0; j < this->jobs.size(); j++)
+    if (!this->jobs_start_times_initialized){
+        float tft = 0.0;
+        vector<float> partialFTByJob(this->jobs.size(), 0.0);
+
+        for (int i = 0; i < this->m; i++)
         {
-            if (j == 0 || partialFTByJob[j] > partialFTByJob[j - 1])
+            for (int j = 0; j < this->jobs.size(); j++)
             {
-                partialFTByJob[j] = partialFTByJob[j] + this->jobs[j]->getP(i);
-            }
-            else
-            {
-                partialFTByJob[j] = partialFTByJob[j - 1] + this->jobs[j]->getP(i);
-                ;
+                if (j == 0 || partialFTByJob[j] > partialFTByJob[j - 1])
+                {
+                    partialFTByJob[j] = partialFTByJob[j] + this->jobs[j]->getP(i);
+                }
+                else
+                {
+                    partialFTByJob[j] = partialFTByJob[j - 1] + this->jobs[j]->getP(i);
+                    ;
+                }
             }
         }
-    }
 
-    for (int i = 0; i < partialFTByJob.size(); i++)
-    {
-        tft += partialFTByJob[i];
-    }
+        for (int i = 0; i < partialFTByJob.size(); i++)
+        {
+            tft += partialFTByJob[i];
+        }
 
-    return tft;
+        return tft;
+    }else{
+        return this->getTFTAfterStartTimesSet();
+    }
 }
 
 float Factory::getTFTAfterStartTimesSet()
