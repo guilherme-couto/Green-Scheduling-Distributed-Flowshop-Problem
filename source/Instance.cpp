@@ -48,7 +48,7 @@ void Instance::construtivo()
 
     for (int i = 0; i < 4; i++)
     {
-        this->randomSolutionGenerator(i);
+        this->balancedRandomSolutionGenerator(i);
     }
 }
 
@@ -397,7 +397,7 @@ Solution *Instance::randSMinTEC(int seed)
     return solution;
 }
 
-void Instance::randomSolutionGenerator(int s)
+void Instance::balancedRandomSolutionGenerator(int s)
 {
     Xoshiro256plus rand(/*time(NULL) +*/ s);
 

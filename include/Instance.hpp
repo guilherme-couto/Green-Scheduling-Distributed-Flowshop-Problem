@@ -41,7 +41,7 @@ public:
     Solution *minSMinTEC();
     Solution *randSMinTEC(int seed);
 
-    void randomSolutionGenerator(int s);
+    void balancedRandomSolutionGenerator(int s);
     void totalRandomSolutionGenerator(int s);
 
     void printPopulation();

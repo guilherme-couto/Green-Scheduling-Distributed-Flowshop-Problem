@@ -11,7 +11,7 @@ void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
     {
-       instance->randomSolutionGenerator(i);
+       instance->balancedRandomSolutionGenerator(i);
     }
     instance->maxSMinTFT();
     vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
@@ -30,7 +30,7 @@ void test2()
     Instance *instance = readFile(path);
     for (int i = 0; i < 100; i++)
     {
-        instance->randomSolutionGenerator(i);
+        instance->balancedRandomSolutionGenerator(i);
     }
     vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
 
@@ -103,7 +103,7 @@ void test()
 
     for (int i = 0; i < 100; i++)
     {
-        instance->randomSolutionGenerator(i);
+        instance->balancedRandomSolutionGenerator(i);
     }
     ofstream output("../pop_output.csv");
     output << instance->generatePopulationCSVString();
