@@ -74,32 +74,32 @@ void test5(){
     string csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 10, 0.0, 0);
     outputToFile("../analysis/2-4-20__0_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-4-40__1_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-4-40__1_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-4-60__2_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-4-60__2_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-4-80__3_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-4-80__3_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-4-100__4_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-4-100__4_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-8-20__5_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-8-20__5_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-8-40__6_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-8-40__6_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-8-60__7_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-8-60__7_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-8-80__8_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-8-80__8_results.csv", csv);
 
-    //csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 10, 0.0, 0);
-    //outputToFile("../analysis/2-8-100__9_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-8-100__9_results.csv", csv);
 
 }
 
