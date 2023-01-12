@@ -21,7 +21,7 @@ void test4(){
 
     //
     outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString());
-    for (int i = 0; i < 2; i++)
+    for (int i = 0; i < 10; i++)
     {
         instance->NSGA2NextGen(i);
     }
@@ -203,7 +203,7 @@ void test()
 int main()
 {
     cout << "Hello" << endl;
-    test2();
+    //test2();
     test4();
     return 0;
 

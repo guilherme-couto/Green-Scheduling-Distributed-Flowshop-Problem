@@ -742,7 +742,7 @@ void Instance::NSGA3NextGen(){
     int n = 0;
 
     //insere enquanto o numero de elementos inseridos for menor q n
-    for(int i=0; inserted < n and i < fronts.size()-1; i++){
+    for(int i=0; inserted < n && i < fronts.size()-1; i++){
         nextGen.reserve(nextGen.size() + fronts[i].size());
         for(int j=0; j < fronts[i].size() ; j++){
             nextGen.push_back(fronts[i][j]);
@@ -781,6 +781,9 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
             int job1 = rand.next() % factory1->getNumJobs();
             int job2 = rand.next() % factory2->getNumJobs();
             sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+            //todo: desfazer
+            factory1->initializeJobsStartTimes();
+            factory2->initializeJobsStartTimes();
         }
 
         children.push_back(sol);
@@ -831,11 +834,18 @@ void Instance::NSGA2NextGen(int seed){
 
     int inserted = 0;
     int n = parents.size();
+    nextGen.reserve(n);
 
     //insere enquanto o numero de elementos inseridos for menor q n
-    for(int i=0; inserted < n and i < fronts.size()-1; i++){
-        nextGen.reserve(nextGen.size() + fronts[i].size());
+    int l = 0;
+    for(int i=0; inserted < n && i < fronts.size()-1; i++){
+        //nextGen.reserve(nextGen.size() + fronts[i].size());
         ::assignCrowdingDistance(fronts[i]);
+
+        if(inserted+fronts[i].size() > n){
+            l = i;
+            break;
+        }
 
         for(int j=0; j < fronts[i].size() ; j++){
             nextGen.push_back(fronts[i][j]);
@@ -843,20 +853,16 @@ void Instance::NSGA2NextGen(int seed){
         }
     }
 
-    // Time control
-   /* gettimeofday(&this->end, 0);
-    seconds = this->end.tv_sec - this->begin.tv_sec;
-    if (seconds > this->n/2)
-        return;*/
 
-    ::assignCrowdingDistance(fronts.back());
-    if(nextGen.size() + fronts.back().size() == n){
-        nextGen.reserve(fronts.back().size());
-        nextGen.insert(nextGen.end(), fronts.back().begin(), fronts.back().end());
-    }else{
-        sort(fronts.back().begin(), fronts.back().end(), crowdedCompare);
-        for(int i=0; nextGen.size() + i< n; i++){
-            nextGen.push_back(fronts.back()[i]);
+    //::assignCrowdingDistance(fronts.back());
+    /*if(nextGen.size() + fronts[l].size() == n){
+        nextGen.reserve(fronts[l].size());
+        nextGen.insert(nextGen.end(), fronts[l].begin(), fronts[l].end());
+    }*/if(nextGen.size() < n){
+        //nextGen.reserve(n);
+        sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
+        for(int i=0; nextGen.size()< n; i++){
+            nextGen.push_back(fronts[l][i]);
         }
     }
 
