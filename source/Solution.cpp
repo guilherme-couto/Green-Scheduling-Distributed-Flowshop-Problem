@@ -111,7 +111,7 @@ int Solution::getDominationCounter()
 {
     return dominationCounter;
 }
-int Solution::getCrowdingDistance()
+float Solution::getCrowdingDistance()
 {
     return crowdingDistance;
 }

@@ -55,7 +55,7 @@ public:
     void setDominationCounter(int val);
     int getDominationCounter();
     void setCrowdingDistance(float val);
-    int getCrowdingDistance();
+    float getCrowdingDistance();
     void incrementCrowdingDistance(float val);
     void incrementDominationCounter(int val);
 
