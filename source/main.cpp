@@ -7,6 +7,43 @@ void outputToFile(string path, string text){
     outputf.close();
 }
 
+string runExperiment(string path, int iterations, int nsgaIterations, float stopTime, int baseSeed){
+
+    string csv = "id,baseSeed,nsgaIterations,a\n";
+    for(int i=0; i<iterations; i++){
+        Instance *instance = readFile(path);
+        for (int i = 0; i < 10; i++)
+        {
+            instance->balancedRandomSolutionGenerator(i+baseSeed);
+            instance->randSMinTEC(i+baseSeed);
+            instance->randSMinTFT(i+baseSeed);
+        }
+        instance->minSMinTEC();
+        instance->maxSMinTFT();
+        instance->assignCrowdingDistance();
+
+        for (int j = 0; j < nsgaIterations; j++)
+        {
+            instance->NSGA2NextGen(j+baseSeed);
+
+        }
+
+        csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
+
+        delete instance;
+    }
+
+
+    return csv;
+
+}
+
+void test5(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    string csv = runExperiment(path, 10, 10, 0.0, 0);
+    outputToFile("../analysis/test_results.csv", csv);
+}
+
 void test4(){
     string path =  "../instances/928/2-4-20__0.txt";
     Instance *instance = readFile(path);
@@ -27,6 +64,7 @@ void test4(){
     }
     outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString());
 
+    delete instance;
 
 }
 
@@ -205,7 +243,7 @@ int main()
 {
     cout << "Hello" << endl;
 
-    test4();
+    test5();
     return 0;
 
     // inicializa o construtivo
