@@ -7,11 +7,30 @@ void outputToFile(string path, string text){
     outputf.close();
 }
 
+vector<Solution*> joinFronts(vector<vector<Solution*>> fronts){
+    vector<Solution*> result ;
+
+    for(int i=0; i< fronts.size(); i++){
+        for(int j=0; j< fronts[i].size(); j++){
+            result.push_back(fronts[i][j]);
+        }
+    }
+
+    return result;
+}
+
 string runExperiment(string path, int iterations, int nsgaIterations, float stopTime, int baseSeed){
 
-    string csv = "id,baseSeed,nsgaIterations,a\n";
+    string csv = "id,baseSeed,nsgaIterations,Nmetric\n";
+    vector<vector<Solution*>> allNonDominatedFronts;
+
+    clock_t start, end;
+
     for(int i=0; i<iterations; i++){
         Instance *instance = readFile(path);
+
+        start = clock();
+
         for (int i = 0; i < 10; i++)
         {
             instance->balancedRandomSolutionGenerator(i+baseSeed);
@@ -22,14 +41,25 @@ string runExperiment(string path, int iterations, int nsgaIterations, float stop
         instance->maxSMinTFT();
         instance->assignCrowdingDistance();
 
-        for (int j = 0; j < nsgaIterations; j++)
+        //for (int j = 0; j < 100; j++)
+        int its = 0;
+        while(true)
         {
-            instance->NSGA2NextGen(j+baseSeed);
+            end = clock();
+            double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+            if (time_taken > instance->get_n()/2)
+            {
+                cout << "Time's up! " << its << " iterations in " << time_taken << " seconds" << endl;
+                break;
+            }
 
+            instance->NSGA2NextGen(its+baseSeed);
+            its++;
         }
 
         csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
 
+        //allNonDominatedFronts.push_back(instance->getParetoFront())
         delete instance;
     }
 
@@ -39,9 +69,38 @@ string runExperiment(string path, int iterations, int nsgaIterations, float stop
 }
 
 void test5(){
+
     string path =  "../instances/928/2-4-20__0.txt";
-    string csv = runExperiment(path, 10, 10, 0.0, 0);
-    outputToFile("../analysis/test_results.csv", csv);
+    string csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 10, 0.0, 0);
+    outputToFile("../analysis/2-4-20__0_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-4-40__1_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-4-60__2_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-4-80__3_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-4-100__4_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-8-20__5_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-8-40__6_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-8-60__7_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-8-80__8_results.csv", csv);
+
+    //csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 10, 0.0, 0);
+    //outputToFile("../analysis/2-8-100__9_results.csv", csv);
+
 }
 
 void test4(){

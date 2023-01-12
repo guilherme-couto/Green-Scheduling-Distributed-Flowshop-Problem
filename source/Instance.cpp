@@ -562,6 +562,68 @@ string Instance::generatePopulationCSVString()
     return str;
 }
 
+vector<vector<Solution*>> Instance::fastNonDominatedSort(vector<Solution*> population) {
+
+    vector<vector<int>> fronts(1);
+    vector<vector<int>> dominatedBy(population.size());
+
+
+    for(int i=0; i< population.size(); i++){
+        population[i]->setDominationCounter(0);
+        //population[i]->setDominationRank(-1);
+
+        for(int j=0; j< population.size(); j++){
+            if(population[i]->dominates(population[j])){
+                dominatedBy[i].push_back(j);
+            }else if(population[j]->dominates(population[i])){
+                population[i]->incrementDominationCounter(1);
+            }
+        }
+
+        if(population[i]->getDominationCounter()==0){
+            population[i]->setDominationRank(1);
+            fronts[0].push_back(i);
+        }
+
+    }
+
+    int i =0;
+    while(!fronts[i].empty()){
+        vector<int> nextFront;
+        for(int j=0; j<fronts[i].size(); j++){
+            int frontSolId =  fronts[i][j]; //id (indices) de cada solução na fronteira atual
+
+            for(int k=0; k<dominatedBy[frontSolId].size(); k++){ //itera por cada solução dominada pela de indice frontSolId
+                int dominatedSolIndex = dominatedBy[frontSolId][k]; // id de cada solução dominada por frontSolId
+
+                Solution *s = population[dominatedSolIndex]; // cada solução dominada por frontSolId
+
+                s->incrementDominationCounter(-1);
+
+                if(s->getDominationCounter()==0){
+                    s->setDominationRank(i+2);
+                    nextFront.push_back(dominatedSolIndex);
+                }
+            }
+        }
+        i++;
+        fronts.push_back(nextFront);
+    }
+
+    vector<vector<Solution*>> solutionFronts(fronts.size());
+    for(int i=0; i< fronts.size(); i++){
+        vector<Solution*> front(fronts[i].size());
+        for(int j=0; j < fronts[i].size(); j++){
+            front[j] = population[fronts[i][j]];
+        }
+        solutionFronts[i] = front;
+    }
+
+    solutionFronts.pop_back();
+    //this->dominationFronts = solutionFronts;
+    return solutionFronts;
+}
+
 vector<vector<Solution*>> Instance::fastNonDominatedSort() {
 
     vector<vector<int>> fronts(1);
@@ -774,6 +836,8 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
     vector<Solution*> children;
     Xoshiro256plus rand(seed);
 
+    vector<int> prob{1, 1, 1, 1, 0, 0, 0, 0, 0, 0}; //1 chance of swap 0 chance of insertion
+
     for(int i =0; i< parents.size(); i++){
 
         Solution* sol = new Solution(parents[i]);
@@ -785,7 +849,21 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
             Factory* factory2 = sol->getFactory(factory2Id);
             int job1 = rand.next() % factory1->getNumJobs();
             int job2 = rand.next() % factory2->getNumJobs();
-            sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+
+            int choice = rand.next() % prob.size();
+            if(choice == 1)
+                sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+            else
+            {
+                if (factory1->getNumJobs() - 1 > 0) {
+                    sol->insert(factory1Id, factory2Id, factory1->getJob(job1), job2);
+                }
+                else if (factory2->getNumJobs() - 1 > 0){
+                    sol->insert(factory2Id, factory1Id, factory2->getJob(job2), job1);
+                }
+                else
+                    sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+            }
             //factory1->initializeJobsStartTimes();
             //factory2->initializeJobsStartTimes();
         }
@@ -860,4 +938,8 @@ void Instance::NSGA2NextGen(int seed){
 
 int Instance::nMetric() {
     return this->dominationFronts[0].size();
+}
+
+vector<Solution *> Instance::getParetoFront() {
+    return this->dominationFronts[0];
 }

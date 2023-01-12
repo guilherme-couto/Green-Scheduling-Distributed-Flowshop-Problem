@@ -50,6 +50,9 @@ public:
     void NSGA2NextGen(int seed);
     vector<Solution*> makeNewPop(vector<Solution*> parents, int seed);
     int nMetric();
+
+    vector<Solution *> getParetoFront();
+    static vector<vector<Solution*>> fastNonDominatedSort(vector<Solution*> population);
 };
 
 #endif // MATRICES_HPP
