@@ -45,7 +45,7 @@ def gantt_chart(path):
     gnt.grid(True)
 
     num_jobs = len(timelines[0])
-    cmap = cm.get_cmap('jet', num_jobs)
+    cmap = cm.get_cmap('gist_rainbow', num_jobs)
     gantt_colors = [ colors.to_hex(cmap(i)) for i in range(num_jobs)]
     #print(gantt_colors)
 
