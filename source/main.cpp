@@ -10,15 +10,15 @@ void outputToFile(string path, string text){
 void test4(){
     string path =  "../instances/928/2-4-20__0.txt";
     Instance *instance = readFile(path);
-    for (int i = 0; i < 30; i++)
+    for (int i = 0; i < 10; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
     }
     instance->minSMinTEC();
     instance->maxSMinTFT();
-    instance->randSMinTEC(0);
-    instance->randSMinTFT(0);
-
+    instance->assignCrowdingDistance();
     //
     outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString());
     for (int i = 0; i < 10; i++)
@@ -204,8 +204,8 @@ void test()
 int main()
 {
     cout << "Hello" << endl;
-    test();
-    //test4();
+
+    test4();
     return 0;
 
     // inicializa o construtivo
