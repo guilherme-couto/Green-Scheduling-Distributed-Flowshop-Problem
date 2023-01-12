@@ -547,13 +547,17 @@ void Instance::printPopulation()
 
 string Instance::generatePopulationCSVString()
 {
-    string str = "id, TFT, TEC\n";
+    string str = "id, TFT, TEC, level, cd\n";
     Solution *solution;
 
     for (size_t i = 0; i < this->population.size(); i++)
     {
         solution = this->population[i];
-        str += to_string(i) + "," + to_string(solution->getTFT()) + "," + to_string(solution->getTEC()) + "," + to_string(solution->getDominationRank()) + "\n";
+        str += to_string(i) + ","
+                + to_string(solution->getTFT()) + ","
+                + to_string(solution->getTEC()) + ","
+                + to_string(solution->getDominationRank()) +","
+                + to_string(solution->getCrowdingDistance()) + "\n";
     }
     return str;
 }
@@ -665,6 +669,7 @@ void Instance::assignCrowdingDistance()
 void assignCrowdingDistance(vector<Solution*> population)
 {
     int numObjectives = 2;
+    int infinity = std::numeric_limits<int>::max();
 
     for (int i = 0; i < population.size(); i++)
     {
@@ -773,7 +778,7 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
 
         Solution* sol = new Solution(parents[i]);
 
-        for(int j=0; j< 30; j++){
+        for(int j=0; j< this->get_n()/4; j++){
             int factory1Id = rand.next() % this->getF();
             int factory2Id = rand.next() % this->getF();
             Factory* factory1 = sol->getFactory(factory1Id);
@@ -781,9 +786,8 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
             int job1 = rand.next() % factory1->getNumJobs();
             int job2 = rand.next() % factory2->getNumJobs();
             sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
-            //todo: desfazer
-            factory1->initializeJobsStartTimes();
-            factory2->initializeJobsStartTimes();
+            //factory1->initializeJobsStartTimes();
+            //factory2->initializeJobsStartTimes();
         }
 
         children.push_back(sol);
@@ -800,20 +804,10 @@ void Instance::NSGA2NextGen(int seed){
     vector<Solution*> parents = this->population;
     vector<Solution*> nextGen;
 
-    // Time control
-    /*gettimeofday(&this->end, 0);
-    long seconds = this->end.tv_sec - this->begin.tv_sec;
-    if (seconds > this->n/2)
-        return;*/
 
     //todo: Recombine and mutate parents into this vector
     vector<Solution*> children = this->makeNewPop(parents, seed);
 
-    // Time control
-    /*gettimeofday(&this->end, 0);
-    seconds = this->end.tv_sec - this->begin.tv_sec;
-    if (seconds > this->n/2)
-        return;*/
 
     //todo: join parents and children into this vector
     vector<Solution*> all = parents;
@@ -826,11 +820,6 @@ void Instance::NSGA2NextGen(int seed){
 
     vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
 
-    // Time control
-   /* gettimeofday(&this->end, 0);
-    seconds = this->end.tv_sec - this->begin.tv_sec;
-    if (seconds > this->n/2)
-        return;*/
 
     int inserted = 0;
     int n = parents.size();
