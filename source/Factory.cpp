@@ -271,7 +271,6 @@ void Factory::addJobAtPosition(Job *job, int pos)
         if (this->jobs[i]->getId() == job->getId())
             return;
     }
-    cout << "total jobs: " << this->total_jobs << endl;
     this->jobs.insert(this->jobs.begin() + pos, job);
     this->total_jobs++;
 }
