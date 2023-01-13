@@ -852,8 +852,14 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
 
             int choice = rand.next() % prob.size();
             choice = 1;
-            if(choice == 1)
+            if(choice == 1) {
                 sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+                //factory1->speedUp();
+                //factory1->speedDown();
+                //factory2->speedUp();
+                //factory1->speedDown();
+            }
+
             else
             {
                 if (factory1->getNumJobs() - 1 > 0) {
