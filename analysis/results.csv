@@ -1,5 +1,4 @@
 id,baseSeed,iterations,nsgaIterations,Nmetric
-id,baseSeed,iterations,nsgaIterations,Nmetric
 ../instances/928/2-4-20__0.txt,0,5,89.800003,107
 ../instances/928/2-4-40__1.txt,0,5,89.800003,84
 ../instances/928/2-4-60__2.txt,0,5,88.599998,87
