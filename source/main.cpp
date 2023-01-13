@@ -1,8 +1,15 @@
 #include "defines.hpp"
 
 
-void outputToFile(string path, string text){
-    ofstream outputf(path);
+void outputToFile(string path, string text, bool append){
+    ofstream outputf;
+
+    if(append){
+        outputf.open(path, std::ios_base::app);
+    }else{
+        outputf.open(path);
+    }
+
     outputf << text;
     outputf.close();
 }
@@ -19,23 +26,26 @@ vector<Solution*> joinFronts(vector<vector<Solution*>> fronts){
     return result;
 }
 
-string runExperiment(string path, int iterations, int nsgaIterations, float stopTime, int baseSeed){
+string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 
-    string csv = "id,baseSeed,nsgaIterations,Nmetric\n";
-    vector<vector<Solution*>> allNonDominatedFronts;
+    //string csv = "id,baseSeed,iterations,nsgaIterations,Nmetric\n";
+    string csv = "";
+    vector<vector<Solution*>> paretoArchive;
 
     clock_t start, end;
 
+    int nsgaIterationsSum = 0;
     for(int i=0; i<iterations; i++){
         Instance *instance = readFile(path);
 
         start = clock();
 
-        for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 10; j++)
         {
             instance->balancedRandomSolutionGenerator(i+baseSeed);
-            instance->randSMinTEC(i+baseSeed);
-            instance->randSMinTFT(i+baseSeed);
+            instance->randSMinTEC(j+baseSeed);
+            instance->randSMinTFT(j+baseSeed);
+
         }
         instance->minSMinTEC();
         instance->maxSMinTFT();
@@ -56,15 +66,23 @@ string runExperiment(string path, int iterations, int nsgaIterations, float stop
             instance->NSGA2NextGen(its+baseSeed);
             its++;
         }
-        instance->fastNonDominatedSort();
-        csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
+        nsgaIterationsSum += its;
 
-        if(instance->nMetric() > 32){
-            cout << "--";
-        }
-        //allNonDominatedFronts.push_back(instance->getParetoFront())
-        delete instance;
+        instance->fastNonDominatedSort();
+        paretoArchive.push_back(instance->getParetoFront());
+        //csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
+
+        //delete instance;
     }
+
+    vector<Solution*> joinedParetoArchive = joinFronts(paretoArchive);
+    vector<Solution*> archiveParetoFront = Util::fastNonDominatedSort(joinedParetoArchive)[0];
+
+    csv += path + "," + to_string(baseSeed)
+            + "," + to_string(iterations)
+            + "," + to_string((float)nsgaIterationsSum/(float)iterations)
+            + "," + to_string(archiveParetoFront.size())
+            + "\n";
 
 
     return csv;
@@ -73,36 +91,40 @@ string runExperiment(string path, int iterations, int nsgaIterations, float stop
 
 void test5(){
 
-    string path =  "../instances/928/2-4-20__0.txt";
-    string csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-4-20__0_results.csv", csv);
+    //string path =  "../instances/928/2-4-20__0.txt";
+    string csv = "id,baseSeed,iterations,nsgaIterations,Nmetric\n";
 
-    csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-4-40__1_results.csv", csv);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-4-60__2_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-20__0.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-4-80__3_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-40__1.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-4-100__4_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-60__2.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-8-20__5_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-80__3.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-8-40__6_results.csv", csv);
+    csv = runExperiment("../instances/928/2-4-100__4.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-8-60__7_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-20__5.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-8-80__8_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-40__6.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 10, 0.0, 0);
-    outputToFile("../analysis/2-8-100__9_results.csv", csv);
+    csv = runExperiment("../instances/928/2-8-60__7.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-80__8.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-100__9.txt", 5, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
 }
 
@@ -119,12 +141,12 @@ void test4(){
     instance->maxSMinTFT();
     instance->assignCrowdingDistance();
     //
-    outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString());
+    outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString(), false);
     for (int i = 0; i < 10; i++)
     {
         instance->NSGA2NextGen(i);
     }
-    outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString());
+    outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
 
     delete instance;
 
@@ -289,7 +311,7 @@ void test()
 
     //f->speedDown();
     f->rightShift();
-    outputToFile("../analysis/factory_test_right_shift_after.csv", f->generateCSV());
+    outputToFile("../analysis/factory_test_right_shift_after.csv", f->generateCSV(),false);
 
     Factory *f2 = s->getFactory(1);
     f2->addJobAtLastPosition(job4);

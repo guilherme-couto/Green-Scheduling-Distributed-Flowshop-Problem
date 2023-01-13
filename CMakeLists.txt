@@ -19,4 +19,6 @@ add_executable(Green_Scheduling_Distributed_Flowshop_Problem
         source/main.cpp
         source/Instance.cpp
         source/read.cpp
-        source/Solution.cpp)
+        source/Solution.cpp
+        include/Util.h
+        source/Util.cpp)

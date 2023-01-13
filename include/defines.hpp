@@ -22,6 +22,7 @@
 #include "Instance.hpp"
 #include "read.hpp"
 #include "Solution.hpp"
+#include "Util.h"
 
 using namespace std;
 

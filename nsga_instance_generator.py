@@ -44,10 +44,11 @@ class Instance:
 def generate(seed=0):
     instance_list = []
     random.seed(seed)
-    for _ in range(10):
-        for f in nums_factories:
-            for m in nums_machines:
-                for n in nums_jobs:
+
+    for f in nums_factories:
+        for m in nums_machines:
+            for n in nums_jobs:
+                for _ in range(10):
                     instance = Instance(f, m, n)
 
                     for i in range(n):
@@ -68,10 +69,14 @@ def main():
 
 
 def generate_instance_files(path="", instance_list=[]):
+    offset = 60
     for i, instance in enumerate(instance_list):
-        file = open(f"{path}/{instance.num_factories}-{instance.num_machines}-{instance.num_jobs}__{i}.txt", mode='x')
+        file = open(f"{path}/{instance.num_factories}-{instance.num_machines}-{instance.num_jobs}__{i%10}.txt", mode='x')
         file.write(instance.to_text())
         file.close()
+        #offset += offset
+        #if offset%60 == 0:
+        #    offset = 60
 
 
 def create_dir_if_not_exists(path):
