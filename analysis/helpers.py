@@ -5,6 +5,7 @@ import matplotlib.cm as cm
 import matplotlib.colors as colors
 import csv
 import os
+import imageio.v2 as imageio
 
 def get_points_from_file(path):
     x_array = []
@@ -103,8 +104,40 @@ def plot_before_after(before_path, after_path, str_before, str_after, out=None, 
         plt.close()
 
 
+def make_movie(base_path, num_iter=1, step=1):
+    create_dir_if_not_exists(f'{base_path}/images')
+    csv_dir = f'{base_path}/csv'
+    all_x = []
+    all_y = []
 
+    filenames_csv = os.listdir(f'{csv_dir}/')
+    for filename in filenames_csv:
+        if filename.endswith(".csv"):
+            # print(filename)
+            x, y = get_points_from_file(f'{csv_dir}/{filename}')
+            all_x.extend(x)
+            all_y.extend(y)
 
+    # print(all_y)
+
+    max_y = max(all_y)
+    min_y = min(all_y)
+    max_x = max(all_x)
+    min_x = min(all_x)
+
+    range_x = (int(min_x), int(max_x))
+    range_y = (int(min_y), int(max_y))
+
+    for i in range(1, num_iter, step):
+        plot_before_after(f'{csv_dir}/before.csv', f'{csv_dir}/after_{i}.csv', 'Inicial', f'Após {i} iter.',
+                                out=f'{base_path}/images/fig{i}.png', x=range_x, y=range_y)
+
+    images = []
+    filenames = os.listdir(f'{base_path}/images/')
+    filenames.sort(key=lambda a: len(a))
+    for filename in filenames:
+        images.append(imageio.imread(f'{base_path}/images/{filename}'))
+    imageio.mimsave(f'{base_path}/movie.gif', images, duration=0.20)
 
 
 def create_dir_if_not_exists(path):

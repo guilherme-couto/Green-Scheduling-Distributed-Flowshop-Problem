@@ -832,7 +832,7 @@ void Instance::NSGA3NextGen(){
 
 
 
-vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
+vector<Solution*> makeNewPop(vector<Solution*> parents, int seed, int n){
     vector<Solution*> children;
     Xoshiro256plus rand(seed);
 
@@ -842,9 +842,9 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
 
         Solution* sol = new Solution(parents[i]);
 
-        for(int j=0; j< this->get_n()/4; j++){
-            int factory1Id = rand.next() % this->getF();
-            int factory2Id = rand.next() % this->getF();
+        for(int j=0; j< n/4; j++){
+            int factory1Id = rand.next() % sol->getNumFactories();
+            int factory2Id = rand.next() % sol->getNumFactories();
             Factory* factory1 = sol->getFactory(factory1Id);
             Factory* factory2 = sol->getFactory(factory2Id);
             int job1 = rand.next() % factory1->getNumJobs();
@@ -883,6 +883,57 @@ vector<Solution*> Instance::makeNewPop(vector<Solution*> parents, int seed){
     return children;
 }
 
+vector<Solution*> makeNewPopV2(vector<Solution*> parents, int seed, int n){
+    vector<Solution*> children;
+    Xoshiro256plus rand(seed);
+
+    vector<int> prob{1, 1, 1, 1, 0, 0, 0, 0, 0, 0}; //1 chance of swap 0 chance of insertion
+
+    for(int i =0; i< parents.size(); i++){
+
+        Solution* sol = new Solution(parents[i]);
+
+        for(int j=0; j< n/4; j++){
+            int factory1Id = rand.next() % sol->getNumFactories();
+            int factory2Id = rand.next() % sol->getNumFactories();
+            Factory* factory1 = sol->getFactory(factory1Id);
+            Factory* factory2 = sol->getFactory(factory2Id);
+            int job1 = rand.next() % factory1->getNumJobs();
+            int job2 = rand.next() % factory2->getNumJobs();
+
+            int choice = rand.next() % prob.size();
+            choice = 1;
+            if(choice == 1) {
+                sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+                factory1->speedUp();
+                factory1->speedDown();
+                factory2->speedUp();
+                factory1->speedDown();
+            }
+
+            else
+            {
+                if (factory1->getNumJobs() - 1 > 0) {
+                    sol->insert(factory1Id, factory2Id, factory1->getJob(job1), job2);
+                }
+                else if (factory2->getNumJobs() - 1 > 0){
+                    sol->insert(factory2Id, factory1Id, factory2->getJob(job2), job1);
+                }
+                else
+                    sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+            }
+            //factory1->initializeJobsStartTimes();
+            //factory2->initializeJobsStartTimes();
+        }
+
+        children.push_back(sol);
+
+    }
+
+
+    return children;
+}
+
 
 
 void Instance::NSGA2NextGen(int seed){
@@ -891,7 +942,7 @@ void Instance::NSGA2NextGen(int seed){
 
 
     //todo: Recombine and mutate parents into this vector
-    vector<Solution*> children = this->makeNewPop(parents, seed);
+    vector<Solution*> children = makeNewPopV2(parents, seed, parents.size());
 
 
     //todo: join parents and children into this vector

@@ -166,12 +166,12 @@ void test6(){
     instance->maxSMinTFT();
     instance->assignCrowdingDistance();
 
-    outputToFile("../analysis/test_6_nsga2_only_swap/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 50; i++)
+    outputToFile("../analysis/test_6_nsga2_only_swap/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
     {
         instance->NSGA2NextGen(i);
         //if(i%5==0) {
-            outputToFile("../analysis/test_6_nsga2_only_swap/after_" + to_string(i + 1) + ".csv",
+            outputToFile("../analysis/test_6_nsga2_only_swap/csv/after_" + to_string(i + 1) + ".csv",
                          instance->generatePopulationCSVString(), false);
         //}
     }
@@ -181,6 +181,34 @@ void test6(){
 
 }
 
+
+void test7(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_7_nsga2_mnpv2/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile("../analysis/test_7_nsga2_mnpv2/csv/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+    //outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
+
+    delete instance;
+
+}
 
 void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
@@ -357,7 +385,7 @@ int main()
 {
     cout << "Hello" << endl;
 
-    test6();
+    test7();
     return 0;
 
     // inicializa o construtivo
