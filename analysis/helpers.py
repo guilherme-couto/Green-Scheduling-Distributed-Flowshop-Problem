@@ -121,7 +121,7 @@ def plot_before_after(before_path, after_path, str_before, str_after, out=None, 
         plt.close()
 
 
-def make_movie(base_path, num_iter=1, step=1):
+def make_movie(base_path, num_iter=1, step=1, duration=0.2):
     create_dir_if_not_exists(f'{base_path}/images')
     csv_dir = f'{base_path}/csv'
     all_x = []

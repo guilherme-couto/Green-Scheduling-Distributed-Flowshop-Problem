@@ -1,5 +1,5 @@
 #include "defines.hpp"
-
+#include <stdlib.h>
 
 void outputToFile(string path, string text, bool append){
     ofstream outputf;
@@ -77,7 +77,7 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/20)
+            if (time_taken > instance->get_n()/2)
             {
                 cout << "Time's up! " << its << " iterations in " << time_taken << " seconds" << endl;
                 break;
@@ -128,33 +128,31 @@ void test5(){
     csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    return;
-
-    csv = runExperiment("../instances/928/2-4-40__1.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-4-60__2.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-4-80__3.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-4-100__4.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-20__5.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-40__6.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-60__7.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-80__8.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
-    csv = runExperiment("../instances/928/2-8-100__9.txt", 5, 0.0, 0);
+    csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
 
 }
@@ -268,6 +266,63 @@ void test8(){
     delete instance;
 
 }
+
+void test9(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_9_nsga2_mnpv3/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 1000; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile("../analysis/test_9_nsga2_mnpv3/csv/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+    delete instance;
+
+}
+
+void test10(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    string outputDir = "../analysis/test_10_nsga2_swap_insert/csv/";
+    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
+
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+    delete instance;
+
+}
+
 void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)

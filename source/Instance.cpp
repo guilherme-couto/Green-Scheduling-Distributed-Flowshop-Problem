@@ -851,7 +851,7 @@ vector<Solution*> makeNewPop(vector<Solution*> parents, int seed, int n){
             int job2 = rand.next() % factory2->getNumJobs();
 
             int choice = rand.next() % prob.size();
-            choice = 1;
+            //choice = 1;
             if(choice == 1) {
                 sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
                 //factory1->speedUp();

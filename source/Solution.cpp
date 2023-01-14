@@ -6,8 +6,8 @@ Solution::Solution(Solution *sol) {
     this->EC_f = sol->EC_f;
     this->FT_f = sol->FT_f;
     this->n = sol->n;
-    this->m = sol->n;
-    this->F = sol->n;
+    this->m = sol->m;
+    this->F = sol->F;
     this->factories.reserve(F);
     for(int i=0; i< sol->factories.size(); i++){
         this->factories.push_back(new Factory(sol->factories[i]));
@@ -194,6 +194,10 @@ void Solution::insert(int from_f_id, int to_f_id, Job *job, int pos)
 
 void Solution::swap(int f1_id, int f2_id, Job *job1, Job *job2)
 {
+    if(f1_id == f2_id && job1->getId() == job2->getId()){
+        return;
+    }
+
     int pos1 = this->factories[f1_id]->getJobPosAtSeq(job1->getId());
     int pos2 = this->factories[f2_id]->getJobPosAtSeq(job2->getId());
 

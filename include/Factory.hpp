@@ -16,6 +16,8 @@ private:
     int m;                // Number of machines
     static vector<float> speeds;
     bool jobs_start_times_initialized;
+    bool TFTChanged =true;
+    bool TECChanged =true;
 
 public:
     Factory(int id, int m); // Constructor (id = factory index, m = number of machines)
@@ -33,6 +35,7 @@ public:
     float getTFTTest(vector<Job *> testJobsList);
     float getTFTAfterStartTimesSet();
     int getNumJobs();
+    int getNumMachines();
     Job* getJob(int id);
 
     void addJobId(int i);

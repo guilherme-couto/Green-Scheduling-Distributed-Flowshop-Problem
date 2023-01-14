@@ -210,3 +210,29 @@ float Util::SMetric(vector<Solution*> &PF, vector<Solution*> &A) {
 
     return result;
 }
+
+string Util::generateCSV(Factory* factory)
+{
+    factory->initializeJobsStartTimes();
+    string csvString = "";
+
+    for (int i = 0; i < factory->getNumJobs(); i++)
+    {
+        csvString += "tj" + to_string(i) + ",td" + to_string(i) + ",";
+    }
+    csvString.pop_back();
+    csvString += "\n";
+
+    for (int i = 0; i < factory->getNumMachines(); i++)
+    {
+        vector<Job*> jobs = factory->getJobs();
+        for (int j = 0; j < factory->getNumJobs(); j++)
+        {
+            csvString += to_string(jobs[j]->getStartTime(i)) + "," + to_string(jobs[j]->getP(i)) + ",";
+        }
+        csvString.pop_back();
+        csvString += "\n";
+    }
+
+    return csvString;
+}

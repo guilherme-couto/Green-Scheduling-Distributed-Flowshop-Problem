@@ -18,6 +18,9 @@ Factory::Factory(Factory *f)
     {
         this->jobs.push_back(new Job(f->jobs[i]));
     }
+
+    this->TECChanged = f->TECChanged;
+    this->TFTChanged = f->TFTChanged;
 }
 
 Factory::Factory(int id, int m)
@@ -28,6 +31,8 @@ Factory::Factory(int id, int m)
     this->TEC = 0.0;
     this->TFT = 0.0;
     this->jobs_start_times_initialized = false;
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 
 Factory::~Factory()
@@ -40,6 +45,7 @@ Factory::~Factory()
 void Factory::setSpeeds(vector<float> s)
 {
     Factory::speeds = s;
+
 }
 
 vector<Job *> Factory::getJobs()
@@ -65,6 +71,10 @@ int Factory::getTotalJobs()
 
 float Factory::getTEC()
 {
+    if(!this->TECChanged){
+        return this->TEC;
+    }
+
     if (!this->jobs_start_times_initialized)
     {
         float tec = 0.0;
@@ -107,14 +117,25 @@ float Factory::getTEC()
                 }
             }
         }
-        return tec;
+        this->TEC = tec;
+        //return tec;
     }
-    else
-        return this->getTECAfterStartTimesSet();
+    else {
+        this->TEC = this->getTECAfterStartTimesSet();
+        //return this->getTECAfterStartTimesSet();
+    }
+
+    this->TECChanged = false;
+    return this->TEC;
+
 }
 
 float Factory::getTFT()
 {
+    if(!this->TFTChanged){
+        return this->TFT;
+    }
+
 
     if (!this->jobs_start_times_initialized)
     {
@@ -141,13 +162,16 @@ float Factory::getTFT()
         {
             tft += partialFTByJob[i];
         }
-
-        return tft;
+        this->TFT =tft;
+        //return tft;
     }
     else
-    {
-        return this->getTFTAfterStartTimesSet();
+    {   this->TFT =this->getTFTAfterStartTimesSet();
+
+        //return this->getTFTAfterStartTimesSet();
     }
+    this->TFTChanged = false;
+    return this->TFT;
 }
 
 float Factory::getTFTAfterStartTimesSet()
@@ -217,8 +241,8 @@ Factory *Factory::minTFTAfterInsertion(Job *job)
         }
     }
 
-    testFactory->jobs = minTFTJobs;
-
+    //testFactory->jobs = minTFTJobs;
+    testFactory->setJobs(minTFTJobs);
     return testFactory;
 }
 
@@ -254,13 +278,16 @@ Factory *Factory::minTECAfterInsertion(Job *job)
 
     Factory *testFactory = new Factory();
     *testFactory = *this;
-    testFactory->jobs = minTECJobs;
+    //testFactory->jobs = minTECJobs;
+    testFactory->setJobs(minTECJobs);
 
     return testFactory;
 }
 
 void Factory::addJobAtLastPosition(Job *job)
 {
+    this->TECChanged = true;
+    this->TFTChanged = true;
 
     for (int i = 0; i < this->jobs.size(); i++)
     {
@@ -271,10 +298,14 @@ void Factory::addJobAtLastPosition(Job *job)
 
     this->jobs.push_back(job);
     this->total_jobs++;
+
 }
 
 void Factory::addJobAtPosition(Job *job, int pos)
 {
+    this->TECChanged = true;
+    this->TFTChanged = true;
+
     for (int i = 0; i < this->jobs.size(); i++)
     {
         // if job already exists in factory, do nothing
@@ -283,6 +314,8 @@ void Factory::addJobAtPosition(Job *job, int pos)
     }
     this->jobs.insert(this->jobs.begin() + pos, job);
     this->total_jobs++;
+
+
 }
 
 int auxFindIndex(vector<float> v, float element)
@@ -334,6 +367,9 @@ void Factory::speedDown()
             }
         }
     }
+
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 
 // obs, não testada ainda
@@ -354,11 +390,16 @@ void Factory::randSpeedDown(int seed)
             job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
         }
     }
+
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 
 void Factory::setJobs(vector<Job *> jobs)
 {
     this->jobs = jobs;
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 
 void Factory::setMachines(int m)
@@ -423,6 +464,9 @@ void Factory::rightShift()
             }
         }
     }
+
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 
 float Factory::getTECAfterStartTimesSet()
@@ -515,12 +559,18 @@ void Factory::speedUp()
                         float new_start_time = this->jobs[critical_job_id]->getStartTime(k) - reduction;
                         this->jobs[critical_job_id]->setStartTime(k, new_start_time);
                     }
+
+                    this->TECChanged = true;
+                    this->TFTChanged = true;
+
                     return;
                 }
             }
             j++;
         }
     }
+
+
 }
 
 void Factory::randSpeedUp()
@@ -590,6 +640,9 @@ void Factory::randSpeedUp()
                         float new_start_time = this->jobs[job_id]->getStartTime(k) - reduction;
                         this->jobs[job_id]->setStartTime(k, new_start_time);
                     }
+
+                    this->TECChanged = true;
+                    this->TFTChanged = true;
                     return;
                 }
             }
@@ -618,6 +671,9 @@ void Factory::removeJob(int job_id)
             break;
         }
     }
+
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 
 void Factory::insertJobAtPos(Job *job, int pos)
@@ -686,6 +742,9 @@ void Factory::insertJobAtPos(Job *job, int pos)
         // Insert the job
         this->jobs.insert(this->jobs.begin() + pos, job);
     }
+
+    this->TECChanged = true;
+    this->TFTChanged = true;
 }
 string Factory::generateCSV()
 {
@@ -716,6 +775,12 @@ int Factory::getNumJobs()
 {
 
     return this->jobs.size();
+}
+
+int Factory::getNumMachines()
+{
+
+    return this->m;
 }
 
 Job *Factory::getJob(int id)
