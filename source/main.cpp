@@ -26,9 +26,29 @@ vector<Solution*> joinFronts(vector<vector<Solution*>> fronts){
     return result;
 }
 
+float meanDMetric(vector<vector<Solution*>> &paretoArchive, vector<Solution*> &PF){
+
+    float sum = 0;
+    for(int i=0; i< paretoArchive.size(); i++){
+        sum+= Util::DMetric(PF, paretoArchive[i]);
+    }
+
+    return sum/paretoArchive.size();
+}
+
+float meanSMetric(vector<vector<Solution*>> &paretoArchive, vector<Solution*> &PF){
+
+    float sum = 0;
+    for(int i=0; i< paretoArchive.size(); i++){
+        sum+= Util::SMetric(PF, paretoArchive[i]);
+    }
+
+    return sum/paretoArchive.size();
+}
+
 string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 
-    //string csv = "id,baseSeed,iterations,nsgaIterations,Nmetric\n";
+    //string csv = "id,baseSeed,iterations,nsgaIterations,N,D,S\n";
     string csv = "";
     vector<vector<Solution*>> paretoArchive;
 
@@ -57,7 +77,7 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/2)
+            if (time_taken > instance->get_n()/20)
             {
                 cout << "Time's up! " << its << " iterations in " << time_taken << " seconds" << endl;
                 break;
@@ -82,6 +102,8 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
             + "," + to_string(iterations)
             + "," + to_string((float)nsgaIterationsSum/(float)iterations)
             + "," + to_string(archiveParetoFront.size())
+            + "," + to_string(meanDMetric(paretoArchive, archiveParetoFront))
+            + "," + to_string(meanSMetric(paretoArchive, archiveParetoFront))
             + "\n";
 
 
@@ -92,9 +114,16 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 void test5(){
 
     //string path =  "../instances/928/2-4-20__0.txt";
-    string csv = "id,baseSeed,iterations,nsgaIterations,Nmetric\n";
+    string csv = "id,baseSeed,iterations,nsgaIterations,N,D,S\n";
 
     outputToFile("../analysis/results.csv", csv, true);
+
+    outputToFile("../analysis/test_results.csv", csv, true);
+
+    csv = runExperiment("../instances/test_instance1.txt", 5, 0.0, 0);
+    outputToFile("../analysis/test_results.csv", csv, true);
+
+    return;
 
     csv = runExperiment("../instances/928/2-4-20__0.txt", 5, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);
@@ -210,6 +239,33 @@ void test7(){
 
 }
 
+
+void test8(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_8_nsga2_mnpv3/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile("../analysis/test_8_nsga2_mnpv3/csv/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+    delete instance;
+
+}
 void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
@@ -385,7 +441,7 @@ int main()
 {
     cout << "Hello" << endl;
 
-    test7();
+    test5();
     return 0;
 
     // inicializa o construtivo

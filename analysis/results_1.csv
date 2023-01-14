@@ -1,0 +1,16 @@
+id,baseSeed,iterations,nsgaIterations,Nmetric
+../instances/928/2-4-20__0.txt,0,5,89.800003,107
+../instances/928/2-4-40__1.txt,0,5,89.800003,84
+../instances/928/2-4-60__2.txt,0,5,88.599998,87
+../instances/928/2-4-80__3.txt,0,5,87.000000,95
+../instances/928/2-4-100__4.txt,0,5,76.000000,76
+../instances/928/2-8-20__5.txt,0,5,55.400002,68
+../instances/928/2-8-40__6.txt,0,5,60.799999,93
+../instances/928/2-8-60__7.txt,0,5,62.799999,95
+../instances/928/2-8-80__8.txt,0,5,59.000000,102
+../instances/928/2-8-100__9.txt,0,5,61.799999,75
+id,baseSeed,iterations,nsgaIterations,Nmetric
+id,baseSeed,iterations,nsgaIterations,Nmetric
+id,baseSeed,iterations,nsgaIterations,Nmetric
+id,baseSeed,iterations,nsgaIterations,Nmetric
+../instances/928/2-4-20__0.txt,0,5,9.000000,67,1489.511353,inf

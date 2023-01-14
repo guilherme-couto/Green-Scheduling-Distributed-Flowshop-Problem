@@ -11,6 +11,8 @@ class Util {
 
 public:
     static vector<vector<Solution*>> fastNonDominatedSort(vector<Solution*> population);
+    static float DMetric(vector<Solution*> &PF, vector<Solution*> &A);
+    static float SMetric(vector<Solution*> &PF, vector<Solution*> &A);
 };
 
 #endif //UTIL_H

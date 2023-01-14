@@ -35,6 +35,23 @@ def get_timelines_from_file(path):
 
     return timelines
 
+def plot_populations(files_list, labels_list):
+
+    populations = []
+
+    for filename in files_list:
+        x, y = get_points_from_file(filename)
+        populations.append((x, y))
+
+    fig, ax = plt.subplots(1, 1)
+    for i, pop in enumerate(populations):
+        ax.plot(pop[0], pop[1], 'o', linestyle='None', markersize=6, label=labels_list[i])
+
+    ax.legend()
+    ax.set_title('Soluções')
+    ax.set_xlabel('TFT')
+    ax.set_ylabel('TEC')
+    plt.show()
 
 def gantt_chart(path):
     timelines = get_timelines_from_file(path)

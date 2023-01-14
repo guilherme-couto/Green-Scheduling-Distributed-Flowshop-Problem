@@ -934,7 +934,45 @@ vector<Solution*> makeNewPopV2(vector<Solution*> parents, int seed, int n){
     return children;
 }
 
+vector<Solution*> makeNewPopV3(vector<Solution*> parents, int seed, int n){
+    vector<Solution*> children;
+    Xoshiro256plus rand(seed);
 
+    vector<int> prob{1, 1, 1, 1, 0, 0, 0, 0, 0, 0}; //1 chance of swap 0 chance of insertion
+
+    for(int i =0; i< parents.size(); i++){
+
+        Solution* sol = new Solution(parents[i]);
+
+        for(int j=0; j< n/4; j++){
+            int factory1Id = rand.next() % sol->getNumFactories();
+            int factory2Id = rand.next() % sol->getNumFactories();
+            Factory* factory1 = sol->getFactory(factory1Id);
+            Factory* factory2 = sol->getFactory(factory2Id);
+            int job1 = rand.next() % factory1->getNumJobs();
+            int job2 = rand.next() % factory2->getNumJobs();
+
+            int choice = rand.next() % prob.size();
+            sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
+
+            if(choice == 1) {
+                factory1->speedUp();
+                factory2->speedUp();
+            }
+            else{
+                factory1->speedDown();
+                factory2->speedDown();
+            }
+
+        }
+
+        children.push_back(sol);
+
+    }
+
+
+    return children;
+}
 
 void Instance::NSGA2NextGen(int seed){
     vector<Solution*> parents = this->population;
@@ -942,7 +980,7 @@ void Instance::NSGA2NextGen(int seed){
 
 
     //todo: Recombine and mutate parents into this vector
-    vector<Solution*> children = makeNewPopV2(parents, seed, parents.size());
+    vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
 
 
     //todo: join parents and children into this vector

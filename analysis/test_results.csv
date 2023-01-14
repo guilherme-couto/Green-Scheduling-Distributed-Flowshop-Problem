@@ -1,11 +1,2 @@
-id,baseSeed,nsgaIterations,Nmetric
-../instances/928/2-4-20__0.txt,0,10,25
-../instances/928/2-4-20__0.txt,0,10,27
-../instances/928/2-4-20__0.txt,0,10,30
-../instances/928/2-4-20__0.txt,0,10,29
-../instances/928/2-4-20__0.txt,0,10,31
-../instances/928/2-4-20__0.txt,0,10,22
-../instances/928/2-4-20__0.txt,0,10,29
-../instances/928/2-4-20__0.txt,0,10,26
-../instances/928/2-4-20__0.txt,0,10,29
-../instances/928/2-4-20__0.txt,0,10,29
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,0.800000,74,0.402954,19.514843
