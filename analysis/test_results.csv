@@ -1,2 +1,17 @@
 id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/test_instance1.txt,0,5,0.800000,74,0.402954,19.514843
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,1.000000,75,0.379943,24.701660
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,1.400000,75,0.379943,24.701660
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,1.000000,75,0.379943,24.701660
+id,baseSeed,iterations,nsgaIterations,N,D,S
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,1.000000,75,0.379943,0.927819
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,58.200001,88,0.675803,0.904209
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,5,55.400002,88,0.675803,0.904209
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/test_instance1.txt,0,10,56.299999,151,1.303931,0.917727

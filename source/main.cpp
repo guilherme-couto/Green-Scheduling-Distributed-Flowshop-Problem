@@ -118,15 +118,17 @@ void test5(){
 
     outputToFile("../analysis/results.csv", csv, true);
 
-    outputToFile("../analysis/test_results.csv", csv, true);
+    //outputToFile("../analysis/test_results.csv", csv, true);
 
-    csv = runExperiment("../instances/test_instance1.txt", 5, 0.0, 0);
-    outputToFile("../analysis/test_results.csv", csv, true);
+    //csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
+    //outputToFile("../analysis/test_results.csv", csv, true);
+
+
+
+    csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
     return;
-
-    csv = runExperiment("../instances/928/2-4-20__0.txt", 5, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
 
     csv = runExperiment("../instances/928/2-4-40__1.txt", 5, 0.0, 0);
     outputToFile("../analysis/results.csv", csv, true);

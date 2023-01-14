@@ -192,7 +192,7 @@ float Util::SMetric(vector<Solution*> &PF, vector<Solution*> &A) {
                 min = distance;
             }
         }
-        diSum=min;
+        diSum+=min;
         d.push_back(min);
     }
 
