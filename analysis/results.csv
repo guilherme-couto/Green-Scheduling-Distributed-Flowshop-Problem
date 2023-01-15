@@ -61,3 +61,11 @@ id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/928/2-4-20__0.txt,0,10,1511.500000,117,64.478676,0.747918
 ../instances/928/2-4-40__1.txt,0,10,1709.800049,61,218.769196,0.748608
 ../instances/928/2-4-60__2.txt,0,10,1759.699951,104,228.142914,0.746076
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/928/2-4-20__0.txt,0,10,108.099998,138,40.885635,0.778237
+../instances/928/2-4-40__1.txt,0,10,174.199997,79,175.550232,0.759935
+../instances/928/2-4-60__2.txt,0,10,163.800003,69,217.771164,0.789019
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/928/2-4-80__3.txt,0,10,1535.000000,156,261.043762,0.741115
+id,baseSeed,iterations,nsgaIterations,N,D,S
+id,baseSeed,iterations,nsgaIterations,N,D,S

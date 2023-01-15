@@ -680,6 +680,9 @@ void Factory::insertJobAtPos(Job *job, int pos)
 {
     if (pos >= this->jobs.size())
     {
+        // Insert the job at the last position
+        this->jobs.push_back(job);
+
         // Update the start times of the job
         int index = this->jobs.size() - 1;
         for (int j = 0; j < this->m; j++)
@@ -695,8 +698,7 @@ void Factory::insertJobAtPos(Job *job, int pos)
             }
         }
 
-        // Insert the job at the last position
-        this->jobs.push_back(job);
+
     }
     else
     {

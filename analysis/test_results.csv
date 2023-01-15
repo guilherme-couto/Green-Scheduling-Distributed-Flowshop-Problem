@@ -15,3 +15,5 @@ id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/test_instance1.txt,0,5,55.400002,88,0.675803,0.904209
 id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/test_instance1.txt,0,10,56.299999,151,1.303931,0.917727
+../instances/test_instance1.txt,0,10,1068.699951,216,0.450720,0.890553
+../instances/test_instance1.txt,0,10,1168.599976,294,81.112221,0.883584

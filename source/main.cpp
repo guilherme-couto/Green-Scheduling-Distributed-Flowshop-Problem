@@ -124,9 +124,8 @@ void test5(){
 
     //outputToFile("../analysis/test_results.csv", csv, true);
 
-    //csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
-    //outputToFile("../analysis/test_results.csv", csv, true);
-
+    csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
+    outputToFile("../analysis/test_results.csv", csv, true);
 
 
     csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 0.0, 0);
