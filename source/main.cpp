@@ -73,21 +73,20 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
         instance->assignCrowdingDistance();
 
         //for (int j = 0; j < 100; j++)
-        int its = 0;
+        nsgaIterationsSum = 0;
         while(true)
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
             if (time_taken > instance->get_n()/2)
             {
-                cout << "Time's up! " << its << " iterations in " << time_taken << " seconds" << endl;
+                cout << "Time's up! " << nsgaIterationsSum << " iterations in " << time_taken << " seconds" << endl;
                 break;
             }
 
-            instance->NSGA2NextGen(its+baseSeed);
-            its++;
+            instance->NSGA2NextGen(nsgaIterationsSum+baseSeed);
+            nsgaIterationsSum++;
         }
-        nsgaIterationsSum += its;
 
         instance->fastNonDominatedSort();
         paretoArchive.push_back(instance->getParetoFront());

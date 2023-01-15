@@ -69,3 +69,10 @@ id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/928/2-4-80__3.txt,0,10,1535.000000,156,261.043762,0.741115
 id,baseSeed,iterations,nsgaIterations,N,D,S
 id,baseSeed,iterations,nsgaIterations,N,D,S
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/928/2-4-20__0.txt,0,10,22.100000,127,587.141479,0.966814
+../instances/928/2-4-40__1.txt,0,10,14.400000,60,209.581146,0.813612
+../instances/928/2-4-60__2.txt,0,10,8.300000,122,104.398270,0.776611
+../instances/928/2-4-80__3.txt,0,10,6.000000,63,311.823029,0.788939
+../instances/928/2-4-100__4.txt,0,10,7.700000,103,341.532623,0.808525
+../instances/928/2-8-20__5.txt,0,10,3.700000,47,216.202423,0.893229
