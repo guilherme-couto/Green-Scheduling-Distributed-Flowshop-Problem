@@ -57,6 +57,16 @@ Solution::Solution(int n, int m, int F)
 
 Solution::~Solution()
 {
+
+    for(Factory* f: this->factories){
+        vector<Job*> jobs =  f->getJobs();
+
+        for(Job * j: jobs){
+            delete j;
+        }
+
+        delete f;
+    }
 }
 
 float Solution::getTEC()

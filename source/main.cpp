@@ -51,12 +51,13 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
     //string csv = "id,baseSeed,iterations,nsgaIterations,N,D,S\n";
     string csv = "";
     vector<vector<Solution*>> paretoArchive;
-
+    vector<Instance*> instances;
     clock_t start, end;
 
     int nsgaIterationsSum = 0;
     for(int i=0; i<iterations; i++){
         Instance *instance = readFile(path);
+        instances.push_back(instance);
 
         start = clock();
 
@@ -106,6 +107,9 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
             + "," + to_string(meanSMetric(paretoArchive, archiveParetoFront))
             + "\n";
 
+    for(Instance* i:instances){
+        delete i;
+    }
 
     return csv;
 

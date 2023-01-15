@@ -53,3 +53,11 @@ id,baseSeed,iterations,nsgaIterations,N,D,S
 id,baseSeed,iterations,nsgaIterations,N,D,S
 id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/928/2-4-20__0.txt,0,10,1536.800049,115,65.302757,0.751172
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/928/2-4-20__0.txt,0,10,1571.000000,116,63.857410,0.743981
+../instances/928/2-4-40__1.txt,0,10,1677.000000,64,171.905914,0.736086
+../instances/928/2-4-60__2.txt,0,10,1700.900024,106,173.775284,0.738579
+id,baseSeed,iterations,nsgaIterations,N,D,S
+../instances/928/2-4-20__0.txt,0,10,1511.500000,117,64.478676,0.747918
+../instances/928/2-4-40__1.txt,0,10,1709.800049,61,218.769196,0.748608
+../instances/928/2-4-60__2.txt,0,10,1759.699951,104,228.142914,0.746076
