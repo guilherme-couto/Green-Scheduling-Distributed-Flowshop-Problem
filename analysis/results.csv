@@ -76,3 +76,4 @@ id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/928/2-4-80__3.txt,0,10,6.000000,63,311.823029,0.788939
 ../instances/928/2-4-100__4.txt,0,10,7.700000,103,341.532623,0.808525
 ../instances/928/2-8-20__5.txt,0,10,3.700000,47,216.202423,0.893229
+id,baseSeed,iterations,nsgaIterations,N,D,S

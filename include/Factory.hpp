@@ -57,7 +57,7 @@ public:
     float getTECAfterStartTimesSet();
     void updateTEC();
     void speedUp();
-    void randSpeedUp();
+    void randSpeedUp(int seed);
     void removeJob(int job_id);
     void insertJobAtPos(Job *job, int pos);
     string generateCSV();

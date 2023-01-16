@@ -18,3 +18,4 @@ id,baseSeed,iterations,nsgaIterations,N,D,S
 ../instances/test_instance1.txt,0,10,1068.699951,216,0.450720,0.890553
 ../instances/test_instance1.txt,0,10,1168.599976,294,81.112221,0.883584
 ../instances/test_instance1.txt,0,10,12.100000,298,94796464.000000,1.111815
+../instances/test_instance1.txt,0,10,19.400000,130,1367000832.000000,0.937781
