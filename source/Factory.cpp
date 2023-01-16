@@ -391,8 +391,10 @@ void Factory::randSpeedDown(int seed)
         {
             float previousSpeed = job->getV(j);
             int indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
-            int indexNewSpeed = (int)rand.next() % indexPreviousSpeed;
-            job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+            if(indexPreviousSpeed>0){
+                int indexNewSpeed = (int)rand.next() % indexPreviousSpeed;
+                job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+            }
         }
     }
 

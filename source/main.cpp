@@ -84,7 +84,7 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 
         for (int j = 0; j < 10; j++)
         {
-            instance->balancedRandomSolutionGenerator(i+baseSeed);
+            instance->balancedRandomSolutionGenerator(j+baseSeed);
             instance->randSMinTEC(j+baseSeed);
             instance->randSMinTFT(j+baseSeed);
 
@@ -350,6 +350,37 @@ void test10(){
 
 }
 
+
+void test11(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    string outputDir = "../analysis/test_11_ingm_sngm_hngm_rand/csv/";
+    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
+
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+
+    delete instance;
+
+}
+
 void test3(){
     Instance *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
@@ -525,7 +556,7 @@ int main()
 {
     cout << "Hello" << endl;
 
-    test5();
+    test11();
     return 0;
 
     // inicializa o construtivo
