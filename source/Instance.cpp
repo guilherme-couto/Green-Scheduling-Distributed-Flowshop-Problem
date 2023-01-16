@@ -1014,14 +1014,28 @@ void normalize(vector<Solution*> solutions){
 
 }
 
-void associate(vector<Solution*> solutions, vector<float>refTFTs, vector<float> refTECs){
+void associate(vector<float>normTFTs, vector<float> normTECs, vector<float>refTFTs, vector<float> refTECs){
 
-    for(int i=0; i<refTECs.size(); i++){
-        //compute reference line
-    }
-    for(int i=0; i<solutions.size(); i++){
-        //for each reference line
-            //compute perp. distance of solution from each line
+    int numSolutions =  normTFTs.size();
+    int numRefPoints = refTFTs.size();
+
+    vector<int> associationVector(numSolutions, 0);
+    for(int i=0; i<numSolutions; i++){
+        float minDistance =INFINITY;
+        int refPointPos;
+
+        for(int j=0; j<numRefPoints; j++){
+            //compute distance of solution from each line
+            float distance = fabsf(refTECs[j]*normTECs[j] + refTFTs[j]*normTFTs[j])/
+                    sqrtf(powf(refTECs[j], 2) + powf(refTFTs[j], 2));
+
+            if(distance<minDistance){
+                minDistance=distance;
+                refPointPos=j;
+            }
+        }
+
+        associationVector[i] = refPointPos;
 
         //assign PI(s) = line w closest from s
         //assign d(s) distance of sol. s to the closest line w
@@ -1029,6 +1043,11 @@ void associate(vector<Solution*> solutions, vector<float>refTFTs, vector<float> 
     }
 
 
+}
+
+
+void niching(){
+    
 }
 
 
