@@ -126,6 +126,7 @@ Solution *Instance::maxSMinTFT()
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -211,6 +212,7 @@ Solution *Instance::randSMinTFT(int seed)
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -295,6 +297,7 @@ Solution *Instance::minSMinTEC()
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -378,6 +381,7 @@ Solution *Instance::randSMinTEC(int seed)
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }

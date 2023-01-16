@@ -53,6 +53,8 @@ Solution::Solution(int n, int m, int F)
 
     this->TEC = 0;
     this->TFT = 0;
+
+    Util::allocate(this);
 }
 
 Solution::~Solution()
@@ -67,6 +69,8 @@ Solution::~Solution()
 
         delete f;
     }
+
+    Util::allocate(this);
 }
 
 float Solution::getTEC()
@@ -148,6 +152,7 @@ void Solution::setV(int job_id, int mach_id, float v)
 
 void Solution::replaceFactory(int f_id, Factory *factory)
 {
+    this->factories[f_id]->clearJobs();
     delete this->factories[f_id];
     this->factories[f_id] = factory;
 }

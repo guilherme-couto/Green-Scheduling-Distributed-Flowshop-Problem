@@ -4,6 +4,7 @@
 
 #include "defines.hpp"
 
+vector<Solution*> Util::allocatedSolutions;
 
 vector<vector<Solution*>> Util::fastNonDominatedSort(vector<Solution*> population) {
 
@@ -65,35 +66,6 @@ vector<vector<Solution*>> Util::fastNonDominatedSort(vector<Solution*> populatio
     solutionFronts.pop_back();
     return solutionFronts;
 }
-
-
-float euclideanDistance(Solution* sol1, Solution* sol2){
-    float sol1Y = sol1->getTEC();
-    float sol1X = sol1->getTFT();
-    float sol2Y = sol2->getTEC();
-    float sol2X = sol2->getTFT();
-
-    float distance = sqrtf(pow(sol1Y-sol2Y, 2) + pow(sol1X - sol2X, 2));
-    return distance;
-}
-
-float Util::DMetric(vector<Solution*> &PF, vector<Solution*> &A){
-
-    float sum = 0;
-    for(int i=0; i < PF.size(); i++){
-        float min =INFINITY;
-        for(int j=0; j < A.size(); j++){
-            float distance = euclideanDistance(PF[i], A[j]);
-            if(distance<min){
-                min = distance;
-            }
-        }
-        sum+=min;
-    }
-
-    return sum/PF.size();
-}
-
 Solution* extremeTEC(vector<Solution*> &v, bool maxExtreme)
 {
     float extreme;
@@ -178,6 +150,92 @@ Solution* minTFTSol(vector<Solution*> &v){
 
 
 
+float euclideanDistance(Solution* sol1, Solution* sol2){
+    float sol1Y = sol1->getTEC();
+    float sol1X = sol1->getTFT();
+    float sol2Y = sol2->getTEC();
+    float sol2X = sol2->getTFT();
+
+    float distance = sqrtf(pow(sol1Y-sol2Y, 2) + pow(sol1X - sol2X, 2));
+    return distance;
+}
+
+float normalizedEuclideanDistance(Solution* sol1, Solution* sol2, float maxTFT, float minTFT, float maxTEC, float minTEC){
+    float sol1TEC = sol1->getTEC();
+    float sol1TFT = sol1->getTFT();
+    float sol2TEC = sol2->getTEC();
+    float sol2TFT = sol2->getTFT();
+
+    float distance =
+            sqrtf(
+                pow((sol1TEC - sol2TEC) / (maxTEC - minTEC), 2) +
+                pow((sol1TFT - sol2TFT) / (maxTFT - minTFT), 2)
+            );
+    return distance;
+}
+
+float Util::DMetric(vector<Solution*> &PF, vector<Solution*> &A){
+
+    float sum = 0;
+    for(int i=0; i < PF.size(); i++){
+        float min =INFINITY;
+        for(int j=0; j < A.size(); j++){
+            float distance = euclideanDistance(PF[i], A[j]);
+            if(distance<min){
+                min = distance;
+            }
+        }
+        sum+=min;
+    }
+
+    return sum/PF.size();
+}
+
+float Util::GDMetric(vector<Solution*> &PF, vector<Solution*> &A){
+    float minTEC = minTECSol(PF)->getTEC();
+    float minTFT = minTFTSol(PF)->getTFT();
+    float maxTEC = maxTECSol(PF)->getTEC();
+    float maxTFT = maxTFTSol(PF)->getTFT();
+
+    float sum = 0;
+    for(int i=0; i < A.size(); i++){
+        float min =INFINITY;
+        for(int j=0; j < PF.size(); j++){
+            float distance = normalizedEuclideanDistance(PF[j], A[i], maxTFT, minTFT, maxTEC, minTEC);
+            if(distance<min){
+                min = distance;
+            }
+        }
+        sum+=pow(min, 2);
+    }
+
+    return sqrtf(sum)/A.size();
+}
+
+float Util::IGDMetric(vector<Solution*> &PF, vector<Solution*> &A){
+    float minTEC = minTECSol(PF)->getTEC();
+    float minTFT = minTFTSol(PF)->getTFT();
+    float maxTEC = maxTECSol(PF)->getTEC();
+    float maxTFT = maxTFTSol(PF)->getTFT();
+
+
+    float sum = 0;
+    for(int i=0; i < PF.size(); i++){
+        float min =INFINITY;
+        for(int j=0; j < A.size(); j++){
+            float distance = normalizedEuclideanDistance(PF[i], A[j], maxTFT, minTFT, maxTEC, minTEC);
+            if(distance<min){
+                min = distance;
+            }
+        }
+        sum+=pow(min, 2);
+    }
+
+    return sqrtf(sum)/PF.size();
+}
+
+
+
 float Util::SMetric(vector<Solution*> &PF, vector<Solution*> &A) {
 
     float diSum, dMean = 0;
@@ -235,4 +293,17 @@ string Util::generateCSV(Factory* factory)
     }
 
     return csvString;
+}
+
+void Util::allocate(Solution* sol){
+    Util::allocatedSolutions.push_back(sol);
+
+}
+
+void Util::deallocate(){
+    for(Solution* s: Util::allocatedSolutions){
+        delete s;
+    }
+
+    Util::allocatedSolutions.clear();
 }

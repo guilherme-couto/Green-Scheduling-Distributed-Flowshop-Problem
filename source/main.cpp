@@ -46,9 +46,30 @@ float meanSMetric(vector<vector<Solution*>> &paretoArchive, vector<Solution*> &P
     return sum/paretoArchive.size();
 }
 
+float meanGDMetric(vector<vector<Solution*>> &paretoArchive, vector<Solution*> &PF){
+
+    float sum = 0;
+    for(int i=0; i< paretoArchive.size(); i++){
+        sum+= Util::GDMetric(PF, paretoArchive[i]);
+    }
+
+    return sum/paretoArchive.size();
+}
+
+float meanIGDMetric(vector<vector<Solution*>> &paretoArchive, vector<Solution*> &PF){
+
+    float sum = 0;
+    for(int i=0; i< paretoArchive.size(); i++){
+        sum+= Util::IGDMetric(PF, paretoArchive[i]);
+    }
+
+    return sum/paretoArchive.size();
+}
+
+
 string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 
-    //string csv = "id,baseSeed,iterations,nsgaIterations,N,D,S\n";
+    //string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga), GD, IGD, S\n";
     string csv = "";
     vector<vector<Solution*>> paretoArchive;
     vector<Instance*> instances;
@@ -78,7 +99,7 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/2)
+            if (time_taken > instance->get_n()/20)
             {
                 cout << "Time's up! " << its << " iterations in " << time_taken << " seconds" << endl;
                 break;
@@ -104,12 +125,16 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
             + "," + to_string((float)nsgaIterationsSum/(float)iterations)
             + "," + to_string(archiveParetoFront.size())
             + "," + to_string(meanDMetric(paretoArchive, archiveParetoFront))
+            + "," + to_string(meanGDMetric(paretoArchive, archiveParetoFront))
+            + "," + to_string(meanIGDMetric(paretoArchive, archiveParetoFront))
             + "," + to_string(meanSMetric(paretoArchive, archiveParetoFront))
             + "\n";
 
-    for(Instance* i:instances){
-        delete i;
-    }
+    //for(Instance* i:instances){
+    //    delete i;
+   // }
+
+    Util::deallocate();
 
     return csv;
 
@@ -118,14 +143,14 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 void test5(){
 
     //string path =  "../instances/928/2-4-20__0.txt";
-    string csv = "id,baseSeed,iterations,nsgaIterations,N,D,S\n";
+    string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
 
     outputToFile("../analysis/results.csv", csv, true);
 
     //outputToFile("../analysis/test_results.csv", csv, true);
 
-    csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
-    outputToFile("../analysis/test_results.csv", csv, true);
+    //csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
+    //outputToFile("../analysis/test_results.csv", csv, true);
 
 
     csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 0.0, 0);
