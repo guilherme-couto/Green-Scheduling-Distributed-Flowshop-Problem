@@ -61,6 +61,7 @@ public:
     void removeJob(int job_id);
     void insertJobAtPos(Job *job, int pos);
     string generateCSV();
+    void clearJobs();
 };
 
 #endif // FACTORY_HPP

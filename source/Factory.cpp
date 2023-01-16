@@ -37,9 +37,13 @@ Factory::Factory(int id, int m)
 
 Factory::~Factory()
 {
-    /*for(int i=0; i< this->jobs.size(); i++){
-        delete jobs[i];
-    }*/
+   // for(int i=0; i< this->jobs.size(); i++){
+   //     delete jobs[i];
+   // }
+}
+
+void Factory::clearJobs(){
+    this->jobs.clear();
 }
 
 void Factory::setSpeeds(vector<float> s)
@@ -273,6 +277,7 @@ Factory *Factory::minTECAfterInsertion(Job *job)
             minIncreaseTEC = tecVariation;
             minTECJobs = testJobs;
         }
+        auxFactory->clearJobs();
         delete auxFactory;
     }
 
@@ -386,8 +391,10 @@ void Factory::randSpeedDown(int seed)
         {
             float previousSpeed = job->getV(j);
             int indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
-            int indexNewSpeed = (int)rand.next() % indexPreviousSpeed;
-            job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+            if(indexPreviousSpeed>0){
+                int indexNewSpeed = (int)rand.next() % indexPreviousSpeed;
+                job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+            }
         }
     }
 

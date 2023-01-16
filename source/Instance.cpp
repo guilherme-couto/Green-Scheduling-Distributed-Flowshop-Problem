@@ -126,6 +126,7 @@ Solution *Instance::maxSMinTFT()
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -211,6 +212,7 @@ Solution *Instance::randSMinTFT(int seed)
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -295,6 +297,7 @@ Solution *Instance::minSMinTEC()
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -378,6 +381,7 @@ Solution *Instance::randSMinTEC(int seed)
             }
             else
             {
+                testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -979,16 +983,14 @@ void Instance::NSGA2NextGen(int seed){
     vector<Solution*> nextGen;
 
 
-    //todo: Recombine and mutate parents into this vector
-    vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
+    this->makenewpop_operators(parents, seed);
+    //vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
 
-
-    //todo: join parents and children into this vector
-    vector<Solution*> all = parents;
+    //vector<Solution*> all = parents;
+    vector<Solution*> all = this->new_individuals;
     //this->population = all;
-    all.reserve(this->population.size() + children.size());
-    all.insert(all.end(), children.begin(), children.end());
-    //std::remove(all.begin()+parents.size(), all.end(), )
+    //all.reserve(this->population.size() + children.size());
+    ///all.insert(all.end(), children.begin(), children.end());
     this->population = all;
 
 
@@ -1253,6 +1255,7 @@ void Instance::makenewpop_operators(vector<Solution*> parents, int seed) {
             i = 0;
         else
             i++;
+
     }
 
     // Return a generation new_individuals = parents + new_individuals
