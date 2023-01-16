@@ -578,10 +578,10 @@ void Factory::speedUp()
 
 }
 
-void Factory::randSpeedUp()
+void Factory::randSpeedUp(int seed)
 {
     // Choose a random job
-    Xoshiro256plus rand(time(NULL));
+    Xoshiro256plus rand(seed);
 
     int job_id;
     do

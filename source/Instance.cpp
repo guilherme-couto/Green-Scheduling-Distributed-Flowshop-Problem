@@ -1043,3 +1043,221 @@ int Instance::nMetric() {
 vector<Solution *> Instance::getParetoFront() {
     return this->dominationFronts[0];
 }
+
+void Instance::INGM(Solution *sol, int seed)
+{
+    Xoshiro256plus rand(seed);
+    Solution* new_sol = new Solution(sol);
+
+    // Randomly choose the objective for optimization
+    int random_obj = rand.next() % 2; // 0 = TFT, 1 = TEC
+
+    // Get the factory with the largest TFT or TEC
+    float largest = 0;
+    int largest_index = -1;
+
+    if (random_obj == 0) // Optimize TFT
+    {
+        for (int f = 0; f < this->F; f++)
+        {
+            float f_tft = new_sol->getFactory(f)->getTFT();
+            if (f_tft > largest) {
+                largest = f_tft;
+                largest_index = f;
+            }
+        }
+    }
+    else    // Optimize TEC
+    {
+        for (int f = 0; f < this->F; f++)
+        {
+            float f_tec = new_sol->getFactory(f)->getTEC();
+            if (f_tec > largest) {
+                largest = f_tec;
+                largest_index = f;
+            }
+        }
+    }
+
+    vector<Job*> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
+    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
+
+    while(jobs_to_try.size() > largest_f_total_jobs / 2)
+    {
+        // Get a random job and extract from the factory
+        int random_job_index = rand.next() % jobs_to_try.size();
+        Job *job = jobs_to_try[random_job_index];
+        new_sol->getFactory(largest_index)->removeJob(random_job_index);
+        jobs_to_try.erase(jobs_to_try.begin() + random_job_index);
+
+        // Change the origin factory
+        if (random_obj == 0) // Optimize TFT
+        {
+            new_sol->getFactory(largest_index)->randSpeedUp(seed);
+            new_sol->getFactory(largest_index)->speedUp();
+        }
+        else    // Optimize TEC
+        {
+            new_sol->getFactory(largest_index)->randSpeedDown(seed);
+            new_sol->getFactory(largest_index)->speedDown();
+            new_sol->getFactory(largest_index)->rightShift();
+        }
+
+        // Try inserting the job to every position of every factory until the solution dominates the original one
+        for (int f = 0; f < this->F; f++)
+        {
+            int f_num_of_jobs = new_sol->getFactory(f)->getNumJobs();
+            for (int pos = 0; pos < f_num_of_jobs; pos++)
+            {
+                // Insert the job to the factory
+                new_sol->getFactory(f)->insertJobAtPos(job, pos);
+
+                // Change the factory
+                if (random_obj == 0) // Optimize TFT
+                {
+                    new_sol->getFactory(f)->randSpeedUp(seed);
+                    new_sol->getFactory(f)->speedUp();
+                }
+                else    // Optimize TEC
+                {
+                    new_sol->getFactory(f)->randSpeedDown(seed);
+                    new_sol->getFactory(f)->speedDown();
+                    new_sol->getFactory(f)->rightShift();
+                }
+                if(new_sol->getTFT() > sol->getTFT() && new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                    this->new_individuals.push_back(new_sol);
+                new_sol->getFactory(f)->removeJob(job->getId());
+            }
+        }
+    }
+}
+
+void Instance::SNGM(Solution *sol, int seed)
+{
+    Xoshiro256plus rand(seed);
+    Solution* new_sol = new Solution(sol);
+
+    // Randomly choose the objective for optimization
+    int random_obj = rand.next() % 2; // 0 = TFT, 1 = TEC
+
+    // Get the factory with the largest TFT or TEC
+    float largest = 0;
+    int largest_index = -1;
+
+    if (random_obj == 0) // Optimize TFT
+    {
+        for (int f = 0; f < this->F; f++)
+        {
+            float f_tft = new_sol->getFactory(f)->getTFT();
+            if (f_tft > largest) {
+                largest = f_tft;
+                largest_index = f;
+            }
+        }
+    }
+    else    // Optimize TEC
+    {
+        for (int f = 0; f < this->F; f++)
+        {
+            float f_tec = new_sol->getFactory(f)->getTEC();
+            if (f_tec > largest) {
+                largest = f_tec;
+                largest_index = f;
+            }
+        }
+    }
+
+    vector<Job*> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
+    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
+    while(jobs_to_try.size() > largest_f_total_jobs / 2)
+    {
+        // Get a random job
+        int random_job_index = rand.next() % jobs_to_try.size();
+        Job *job = jobs_to_try[random_job_index];
+        jobs_to_try.erase(jobs_to_try.begin() + random_job_index);
+
+        // Try inserting the job to every position of every factory until the solution dominates the original one
+        for (int f = 0; f < this->F; f++)
+        {
+            int f_num_of_jobs = new_sol->getFactory(f)->getNumJobs();
+            for (int pos = 0; pos < f_num_of_jobs; pos++)
+            {
+                // Swap the job to the factory
+                Job *job2;
+                do {
+                    job2 = new_sol->getFactory(f)->getJobs().at(pos);
+                } while (job2->getId() == job->getId());    // get a different job to swap
+
+                new_sol->swap(largest_index, f, job, job2);
+
+                // Change the factories
+                if (random_obj == 0) // Optimize TFT
+                {
+                    new_sol->getFactory(largest_index)->randSpeedUp(seed);
+                    new_sol->getFactory(largest_index)->speedUp();
+
+                    new_sol->getFactory(f)->randSpeedUp(seed);
+                    new_sol->getFactory(f)->speedUp();
+                }
+                else    // Optimize TEC
+                {
+                    new_sol->getFactory(largest_index)->randSpeedDown(seed);
+                    new_sol->getFactory(largest_index)->speedDown();
+                    new_sol->getFactory(largest_index)->rightShift();
+
+                    new_sol->getFactory(f)->randSpeedDown(seed);
+                    new_sol->getFactory(f)->speedDown();
+                    new_sol->getFactory(f)->rightShift();
+                }
+                if(new_sol->getTFT() > sol->getTFT() && new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                    this->new_individuals.push_back(new_sol);
+
+                new_sol->swap(f, largest_index, job, job2);
+            }
+        }
+    }
+}
+
+void Instance::HNGM(Solution *sol, int seed) {
+    Xoshiro256plus rand(seed);
+
+    // Randomly choose INGM or SNGM
+    int random_gen = rand.next() % 2; // 0 = INGM, 1 = SNGM
+
+    if (random_gen == 0)
+        this->INGM(sol, seed);
+    else
+        this->SNGM(sol, seed);
+}
+
+void Instance::makenewpop_operators(vector<Solution*> parents, int seed) {
+    Xoshiro256plus rand(seed);
+
+    // clear the new_individuals vector
+    this->new_individuals.clear();
+
+    // Generate the same number of new individuals as parents size
+    // For each solution in parents, generate a neighbour
+    int i = 0;
+    while(this->new_individuals.size() < parents.size())
+    {
+        // Randomly choose which operator will be used to generate a neighbour
+        int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
+
+        if (rand_op == 0)
+            this->INGM(parents[i], seed);
+        else if (rand_op == 1)
+            this->SNGM(parents[i], seed);
+        else
+            this->HNGM(parents[i], seed);
+
+        if (i == parents.size())
+            i = 0;
+        else
+            i++;
+    }
+
+    // Return a generation new_individuals = parents + new_individuals
+    this->new_individuals.insert(this->new_individuals.end(), parents.begin(), parents.end());
+}
+
