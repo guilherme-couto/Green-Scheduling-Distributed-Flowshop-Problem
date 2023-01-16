@@ -95,7 +95,7 @@ Solution* extremeTEC(vector<Solution*> &v, bool maxExtreme)
 }
 
 
-Solution* maxTECSol(vector<Solution*> &v){
+Solution* Util::maxTECSol(vector<Solution*> &v){
     float max=0;
     Solution* sol;
 
@@ -108,7 +108,7 @@ Solution* maxTECSol(vector<Solution*> &v){
     return sol;
 }
 
-Solution* maxTFTSol(vector<Solution*> &v){
+Solution* Util::maxTFTSol(vector<Solution*> &v){
     float max=0;
     Solution* sol;
 
@@ -122,7 +122,7 @@ Solution* maxTFTSol(vector<Solution*> &v){
 }
 
 
-Solution* minTECSol(vector<Solution*> &v){
+Solution* Util::minTECSol(vector<Solution*> &v){
     float min=INFINITY;
     Solution* sol;
 
@@ -135,7 +135,7 @@ Solution* minTECSol(vector<Solution*> &v){
     return sol;
 }
 
-Solution* minTFTSol(vector<Solution*> &v){
+Solution* Util::minTFTSol(vector<Solution*> &v){
     float min=INFINITY;
     Solution* sol;
 

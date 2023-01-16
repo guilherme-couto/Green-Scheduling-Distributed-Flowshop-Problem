@@ -152,7 +152,7 @@ void Solution::setV(int job_id, int mach_id, float v)
 
 void Solution::replaceFactory(int f_id, Factory *factory)
 {
-    this->factories[f_id]->clearJobs();
+    //this->factories[f_id]->clearJobs();
     delete this->factories[f_id];
     this->factories[f_id] = factory;
 }

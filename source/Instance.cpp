@@ -126,7 +126,7 @@ Solution *Instance::maxSMinTFT()
             }
             else
             {
-                testFactory->clearJobs();
+                //testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -212,7 +212,7 @@ Solution *Instance::randSMinTFT(int seed)
             }
             else
             {
-                testFactory->clearJobs();
+                //testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -297,7 +297,7 @@ Solution *Instance::minSMinTEC()
             }
             else
             {
-                testFactory->clearJobs();
+                //testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -381,7 +381,7 @@ Solution *Instance::randSMinTEC(int seed)
             }
             else
             {
-                testFactory->clearJobs();
+                //testFactory->clearJobs();
                 delete testFactory;
             }
         }
@@ -794,47 +794,6 @@ bool crowdedCompare(Solution *s1, Solution* s2)
     return false;
 }
 
-void Instance::NSGA3NextGen(){
-    vector<Solution*> parents = this->population;
-    vector<Solution*> nextGen;
-
-    //todo: vector of reference points
-
-    //todo: Recombine and mutate parents into this vector
-    vector<Solution*> children;
-
-    //todo: join parents and children into this vector
-    vector<Solution*> all;
-    this->population = all;
-
-    vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
-
-    int inserted = 0;
-    int n = 0;
-
-    //insere enquanto o numero de elementos inseridos for menor q n
-    for(int i=0; inserted < n && i < fronts.size()-1; i++){
-        nextGen.reserve(nextGen.size() + fronts[i].size());
-        for(int j=0; j < fronts[i].size() ; j++){
-            nextGen.push_back(fronts[i][j]);
-            inserted++;
-        }
-    }
-
-    if(nextGen.size() + fronts.back().size() == n){
-        nextGen.reserve(fronts.back().size());
-        nextGen.insert(nextGen.end(), fronts.back().begin(), fronts.back().end());
-    }else{
-        // Points to be chosen from Fl: K = N − |Pt+1|
-        // Normalize objectives and create reference set Zr
-        // Associate each member s of St with a reference point
-        // Compute niche count of reference point j ∈ Zr
-        // Choose K members one at a time from Fl to construct Pt+1: Niching
-    }
-}
-
-
-
 
 vector<Solution*> makeNewPop(vector<Solution*> parents, int seed, int n){
     vector<Solution*> children;
@@ -959,7 +918,7 @@ vector<Solution*> makeNewPopV3(vector<Solution*> parents, int seed, int n){
             int choice = rand.next() % prob.size();
             sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
 
-            if(choice == 1) {
+            if(prob[choice] == 1) {
                 factory1->speedUp();
                 factory2->speedUp();
             }
@@ -983,21 +942,16 @@ void Instance::NSGA2NextGen(int seed){
     vector<Solution*> nextGen;
 
 
-    //todo: Recombine and mutate parents into this vector
+    //Recombine and mutate parents into this vector
     vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
 
-
-    //todo: join parents and children into this vector
+    //join parents and children into this vector
     vector<Solution*> all = parents;
-    //this->population = all;
     all.reserve(this->population.size() + children.size());
     all.insert(all.end(), children.begin(), children.end());
-    //std::remove(all.begin()+parents.size(), all.end(), )
     this->population = all;
 
-
     vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
-
 
     int inserted = 0;
     int n = parents.size();
@@ -1035,6 +989,103 @@ void Instance::NSGA2NextGen(int seed){
 
     this->population=nextGen;
 }
+
+
+void normalize(vector<Solution*> solutions){
+    int numPoints = 10;
+    vector<float> refPointTFTs(numPoints);
+    vector<float> refPointTECs(numPoints);
+    vector<float> TFTs(solutions.size(), 0.0);
+    vector<float> TECs(solutions.size(), 0.0);
+    float minTFT = Util::minTFTSol(solutions)->getTFT();
+    float minTEC = Util::minTECSol(solutions)->getTEC();;
+    float maxTFT = Util::maxTFTSol(solutions)->getTFT();;
+    float maxTEC = Util::maxTECSol(solutions)->getTEC();;
+
+    for(int i=0; i< solutions.size(); i++){
+        TFTs[i] = (solutions[i]->getTFT() - minTFT)/maxTFT;
+        TECs[i] = (solutions[i]->getTEC() - minTEC)/maxTEC;
+    }
+
+    for(int i=0; i<numPoints;i++){
+        refPointTECs.push_back((1/numPoints)*i);
+        refPointTFTs.push_back((1/numPoints)*i);
+    }
+
+}
+
+void associate(vector<Solution*> solutions, vector<float>refTFTs, vector<float> refTECs){
+
+    for(int i=0; i<refTECs.size(); i++){
+        //compute reference line
+    }
+    for(int i=0; i<solutions.size(); i++){
+        //for each reference line
+            //compute perp. distance of solution from each line
+
+        //assign PI(s) = line w closest from s
+        //assign d(s) distance of sol. s to the closest line w
+
+    }
+
+
+}
+
+
+void Instance::NSGA3NextGen(int seed){
+    vector<Solution*> parents = this->population;
+    vector<Solution*> nextGen;
+
+    //Recombine and mutate parents into this vector
+    vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
+
+    //join parents and children into this vector
+    vector<Solution*> all = parents;
+    all.reserve(this->population.size() + children.size());
+    all.insert(all.end(), children.begin(), children.end());
+    this->population = all;
+
+    vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
+
+    int inserted = 0;
+    int n = parents.size();
+    nextGen.reserve(n);
+
+    //insere enquanto o numero de elementos inseridos for menor q n
+    int l = 0;
+    for(int i=0; inserted < n && i < fronts.size()-1; i++){
+        //nextGen.reserve(nextGen.size() + fronts[i].size());
+        ::assignCrowdingDistance(fronts[i]);
+
+        if(inserted+fronts[i].size() > n){
+            l = i;
+            break;
+        }
+
+        for(int j=0; j < fronts[i].size() ; j++){
+            nextGen.push_back(fronts[i][j]);
+            inserted++;
+        }
+    }
+
+    if(nextGen.size() < n){
+        sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
+        for(int i=0; nextGen.size()< n; i++){
+            nextGen.push_back(fronts[l][i]);
+        }
+    }
+
+    this->population=nextGen;
+
+    // Points to be chosen from Fl: K = N − |Pt+1|
+    // Normalize objectives and create reference set Zr
+    // Associate each member s of St with a reference point
+    // Compute niche count of reference point j ∈ Zr
+    // Choose K members one at a time from Fl to construct Pt+1: Niching
+
+}
+
+
 
 int Instance::nMetric() {
     return this->dominationFronts[0].size();
