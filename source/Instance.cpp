@@ -983,14 +983,16 @@ void Instance::NSGA2NextGen(int seed){
     vector<Solution*> nextGen;
 
 
-    this->makenewpop_operators(parents, seed);
-    //vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
+    //todo: Recombine and mutate parents into this vector
+    vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
 
-    //vector<Solution*> all = parents;
-    vector<Solution*> all = this->new_individuals;
+
+    //todo: join parents and children into this vector
+    vector<Solution*> all = parents;
     //this->population = all;
-    //all.reserve(this->population.size() + children.size());
-    ///all.insert(all.end(), children.begin(), children.end());
+    all.reserve(this->population.size() + children.size());
+    all.insert(all.end(), children.begin(), children.end());
+    //std::remove(all.begin()+parents.size(), all.end(), )
     this->population = all;
 
 
