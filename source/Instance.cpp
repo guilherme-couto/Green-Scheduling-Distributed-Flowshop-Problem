@@ -1128,6 +1128,7 @@ void Instance::INGM(Solution *sol, int seed)
             }
         }
     }
+    this->new_individuals.push_back(new_sol);
 }
 
 void Instance::SNGM(Solution *sol, int seed)
@@ -1214,6 +1215,7 @@ void Instance::SNGM(Solution *sol, int seed)
             }
         }
     }
+    this->new_individuals.push_back(new_sol);
 }
 
 void Instance::HNGM(Solution *sol, int seed) {
