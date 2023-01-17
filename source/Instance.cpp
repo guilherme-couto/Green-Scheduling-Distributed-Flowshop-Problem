@@ -1218,7 +1218,6 @@ void Instance::INGM(Solution *sol, int seed) {
         // Get a random job and extract from the factory
         int random_job_index = rand.next() % jobs_to_try.size();
         Job *job = jobs_to_try[random_job_index];
-        new_sol->getFactory(largest_index)->removeJob(random_job_index);
         jobs_to_try.erase(jobs_to_try.begin() + random_job_index);
 
         // Change the origin factory
@@ -1238,7 +1237,7 @@ void Instance::INGM(Solution *sol, int seed) {
             int f_num_of_jobs = new_sol->getFactory(f)->getNumJobs();
             for (int pos = 0; pos < f_num_of_jobs; pos++) {
                 // Insert the job to the factory
-                new_sol->getFactory(f)->insertJobAtPos(job, pos);
+                new_sol->insert(largest_index, f, job, pos);
 
                 // Change the factory
                 if (random_obj == 0) // Optimize TFT
@@ -1257,7 +1256,7 @@ void Instance::INGM(Solution *sol, int seed) {
                     this->new_individuals.push_back(new_sol);
                     return;
                 }
-                new_sol->getFactory(f)->removeJob(job->getId());
+                new_sol->insert(f, largest_index, job, random_job_index);
             }
         }
     }
