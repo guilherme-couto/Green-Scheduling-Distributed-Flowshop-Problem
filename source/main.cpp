@@ -183,290 +183,6 @@ void test5(){
     outputToFile("../analysis/results.csv", csv, true);
 
 }
-
-void test4(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 10; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-    //
-    outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 10; i++)
-    {
-        instance->NSGA2NextGen(i);
-    }
-    outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
-
-    delete instance;
-
-}
-
-
-void test6(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 7; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-
-    outputToFile("../analysis/test_6_nsga2_only_swap/csv/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 100; i++)
-    {
-        instance->NSGA2NextGen(i);
-        //if(i%5==0) {
-            outputToFile("../analysis/test_6_nsga2_only_swap/csv/after_" + to_string(i + 1) + ".csv",
-                         instance->generatePopulationCSVString(), false);
-        //}
-    }
-    //outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
-
-    delete instance;
-
-}
-
-
-void test7(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 7; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-
-    outputToFile("../analysis/test_7_nsga2_mnpv2/csv/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 100; i++)
-    {
-        instance->NSGA2NextGen(i);
-        //if(i%5==0) {
-        outputToFile("../analysis/test_7_nsga2_mnpv2/csv/after_" + to_string(i + 1) + ".csv",
-                     instance->generatePopulationCSVString(), false);
-        //}
-    }
-    //outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
-
-    delete instance;
-
-}
-
-
-void test8(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 7; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-
-    outputToFile("../analysis/test_8_nsga2_mnpv3/csv/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 100; i++)
-    {
-        instance->NSGA2NextGen(i);
-        //if(i%5==0) {
-        outputToFile("../analysis/test_8_nsga2_mnpv3/csv/after_" + to_string(i + 1) + ".csv",
-                     instance->generatePopulationCSVString(), false);
-        //}
-    }
-
-    delete instance;
-
-}
-
-void test9(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 7; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-
-    outputToFile("../analysis/test_9_nsga2_mnpv3/csv/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 1000; i++)
-    {
-        instance->NSGA2NextGen(i);
-        //if(i%5==0) {
-        outputToFile("../analysis/test_9_nsga2_mnpv3/csv/after_" + to_string(i + 1) + ".csv",
-                     instance->generatePopulationCSVString(), false);
-        //}
-    }
-
-    delete instance;
-
-}
-
-void test10(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    string outputDir = "../analysis/test_10_nsga2_swap_insert/csv/";
-    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
-
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 7; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 100; i++)
-    {
-        instance->NSGA2NextGen(i);
-        //if(i%5==0) {
-        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
-                     instance->generatePopulationCSVString(), false);
-        //}
-    }
-
-    delete instance;
-
-}
-
-
-void test11(){
-    string path =  "../instances/928/2-4-20__0.txt";
-    string outputDir = "../analysis/test_11_ingm_sngm_hngm_rand/csv/";
-    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
-
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 7; i++)
-    {
-        instance->balancedRandomSolutionGenerator(i);
-        instance->randSMinTEC(i);
-        instance->randSMinTFT(i);
-    }
-    instance->minSMinTEC();
-    instance->maxSMinTFT();
-    instance->assignCrowdingDistance();
-    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
-    for (int i = 0; i < 100; i++)
-    {
-        instance->NSGA2NextGen(i);
-        //if(i%5==0) {
-        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
-                     instance->generatePopulationCSVString(), false);
-        //}
-    }
-
-
-    delete instance;
-
-}
-
-void test3(){
-    Instance *instance = readFile("../instances/test_instance1.txt");
-    for (int i = 0; i < 100; i++)
-    {
-       instance->balancedRandomSolutionGenerator(i);
-    }
-    instance->maxSMinTFT();
-    vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
-    instance->printPopulation();
-    ofstream output("../analysis/test_instance_pop.csv");
-    output << instance->generatePopulationCSVString();
-    output.close();
-
-    delete instance;
-}
-
-void test2()
-{
-    //string path =  "../instances/test_instance1.txt";
-    string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
-    for (int i = 0; i < 100; i++)
-    {
-        instance->totalRandomSolutionGenerator(i);
-    }
-    vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
-
-    ofstream output("../analysis/pop_output.csv");
-    output << instance->generatePopulationCSVString();
-    output.close();
-    instance->assignCrowdingDistance();
-
-    delete instance;
-
-
-
-    Instance *instance2 = readFile(path);
-    instance2->maxSMinTFT();
-    ofstream output2("../analysis/max_s_min_tft.csv");
-    output2 << instance2->generatePopulationCSVString();
-    output2.close();
-
-    delete instance2;
-
-    Instance *instance3 = readFile(path);
-    for (int i = 0; i < 100; i++)
-    {
-        instance3->randSMinTFT(i);
-    }
-    ofstream output3("../analysis/rand_s_min_tft.csv");
-    output3 << instance3->generatePopulationCSVString();
-    output3.close();
-
-    delete instance3;
-
-
-
-
-    Instance *instance5 = readFile(path);
-    for (int i = 0; i < 100; i++)
-    {
-        instance5->randSMinTEC(i);
-    }
-    instance5->fastNonDominatedSort();
-
-    ofstream output5("../analysis/rand_s_min_tec.csv");
-    output5 << instance5->generatePopulationCSVString();
-    output5.close();
-    instance5->assignCrowdingDistance();
-
-    delete instance5;
-
-
-
-    Instance *instance4 = readFile(path);
-    instance4->minSMinTEC();
-    ofstream output4("../analysis/min_s_min_tec.csv");
-    output4 << instance4->generatePopulationCSVString();
-    output4.close();
-
-    delete instance4;
-
-
-
-}
-
 void test()
 {
     // criar instancia
@@ -551,6 +267,287 @@ void test()
 
     // float tft = f->getTFT();
 }
+
+void test2()
+{
+    //string path =  "../instances/test_instance1.txt";
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->totalRandomSolutionGenerator(i);
+    }
+    vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
+
+    ofstream output("../analysis/pop_output.csv");
+    output << instance->generatePopulationCSVString();
+    output.close();
+    instance->assignCrowdingDistance();
+
+    delete instance;
+
+
+
+    Instance *instance2 = readFile(path);
+    instance2->maxSMinTFT();
+    ofstream output2("../analysis/max_s_min_tft.csv");
+    output2 << instance2->generatePopulationCSVString();
+    output2.close();
+
+    delete instance2;
+
+    Instance *instance3 = readFile(path);
+    for (int i = 0; i < 100; i++)
+    {
+        instance3->randSMinTFT(i);
+    }
+    ofstream output3("../analysis/rand_s_min_tft.csv");
+    output3 << instance3->generatePopulationCSVString();
+    output3.close();
+
+    delete instance3;
+
+
+
+
+    Instance *instance5 = readFile(path);
+    for (int i = 0; i < 100; i++)
+    {
+        instance5->randSMinTEC(i);
+    }
+    instance5->fastNonDominatedSort();
+
+    ofstream output5("../analysis/rand_s_min_tec.csv");
+    output5 << instance5->generatePopulationCSVString();
+    output5.close();
+    instance5->assignCrowdingDistance();
+
+    delete instance5;
+
+
+
+    Instance *instance4 = readFile(path);
+    instance4->minSMinTEC();
+    ofstream output4("../analysis/min_s_min_tec.csv");
+    output4 << instance4->generatePopulationCSVString();
+    output4.close();
+
+    delete instance4;
+
+
+
+}
+
+void test3(){
+    Instance *instance = readFile("../instances/test_instance1.txt");
+    for (int i = 0; i < 100; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+    }
+    instance->maxSMinTFT();
+    vector<vector<Solution *>> fronts = instance->fastNonDominatedSort();
+    instance->printPopulation();
+    ofstream output("../analysis/test_instance_pop.csv");
+    output << instance->generatePopulationCSVString();
+    output.close();
+
+    delete instance;
+}
+
+void test4(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 10; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+    //
+    outputToFile("../analysis/initial_pop_1.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 10; i++)
+    {
+        instance->NSGA2NextGen(i);
+    }
+    outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
+
+    delete instance;
+
+}
+
+void test6(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_6_nsga2_only_swap/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+            outputToFile("../analysis/test_6_nsga2_only_swap/csv/after_" + to_string(i + 1) + ".csv",
+                         instance->generatePopulationCSVString(), false);
+        //}
+    }
+    //outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
+
+    delete instance;
+
+}
+
+void test7(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_7_nsga2_mnpv2/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile("../analysis/test_7_nsga2_mnpv2/csv/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+    //outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
+
+    delete instance;
+
+}
+
+void test8(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_8_nsga2_mnpv3/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile("../analysis/test_8_nsga2_mnpv3/csv/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+    delete instance;
+
+}
+
+void test9(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+
+    outputToFile("../analysis/test_9_nsga2_mnpv3/csv/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 1000; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile("../analysis/test_9_nsga2_mnpv3/csv/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+    delete instance;
+
+}
+
+void test10(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    string outputDir = "../analysis/test_10_nsga2_swap_insert/csv/";
+    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
+
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+    delete instance;
+
+}
+
+void test11(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    string outputDir = "../analysis/test_11_ingm_sngm_hngm_rand/csv/";
+    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
+
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA2NextGen(i);
+        //if(i%5==0) {
+        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+
+    delete instance;
+
+}
+
+
 
 int main()
 {
