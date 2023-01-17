@@ -1045,9 +1045,87 @@ void associate(vector<float>normTFTs, vector<float> normTECs, vector<float>refTF
 
 }
 
+bool nicheCompare(vector<tuple<Solution*, float>> &a, vector<tuple<Solution*, float>> &b){
+    return a.size() < b.size();
+}
 
-void niching(){
-    
+bool distanceCompare(tuple<Solution*, float> &a, tuple<Solution*, float> &b){
+    return get<0>(a) < get<0>(b);
+}
+
+vector<tuple<Solution*, float>> getIntersection(vector<Solution*> &solV, vector<tuple<Solution*, float>> &niche){
+    vector<tuple<Solution*, float>> intersection;
+
+    for(Solution* s: solV){
+        for(tuple<Solution*, float> n:niche){
+            if(s==get<0>(n)){
+                intersection.push_back(n);
+            }
+        }
+    }
+
+    return intersection;
+}
+
+int minDistanceIndex(vector<tuple<Solution*, float>> v){
+
+    float minDistance=INFINITY;
+    int minDistancePos=0;
+    for(tuple<Solution*, float> t: v){
+        if(get<1>(t)<minDistance){
+            minDistance=get<1>(t);
+        }
+    }
+
+    return minDistancePos;
+}
+
+void niching(int K, vector<vector<tuple<Solution*, float>>> niches, vector<Solution*> lastFront, int seed){
+
+    sort(niches.begin(), niches.end(), nicheCompare);
+    vector<Solution*> selected(K);
+    Xoshiro256plus rand(seed);
+
+    int j =0;
+    int k=0;
+    while(k<K){
+        vector<tuple<Solution*, float>> intersection = getIntersection(lastFront, niches[j]);
+        if(!intersection.empty()){
+            if(niches[j].size()==0){
+                int pos = minDistanceIndex(intersection);
+                selected.push_back(get<0>(intersection[pos]));
+            }
+            else{
+                int pos = rand.next() % intersection.size();
+                selected.push_back(get<0>(intersection[pos]));
+            }
+
+
+            k++;
+        }
+        else{
+
+        }
+
+    }
+
+    //enquanto k<K
+        //conjunto J = pontos com menor niche count
+        //escolhe elemento j aleatório em J
+        //conjunto I = elementos de Fl que estão associados a j
+        //se I está vazio
+            //se niche_count(j) == 0
+                //seleciona elemento de I com o menor distância ao ponto de referência
+            //else
+                //seleciona elemento aleatório de I
+
+            //incrementa niche count de j
+            //remove elemento selecionado de Fl
+            //k++
+
+        //else
+            //remove j da lista de pontos de ref.
+
 }
 
 
