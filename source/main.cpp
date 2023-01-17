@@ -547,13 +547,41 @@ void test11(){
 
 }
 
+void test12(){
+    string path =  "../instances/928/2-4-20__0.txt";
+    string outputDir = "../analysis/test_12_nsga3_mnpv3/csv/";
+    //std::system(("python ./../create_folders.py "+ outputDir).c_str());
 
+    Instance *instance = readFile(path);
+    for (int i = 0; i < 7; i++)
+    {
+        instance->balancedRandomSolutionGenerator(i);
+        instance->randSMinTEC(i);
+        instance->randSMinTFT(i);
+    }
+    instance->minSMinTEC();
+    instance->maxSMinTFT();
+    instance->assignCrowdingDistance();
+    outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
+    for (int i = 0; i < 100; i++)
+    {
+        instance->NSGA3NextGen(i);
+        //if(i%5==0) {
+        outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
+                     instance->generatePopulationCSVString(), false);
+        //}
+    }
+
+
+    delete instance;
+
+}
 
 int main()
 {
     cout << "Hello" << endl;
 
-    test6();
+    test12();
     return 0;
 
     // inicializa o construtivo
