@@ -76,7 +76,7 @@ int Factory::getTotalJobs()
 float Factory::getTEC()
 {
     if(!this->TECChanged){
-        return this->TEC;
+        //return this->TEC;
     }
 
     if (!this->jobs_start_times_initialized)
@@ -137,7 +137,7 @@ float Factory::getTEC()
 float Factory::getTFT()
 {
     if(!this->TFTChanged){
-        return this->TFT;
+     //   return this->TFT;
     }
 
 
@@ -170,7 +170,8 @@ float Factory::getTFT()
         //return tft;
     }
     else
-    {   this->TFT =this->getTFTAfterStartTimesSet();
+    {
+        this->TFT =this->getTFTAfterStartTimesSet();
 
         //return this->getTFTAfterStartTimesSet();
     }
@@ -227,15 +228,16 @@ Factory *Factory::minTFTAfterInsertion(Job *job)
     vector<Job *> auxJobs = this->jobs;
     vector<Job *> testJobs = this->jobs;
     vector<Job *> minTFTJobs = this->jobs;
-    Factory *testFactory = new Factory();
-    *testFactory = *this;
+    Factory *testFactory = new Factory(this->id, this->m);
+    //*testFactory = *this;
 
     for (int i = 0; i <= this->jobs.size(); i++)
     {
-
         testJobs = this->jobs;
         testJobs.insert(testJobs.begin() + i, job);
-        float testFactoryTFT = this->getTFTTest(testJobs);
+        testFactory->setJobs(testJobs);
+        //float testFactoryTFT = this->getTFTTest(testJobs);
+        float testFactoryTFT = testFactory->getTFT();
 
         tftVariation = testFactoryTFT - tftBeforeInsertion;
         if (tftVariation < minIncreaseTFT)
@@ -277,7 +279,7 @@ Factory *Factory::minTECAfterInsertion(Job *job)
             minIncreaseTEC = tecVariation;
             minTECJobs = testJobs;
         }
-        auxFactory->clearJobs();
+        //auxFactory->clearJobs();
         delete auxFactory;
     }
 
@@ -576,7 +578,8 @@ void Factory::speedUp()
             j++;
         }
     }
-
+    this->TECChanged = true;
+    this->TFTChanged = true;
 
 }
 

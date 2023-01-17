@@ -21,8 +21,13 @@ public:
     static string generateCSV(Factory* factory);
     static void allocate(Solution* sol);
     static void deallocate();
+    static Solution* maxTECSol(vector<Solution*> &v);
+    static Solution* minTECSol(vector<Solution*> &v);
+    static Solution* maxTFTSol(vector<Solution*> &v);
+    static Solution* minTFTSol(vector<Solution*> &v);
 
 
-};
+
+    };
 
 #endif //UTIL_H
