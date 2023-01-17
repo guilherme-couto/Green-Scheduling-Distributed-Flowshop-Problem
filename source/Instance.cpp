@@ -1443,10 +1443,12 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
         else {
             sol_ptr = this->HNGM(parents[i], seed);
         }
+        i++;
         if (sol_ptr != nullptr) {
             children.push_back(sol_ptr);
-            i++;
         }
+        if (i == parents.size())
+            i = 0;
     }
 
     // Return children
