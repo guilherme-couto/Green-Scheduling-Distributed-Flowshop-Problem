@@ -946,6 +946,59 @@ void Instance::NSGA2NextGen_operators(int seed) {
     this->population = nextGen;
 }
 
+void Instance::NSGA2NextGen_operators_ND(int seed) {
+    vector<Solution *> parents = this->population;
+    vector<Solution *> nextGen;
+
+
+    //Recombine and mutate parents into this vector
+    vector<Solution *> children = makenewpop_operators_ND(parents, seed);
+
+    //join parents and children into this vector
+    vector<Solution *> all = parents;
+    all.reserve(this->population.size() + children.size());
+    all.insert(all.end(), children.begin(), children.end());
+    this->population = all;
+
+    vector<vector<Solution *>> fronts = this->fastNonDominatedSort();
+
+    int inserted = 0;
+    int n = parents.size();
+    nextGen.reserve(n);
+
+    //insere enquanto o numero de elementos inseridos for menor q n
+    int l = 0;
+    for (int i = 0; inserted < n && i < fronts.size() - 1; i++) {
+        //nextGen.reserve(nextGen.size() + fronts[i].size());
+        ::assignCrowdingDistance(fronts[i]);
+
+        if (inserted + fronts[i].size() > n) {
+            l = i;
+            break;
+        }
+
+        for (int j = 0; j < fronts[i].size(); j++) {
+            nextGen.push_back(fronts[i][j]);
+            inserted++;
+        }
+    }
+
+
+    //::assignCrowdingDistance(fronts.back());
+    /*if(nextGen.size() + fronts[l].size() == n){
+        nextGen.reserve(fronts[l].size());
+        nextGen.insert(nextGen.end(), fronts[l].begin(), fronts[l].end());
+    }*/if (nextGen.size() < n) {
+        //nextGen.reserve(n);
+        sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
+        for (int i = 0; nextGen.size() < n; i++) {
+            nextGen.push_back(fronts[l][i]);
+        }
+    }
+
+    this->population = nextGen;
+}
+
 void normalize(vector<Solution *> solutions,
                vector<tuple<float, float, int, int>> &refPoints,
                vector<tuple<float, float, Solution*>> &normalizedSolutions) {

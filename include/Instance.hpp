@@ -50,6 +50,7 @@ public:
     void NSGA3NextGen(int seed);
     void NSGA2NextGen(int seed);
     void NSGA2NextGen_operators(int seed);
+    void NSGA2NextGen_operators_ND(int seed);
     //vector<Solution*> makeNewPop(vector<Solution*> parents, int seed);
     int nMetric();
 
