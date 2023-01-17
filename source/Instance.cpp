@@ -1,7 +1,6 @@
 #include "defines.hpp"
 
-Instance::Instance(int F, int n, int m, vector<vector<int>> t)
-{
+Instance::Instance(int F, int n, int m, vector<vector<int>> t) {
     this->F = F;
     this->n = n;
     this->m = m;
@@ -15,72 +14,58 @@ Instance::Instance(int F, int n, int m, vector<vector<int>> t)
     Factory::setSpeeds(this->speeds);
 }
 
-Instance::~Instance()
-{
-    for (int i = 0; i < this->population.size(); i++)
-    {
+Instance::~Instance() {
+    for (int i = 0; i < this->population.size(); i++) {
         delete this->population[i];
     }
 }
 
-int Instance::getF()
-{
+int Instance::getF() {
     return this->F;
 }
 
-int Instance::get_n()
-{
+int Instance::get_n() {
     return this->n;
 }
 
-int Instance::get_m()
-{
+int Instance::get_m() {
     return this->m;
 }
 
-int Instance::get_t(int machine_id, int job_id)
-{
+int Instance::get_t(int machine_id, int job_id) {
     return t[machine_id][job_id];
 }
 
-void Instance::construtivo()
-{
+void Instance::construtivo() {
 
-    for (int i = 0; i < 4; i++)
-    {
+    for (int i = 0; i < 4; i++) {
         this->balancedRandomSolutionGenerator(i);
     }
 }
 
-bool compareJobsByTotalProcessingTime(Job *a, Job *b)
-{
+bool compareJobsByTotalProcessingTime(Job *a, Job *b) {
     return a->getTotalP() < b->getTotalP();
 }
 
-bool compareSolutionsByTFT(Solution *a, Solution *b)
-{
+bool compareSolutionsByTFT(Solution *a, Solution *b) {
     return a->getTFT() < b->getTFT();
 }
 
-bool compareSolutionsByTEC(Solution *a, Solution *b)
-{
+bool compareSolutionsByTEC(Solution *a, Solution *b) {
     return a->getTEC() < b->getTEC();
 }
 
-Solution *Instance::maxSMinTFT()
-{
+Solution *Instance::maxSMinTFT() {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
     int highestSpeed = this->speeds.size() - 1;
 
-    for (int i = 0; i < this->get_n(); i++)
-    {
+    for (int i = 0; i < this->get_n(); i++) {
         jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
-        for (int j = 0; j < this->get_m(); j++)
-        {
+        for (int j = 0; j < this->get_m(); j++) {
             jobTimeByMachine[j] = this->t[i][j];
             jobSpeedByMachine[j] = this->speeds[highestSpeed];
         }
@@ -91,8 +76,7 @@ Solution *Instance::maxSMinTFT()
     sort(jobs.begin(), jobs.end(),
          compareJobsByTotalProcessingTime); // generate job permutation lambda according to non-descending order of Ti (total job i processing time)
 
-    for (int i = 0; i < this->getF(); i++)
-    { // assign the first f jobs to each one of the factories
+    for (int i = 0; i < this->getF(); i++) { // assign the first f jobs to each one of the factories
         // factories[i] = new Factory(i, this->m);
         solution->getFactory(i)->addJobAtLastPosition(jobs[i]);
     }
@@ -106,26 +90,21 @@ Solution *Instance::maxSMinTFT()
     Factory *minTFTFactory;
 
     // for each factory f
-    for (int j = this->getF(); j < jobs.size(); j++)
-    { // test job j at all the possible positions of PI_k (the factory)
+    for (int j = this->getF(); j < jobs.size(); j++) { // test job j at all the possible positions of PI_k (the factory)
         float minIncreaseTFT = INFINITY;
         float minTFTPos = 0;
 
-        for (int f = 0; f < this->getF(); f++)
-        {
+        for (int f = 0; f < this->getF(); f++) {
             testFactory = solution->getFactory(f)->minTFTAfterInsertion(jobs[j]);
             testFactoryTFT = testFactory->getTFT();
             previousTFT = solution->getFactory(f)->getTFT();
             tftVariation = testFactoryTFT - previousTFT;
 
-            if (tftVariation < minIncreaseTFT)
-            {
+            if (tftVariation < minIncreaseTFT) {
                 minIncreaseTFT = tftVariation;
                 minTFTFactory = testFactory;
                 minTFTPos = f;
-            }
-            else
-            {
+            } else {
                 //testFactory->clearJobs();
                 delete testFactory;
             }
@@ -135,37 +114,32 @@ Solution *Instance::maxSMinTFT()
         solution->replaceFactory(minTFTPos, minTFTFactory); // replaces old factory and deletes it
     }
 
-    for (int i = 0; i < this->getF(); i++)
-    {
+    for (int i = 0; i < this->getF(); i++) {
         solution->getFactory(i)->speedDown();
     }
     this->population.push_back(solution);
 
     // Initialize the of each factory
-    for (int f = 0; f < this->getF(); f++)
-    {
+    for (int f = 0; f < this->getF(); f++) {
         solution->getFactory(f)->initializeJobsStartTimes();
     }
 
     return solution;
 }
 
-Solution *Instance::randSMinTFT(int seed)
-{
+Solution *Instance::randSMinTFT(int seed) {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
     Xoshiro256plus rand(/*time(NULL) +*/ seed);
     int highestSpeed = this->speeds.size() - 1;
 
-    for (int i = 0; i < this->get_n(); i++)
-    {
+    for (int i = 0; i < this->get_n(); i++) {
 
         jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
-        for (int j = 0; j < this->get_m(); j++)
-        {
+        for (int j = 0; j < this->get_m(); j++) {
             int randomIndex = rand.next() % this->speeds.size();
             jobTimeByMachine[j] = this->t[i][j];
             jobSpeedByMachine[j] = this->speeds[randomIndex];
@@ -177,8 +151,7 @@ Solution *Instance::randSMinTFT(int seed)
     sort(jobs.begin(), jobs.end(),
          compareJobsByTotalProcessingTime); // generate job permutation lambda according to non-descending order of Ti (total job i processing time)
 
-    for (int i = 0; i < this->getF(); i++)
-    { // assign the first f jobs to each one of the factories
+    for (int i = 0; i < this->getF(); i++) { // assign the first f jobs to each one of the factories
         // factories[i] = new Factory(i, this->m);
         solution->getFactory(i)->addJobAtLastPosition(jobs[i]);
     }
@@ -192,26 +165,21 @@ Solution *Instance::randSMinTFT(int seed)
     Factory *minTFTFactory;
 
     // for each factory f
-    for (int j = this->getF(); j < jobs.size(); j++)
-    { // test job j at all the possible positions of PI_k (the factory)
+    for (int j = this->getF(); j < jobs.size(); j++) { // test job j at all the possible positions of PI_k (the factory)
         float minIncreaseTFT = INFINITY;
         float minTFTPos = 0;
 
-        for (int f = 0; f < this->getF(); f++)
-        {
+        for (int f = 0; f < this->getF(); f++) {
             testFactory = solution->getFactory(f)->minTFTAfterInsertion(jobs[j]);
             testFactoryTFT = testFactory->getTFT();
             previousTFT = solution->getFactory(f)->getTFT();
             tftVariation = testFactoryTFT - previousTFT;
 
-            if (tftVariation < minIncreaseTFT)
-            {
+            if (tftVariation < minIncreaseTFT) {
                 minIncreaseTFT = tftVariation;
                 minTFTFactory = testFactory;
                 minTFTPos = f;
-            }
-            else
-            {
+            } else {
                 //testFactory->clearJobs();
                 delete testFactory;
             }
@@ -221,35 +189,30 @@ Solution *Instance::randSMinTFT(int seed)
         solution->replaceFactory(minTFTPos, minTFTFactory); // replaces old factory and deletes it
     }
 
-    for (int i = 0; i < this->getF(); i++)
-    {
+    for (int i = 0; i < this->getF(); i++) {
         solution->getFactory(i)->speedDown();
     }
     this->population.push_back(solution);
 
     // Initialize the of each factory
-    for (int f = 0; f < this->getF(); f++)
-    {
+    for (int f = 0; f < this->getF(); f++) {
         solution->getFactory(f)->initializeJobsStartTimes();
     }
 
     return solution;
 }
 
-Solution *Instance::minSMinTEC()
-{
+Solution *Instance::minSMinTEC() {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
 
     // First, all the speeds set to the minimum value
-    for (int i = 0; i < this->get_n(); i++)
-    {
+    for (int i = 0; i < this->get_n(); i++) {
         jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
-        for (int j = 0; j < this->get_m(); j++)
-        {
+        for (int j = 0; j < this->get_m(); j++) {
             jobTimeByMachine[j] = this->t[i][j];
             jobSpeedByMachine[j] = this->speeds[0]; // minimum speed
         }
@@ -261,8 +224,7 @@ Solution *Instance::minSMinTEC()
     sort(jobs.begin(), jobs.end(), compareJobsByTotalProcessingTime);
 
     // Assign the first f jobs to each one of the factories
-    for (int k = 0; k < this->getF(); k++)
-    {
+    for (int k = 0; k < this->getF(); k++) {
         solution->getFactory(k)->addJobAtLastPosition(jobs[k]);
     }
 
@@ -276,27 +238,22 @@ Solution *Instance::minSMinTEC()
     Factory *minTECFactory;
 
     // For each factory f
-    for (int i = this->getF(); i < jobs.size(); i++)
-    {
+    for (int i = this->getF(); i < jobs.size(); i++) {
         float minIncreaseTEC = INFINITY;
         float minTECPos = 0;
 
         // Test job j at all the possible positions of PI_k (the factory)
-        for (int k = 0; k < this->getF(); k++)
-        {
+        for (int k = 0; k < this->getF(); k++) {
             testFactory = solution->getFactory(k)->minTECAfterInsertion(jobs[i]);
             testFactoryTEC = testFactory->getTEC();
             previousTEC = solution->getFactory(k)->getTEC();
             tecVariation = testFactoryTEC - previousTEC;
 
-            if (tecVariation < minIncreaseTEC)
-            {
+            if (tecVariation < minIncreaseTEC) {
                 minIncreaseTEC = tecVariation;
                 minTECFactory = testFactory;
                 minTECPos = k;
-            }
-            else
-            {
+            } else {
                 //testFactory->clearJobs();
                 delete testFactory;
             }
@@ -307,8 +264,7 @@ Solution *Instance::minSMinTEC()
     }
 
     // Initialize the start_times of each factory and then right shift
-    for (int f = 0; f < this->getF(); f++)
-    {
+    for (int f = 0; f < this->getF(); f++) {
         solution->getFactory(f)->initializeJobsStartTimes();
         solution->getFactory(f)->rightShift();
     }
@@ -317,22 +273,19 @@ Solution *Instance::minSMinTEC()
     return solution;
 }
 
-Solution *Instance::randSMinTEC(int seed)
-{
+Solution *Instance::randSMinTEC(int seed) {
     Xoshiro256plus rand(/*time(NULL) +*/ seed);
 
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
 
     // First, all the speeds set to the minimum value
-    for (int i = 0; i < this->get_n(); i++)
-    {
+    for (int i = 0; i < this->get_n(); i++) {
         jobs[i] = new Job(i, this->m);
         vector<int> jobTimeByMachine(this->get_m());
         vector<float> jobSpeedByMachine(this->get_m());
 
-        for (int j = 0; j < this->get_m(); j++)
-        {
+        for (int j = 0; j < this->get_m(); j++) {
             int randomSpeedIndex = rand.next() % this->speeds.size();
             jobTimeByMachine[j] = this->t[i][j];
             jobSpeedByMachine[j] = this->speeds[randomSpeedIndex]; // random speed
@@ -345,8 +298,7 @@ Solution *Instance::randSMinTEC(int seed)
     sort(jobs.begin(), jobs.end(), compareJobsByTotalProcessingTime);
 
     // Assign the first f jobs to each one of the factories
-    for (int k = 0; k < this->getF(); k++)
-    {
+    for (int k = 0; k < this->getF(); k++) {
         solution->getFactory(k)->addJobAtLastPosition(jobs[k]);
     }
 
@@ -360,27 +312,22 @@ Solution *Instance::randSMinTEC(int seed)
     Factory *minTECFactory;
 
     // For each factory f
-    for (int i = this->getF(); i < jobs.size(); i++)
-    {
+    for (int i = this->getF(); i < jobs.size(); i++) {
         float minIncreaseTEC = INFINITY;
         float minTECPos = 0;
 
         // Test job j at all the possible positions of PI_k (the factory)
-        for (int k = 0; k < this->getF(); k++)
-        {
+        for (int k = 0; k < this->getF(); k++) {
             testFactory = solution->getFactory(k)->minTECAfterInsertion(jobs[i]);
             testFactoryTEC = testFactory->getTEC();
             previousTEC = solution->getFactory(k)->getTEC();
             tecVariation = testFactoryTEC - previousTEC;
 
-            if (tecVariation < minIncreaseTEC)
-            {
+            if (tecVariation < minIncreaseTEC) {
                 minIncreaseTEC = tecVariation;
                 minTECFactory = testFactory;
                 minTECPos = k;
-            }
-            else
-            {
+            } else {
                 //testFactory->clearJobs();
                 delete testFactory;
             }
@@ -391,8 +338,7 @@ Solution *Instance::randSMinTEC(int seed)
     }
 
     // Initialize the start_times of each factory and then right shift
-    for (int f = 0; f < this->getF(); f++)
-    {
+    for (int f = 0; f < this->getF(); f++) {
         solution->getFactory(f)->initializeJobsStartTimes();
         solution->getFactory(f)->rightShift();
     }
@@ -401,8 +347,7 @@ Solution *Instance::randSMinTEC(int seed)
     return solution;
 }
 
-void Instance::balancedRandomSolutionGenerator(int s)
-{
+void Instance::balancedRandomSolutionGenerator(int s) {
     Xoshiro256plus rand(/*time(NULL) +*/ s);
 
     Solution *sol = new Solution(this->n, this->m, this->F);
@@ -411,30 +356,26 @@ void Instance::balancedRandomSolutionGenerator(int s)
     vector<bool> job_allocated(this->n, false);
 
     vector<int> jobs_to_allocate;
-    for (size_t i = 0; i < this->n; i++)
-    {
+    for (size_t i = 0; i < this->n; i++) {
         jobs_to_allocate.push_back(i);
     }
 
     // Allocate the jobs equally to the factories
     int f_id = 0;
-    while (jobs_to_allocate.size())
-    {
+    while (jobs_to_allocate.size()) {
         int random_num = rand.next() % jobs_to_allocate.size();
         Job *job = new Job(jobs_to_allocate[random_num], this->m);
         job->setT(this->t[jobs_to_allocate[random_num]]);
 
         // Set a random speed for each machine
-        for (int j = 0; j < this->m; j++)
-        {
+        for (int j = 0; j < this->m; j++) {
             int random_num = rand.next() % this->speeds.size();
             sol->setV(job->getId(), j, this->speeds[random_num]);
             job->setVForMachine(j, this->speeds[random_num]);
         }
 
         // Select the factory
-        if (f_id == this->F)
-        {
+        if (f_id == this->F) {
             f_id = 0;
         }
 
@@ -459,14 +400,12 @@ void Instance::balancedRandomSolutionGenerator(int s)
     this->population.push_back(sol);
 
     // Initialize the of each factory
-    for (int f = 0; f < this->getF(); f++)
-    {
+    for (int f = 0; f < this->getF(); f++) {
         sol->getFactory(f)->initializeJobsStartTimes();
     }
 }
 
-void Instance::totalRandomSolutionGenerator(int s)
-{
+void Instance::totalRandomSolutionGenerator(int s) {
     Xoshiro256plus rand(/*time(NULL) +*/ s);
 
     Solution *sol = new Solution(this->n, this->m, this->F);
@@ -475,21 +414,18 @@ void Instance::totalRandomSolutionGenerator(int s)
     vector<bool> job_allocated(this->n, false);
 
     vector<int> jobs_to_allocate;
-    for (size_t i = 0; i < this->n; i++)
-    {
+    for (size_t i = 0; i < this->n; i++) {
         jobs_to_allocate.push_back(i);
     }
 
     // Allocate one job in each factory
-    for (int i = 0; i < this->F; i++)
-    {
+    for (int i = 0; i < this->F; i++) {
         int random_num = rand.next() % jobs_to_allocate.size();
         Job *job = new Job(jobs_to_allocate[random_num], this->m);
         job->setT(this->t[jobs_to_allocate[random_num]]);
 
         // Set a random speed for each machine
-        for (int j = 0; j < this->m; j++)
-        {
+        for (int j = 0; j < this->m; j++) {
             int random_num = rand.next() % this->speeds.size();
             sol->setV(job->getId(), j, this->speeds[random_num]);
             job->setVForMachine(j, this->speeds[random_num]);
@@ -499,15 +435,13 @@ void Instance::totalRandomSolutionGenerator(int s)
     }
 
     // Allocate the remaining jobs randomly
-    while (jobs_to_allocate.size())
-    {
+    while (jobs_to_allocate.size()) {
         int random_num = rand.next() % jobs_to_allocate.size();
         Job *job = new Job(jobs_to_allocate[random_num], this->m);
         job->setT(this->t[jobs_to_allocate[random_num]]);
 
         // Set a random speed for each machine
-        for (int j = 0; j < this->m; j++)
-        {
+        for (int j = 0; j < this->m; j++) {
             int random_num = rand.next() % this->speeds.size();
             sol->setV(job->getId(), j, this->speeds[random_num]);
             job->setVForMachine(j, this->speeds[random_num]);
@@ -531,81 +465,77 @@ void Instance::totalRandomSolutionGenerator(int s)
     this->population.push_back(sol);
 
     // Initialize the of each factory
-    for (int f = 0; f < this->getF(); f++)
-    {
+    for (int f = 0; f < this->getF(); f++) {
         sol->getFactory(f)->initializeJobsStartTimes();
     }
 }
 
-void Instance::printPopulation()
-{
+void Instance::printPopulation() {
     cout << "\nPOPULATION "
          << "(with " << this->population.size() << " solutions)" << endl;
 
-    for (size_t i = 0; i < this->population.size(); i++)
-    {
+    for (size_t i = 0; i < this->population.size(); i++) {
         cout << "\nSolution " << i << endl;
         this->population[i]->printSolution();
     }
 }
 
-string Instance::generatePopulationCSVString()
-{
+string Instance::generatePopulationCSVString() {
     string str = "id, TFT, TEC, level, cd\n";
     Solution *solution;
 
-    for (size_t i = 0; i < this->population.size(); i++)
-    {
+    for (size_t i = 0; i < this->population.size(); i++) {
         solution = this->population[i];
         str += to_string(i) + ","
-                + to_string(solution->getTFT()) + ","
-                + to_string(solution->getTEC()) + ","
-                + to_string(solution->getDominationRank()) +","
-                + to_string(solution->getCrowdingDistance()) + "\n";
+               + to_string(solution->getTFT()) + ","
+               + to_string(solution->getTEC()) + ","
+               + to_string(solution->getDominationRank()) + ","
+               + to_string(solution->getCrowdingDistance()) + "\n";
     }
     return str;
 }
 
-vector<vector<Solution*>> Instance::fastNonDominatedSort(vector<Solution*> population) {
+vector<vector<Solution *>> Instance::fastNonDominatedSort(vector<Solution *> population) {
 
     vector<vector<int>> fronts(1);
     vector<vector<int>> dominatedBy(population.size());
 
 
-    for(int i=0; i< population.size(); i++){
+    for (int i = 0; i < population.size(); i++) {
         population[i]->setDominationCounter(0);
         //population[i]->setDominationRank(-1);
 
-        for(int j=0; j< population.size(); j++){
-            if(population[i]->dominates(population[j])){
+        for (int j = 0; j < population.size(); j++) {
+            if (population[i]->dominates(population[j])) {
                 dominatedBy[i].push_back(j);
-            }else if(population[j]->dominates(population[i])){
+            } else if (population[j]->dominates(population[i])) {
                 population[i]->incrementDominationCounter(1);
             }
         }
 
-        if(population[i]->getDominationCounter()==0){
+        if (population[i]->getDominationCounter() == 0) {
             population[i]->setDominationRank(1);
             fronts[0].push_back(i);
         }
 
     }
 
-    int i =0;
-    while(!fronts[i].empty()){
+    int i = 0;
+    while (!fronts[i].empty()) {
         vector<int> nextFront;
-        for(int j=0; j<fronts[i].size(); j++){
-            int frontSolId =  fronts[i][j]; //id (indices) de cada solução na fronteira atual
+        for (int j = 0; j < fronts[i].size(); j++) {
+            int frontSolId = fronts[i][j]; //id (indices) de cada solução na fronteira atual
 
-            for(int k=0; k<dominatedBy[frontSolId].size(); k++){ //itera por cada solução dominada pela de indice frontSolId
+            for (int k = 0;
+                 k < dominatedBy[frontSolId].size(); k++) { //itera por cada solução dominada pela de indice frontSolId
                 int dominatedSolIndex = dominatedBy[frontSolId][k]; // id de cada solução dominada por frontSolId
 
                 Solution *s = population[dominatedSolIndex]; // cada solução dominada por frontSolId
 
                 s->incrementDominationCounter(-1);
 
-                if(s->getDominationCounter()==0){
-                    s->setDominationRank(i+2);
+                if (s->getDominationCounter() == 0) {
+                    s->setDominationRank(i + 2);
                     nextFront.push_back(dominatedSolIndex);
                 }
             }
@@ -614,10 +544,10 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort(vector<Solution*> popul
         fronts.push_back(nextFront);
     }
 
-    vector<vector<Solution*>> solutionFronts(fronts.size());
-    for(int i=0; i< fronts.size(); i++){
-        vector<Solution*> front(fronts[i].size());
-        for(int j=0; j < fronts[i].size(); j++){
+    vector<vector<Solution *>> solutionFronts(fronts.size());
+    for (int i = 0; i < fronts.size(); i++) {
+        vector<Solution *> front(fronts[i].size());
+        for (int j = 0; j < fronts[i].size(); j++) {
             front[j] = population[fronts[i][j]];
         }
         solutionFronts[i] = front;
@@ -628,46 +558,47 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort(vector<Solution*> popul
     return solutionFronts;
 }
 
-vector<vector<Solution*>> Instance::fastNonDominatedSort() {
+vector<vector<Solution *>> Instance::fastNonDominatedSort() {
 
     vector<vector<int>> fronts(1);
     vector<vector<int>> dominatedBy(population.size());
 
 
-    for(int i=0; i< population.size(); i++){
+    for (int i = 0; i < population.size(); i++) {
         population[i]->setDominationCounter(0);
         //population[i]->setDominationRank(-1);
 
-        for(int j=0; j< population.size(); j++){
-            if(population[i]->dominates(population[j])){
+        for (int j = 0; j < population.size(); j++) {
+            if (population[i]->dominates(population[j])) {
                 dominatedBy[i].push_back(j);
-            }else if(population[j]->dominates(population[i])){
+            } else if (population[j]->dominates(population[i])) {
                 population[i]->incrementDominationCounter(1);
             }
         }
 
-        if(population[i]->getDominationCounter()==0){
+        if (population[i]->getDominationCounter() == 0) {
             population[i]->setDominationRank(1);
             fronts[0].push_back(i);
         }
 
     }
 
-    int i =0;
-    while(!fronts[i].empty()){
+    int i = 0;
+    while (!fronts[i].empty()) {
         vector<int> nextFront;
-        for(int j=0; j<fronts[i].size(); j++){
-            int frontSolId =  fronts[i][j]; //id (indices) de cada solução na fronteira atual
+        for (int j = 0; j < fronts[i].size(); j++) {
+            int frontSolId = fronts[i][j]; //id (indices) de cada solução na fronteira atual
 
-            for(int k=0; k<dominatedBy[frontSolId].size(); k++){ //itera por cada solução dominada pela de indice frontSolId
+            for (int k = 0;
+                 k < dominatedBy[frontSolId].size(); k++) { //itera por cada solução dominada pela de indice frontSolId
                 int dominatedSolIndex = dominatedBy[frontSolId][k]; // id de cada solução dominada por frontSolId
 
                 Solution *s = population[dominatedSolIndex]; // cada solução dominada por frontSolId
 
                 s->incrementDominationCounter(-1);
 
-                if(s->getDominationCounter()==0){
-                    s->setDominationRank(i+2);
+                if (s->getDominationCounter() == 0) {
+                    s->setDominationRank(i + 2);
                     nextFront.push_back(dominatedSolIndex);
                 }
             }
@@ -676,10 +607,10 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
         fronts.push_back(nextFront);
     }
 
-    vector<vector<Solution*>> solutionFronts(fronts.size());
-    for(int i=0; i< fronts.size(); i++){
-        vector<Solution*> front(fronts[i].size());
-        for(int j=0; j < fronts[i].size(); j++){
+    vector<vector<Solution *>> solutionFronts(fronts.size());
+    for (int i = 0; i < fronts.size(); i++) {
+        vector<Solution *> front(fronts[i].size());
+        for (int j = 0; j < fronts[i].size(); j++) {
             front[j] = population[fronts[i][j]];
         }
         solutionFronts[i] = front;
@@ -690,102 +621,85 @@ vector<vector<Solution*>> Instance::fastNonDominatedSort() {
     return solutionFronts;
 }
 
-void Instance::assignCrowdingDistance()
-{
+void Instance::assignCrowdingDistance() {
     int numObjectives = 2;
 
-    for (int i = 0; i < population.size(); i++)
-    {
+    for (int i = 0; i < population.size(); i++) {
         population[i]->setCrowdingDistance(0);
     }
 
-    for (int i = 0; i < numObjectives; i++)
-    {
+    for (int i = 0; i < numObjectives; i++) {
 
-        if (i == 0)
-        {
+        if (i == 0) {
             sort(population.begin(), population.end(), compareSolutionsByTFT);
             population[0]->setCrowdingDistance(INFINITY);
             population[population.size() - 1]->setCrowdingDistance(INFINITY);
             float maxTFT = population[population.size() - 1]->getTFT();
             float minTFT = population[0]->getTFT();
-            for (int j = 1; j < population.size() - 1; j++)
-            {
-                float normalizedDistance = (population[j + 1]->getTFT() - population[j - 1]->getTFT()) / (maxTFT - minTFT);
+            for (int j = 1; j < population.size() - 1; j++) {
+                float normalizedDistance =
+                        (population[j + 1]->getTFT() - population[j - 1]->getTFT()) / (maxTFT - minTFT);
                 population[j]->incrementCrowdingDistance(normalizedDistance);
             }
-        }
-        else
-        {
+        } else {
             sort(population.begin(), population.end(), compareSolutionsByTEC);
             population[0]->setCrowdingDistance(INFINITY);
             population[population.size() - 1]->setCrowdingDistance(INFINITY);
             float maxTEC = population[population.size() - 1]->getTEC();
             float minTEC = population[0]->getTEC();
 
-            for (int j = 1; j < population.size() - 1; j++)
-            {
-                float normalizedDistance = (population[j + 1]->getTEC() - population[j - 1]->getTEC()) / (maxTEC - minTEC);
+            for (int j = 1; j < population.size() - 1; j++) {
+                float normalizedDistance =
+                        (population[j + 1]->getTEC() - population[j - 1]->getTEC()) / (maxTEC - minTEC);
                 population[j]->incrementCrowdingDistance(normalizedDistance);
             }
         }
     }
 }
 
-void assignCrowdingDistance(vector<Solution*> population)
-{
+void assignCrowdingDistance(vector<Solution *> population) {
     int numObjectives = 2;
     int infinity = std::numeric_limits<int>::max();
 
-    for (int i = 0; i < population.size(); i++)
-    {
+    for (int i = 0; i < population.size(); i++) {
         population[i]->setCrowdingDistance(0);
     }
 
-    for (int i = 0; i < numObjectives; i++)
-    {
+    for (int i = 0; i < numObjectives; i++) {
 
-        if (i == 0)
-        {
+        if (i == 0) {
             sort(population.begin(), population.end(), compareSolutionsByTFT);
             population[0]->setCrowdingDistance(INFINITY);
             population[population.size() - 1]->setCrowdingDistance(INFINITY);
             float maxTFT = population[population.size() - 1]->getTFT();
             float minTFT = population[0]->getTFT();
-            for (int j = 1; j < population.size() - 1; j++)
-            {
-                float normalizedDistance = (population[j + 1]->getTFT() - population[j - 1]->getTFT()) / (maxTFT - minTFT);
+            for (int j = 1; j < population.size() - 1; j++) {
+                float normalizedDistance =
+                        (population[j + 1]->getTFT() - population[j - 1]->getTFT()) / (maxTFT - minTFT);
                 population[j]->incrementCrowdingDistance(normalizedDistance);
             }
-        }
-        else
-        {
+        } else {
             sort(population.begin(), population.end(), compareSolutionsByTEC);
             population[0]->setCrowdingDistance(INFINITY);
             population[population.size() - 1]->setCrowdingDistance(INFINITY);
             float maxTEC = population[population.size() - 1]->getTEC();
             float minTEC = population[0]->getTEC();
 
-            for (int j = 1; j < population.size() - 1; j++)
-            {
-                float normalizedDistance = (population[j + 1]->getTEC() - population[j - 1]->getTEC()) / (maxTEC - minTEC);
+            for (int j = 1; j < population.size() - 1; j++) {
+                float normalizedDistance =
+                        (population[j + 1]->getTEC() - population[j - 1]->getTEC()) / (maxTEC - minTEC);
                 population[j]->incrementCrowdingDistance(normalizedDistance);
             }
         }
     }
 }
 
-bool crowdedCompare(Solution *s1, Solution* s2)
-{
+bool crowdedCompare(Solution *s1, Solution *s2) {
 
-    if (s1->getDominationRank() < s2->getDominationRank())
-    {
+    if (s1->getDominationRank() < s2->getDominationRank()) {
         return true;
-    }
-    else if (s1->getDominationRank() == s2->getDominationRank())
-    {
-        if (s1->getCrowdingDistance() > s2->getCrowdingDistance())
-        {
+    } else if (s1->getDominationRank() == s2->getDominationRank()) {
+        if (s1->getCrowdingDistance() > s2->getCrowdingDistance()) {
             return true;
         }
         return false;
@@ -795,43 +709,38 @@ bool crowdedCompare(Solution *s1, Solution* s2)
 }
 
 
-vector<Solution*> makeNewPop(vector<Solution*> parents, int seed, int n){
-    vector<Solution*> children;
+vector<Solution *> makeNewPop(vector<Solution *> parents, int seed, int n) {
+    vector<Solution *> children;
     Xoshiro256plus rand(seed);
 
     vector<int> prob{1, 1, 1, 1, 0, 0, 0, 0, 0, 0}; //1 chance of swap 0 chance of insertion
 
-    for(int i =0; i< parents.size(); i++){
+    for (int i = 0; i < parents.size(); i++) {
 
-        Solution* sol = new Solution(parents[i]);
+        Solution *sol = new Solution(parents[i]);
 
-        for(int j=0; j< n/4; j++){
+        for (int j = 0; j < n / 4; j++) {
             int factory1Id = rand.next() % sol->getNumFactories();
             int factory2Id = rand.next() % sol->getNumFactories();
-            Factory* factory1 = sol->getFactory(factory1Id);
-            Factory* factory2 = sol->getFactory(factory2Id);
+            Factory *factory1 = sol->getFactory(factory1Id);
+            Factory *factory2 = sol->getFactory(factory2Id);
             int job1 = rand.next() % factory1->getNumJobs();
             int job2 = rand.next() % factory2->getNumJobs();
 
             int choice = rand.next() % prob.size();
             //choice = 1;
-            if(choice == 1) {
+            if (choice == 1) {
                 sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
                 //factory1->speedUp();
                 //factory1->speedDown();
                 //factory2->speedUp();
                 //factory1->speedDown();
-            }
-
-            else
-            {
+            } else {
                 if (factory1->getNumJobs() - 1 > 0) {
                     sol->insert(factory1Id, factory2Id, factory1->getJob(job1), job2);
-                }
-                else if (factory2->getNumJobs() - 1 > 0){
+                } else if (factory2->getNumJobs() - 1 > 0) {
                     sol->insert(factory2Id, factory1Id, factory2->getJob(job2), job1);
-                }
-                else
+                } else
                     sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
             }
             //factory1->initializeJobsStartTimes();
@@ -846,43 +755,38 @@ vector<Solution*> makeNewPop(vector<Solution*> parents, int seed, int n){
     return children;
 }
 
-vector<Solution*> makeNewPopV2(vector<Solution*> parents, int seed, int n){
-    vector<Solution*> children;
+vector<Solution *> makeNewPopV2(vector<Solution *> parents, int seed, int n) {
+    vector<Solution *> children;
     Xoshiro256plus rand(seed);
 
     vector<int> prob{1, 1, 1, 1, 0, 0, 0, 0, 0, 0}; //1 chance of swap 0 chance of insertion
 
-    for(int i =0; i< parents.size(); i++){
+    for (int i = 0; i < parents.size(); i++) {
 
-        Solution* sol = new Solution(parents[i]);
+        Solution *sol = new Solution(parents[i]);
 
-        for(int j=0; j< n/4; j++){
+        for (int j = 0; j < n / 4; j++) {
             int factory1Id = rand.next() % sol->getNumFactories();
             int factory2Id = rand.next() % sol->getNumFactories();
-            Factory* factory1 = sol->getFactory(factory1Id);
-            Factory* factory2 = sol->getFactory(factory2Id);
+            Factory *factory1 = sol->getFactory(factory1Id);
+            Factory *factory2 = sol->getFactory(factory2Id);
             int job1 = rand.next() % factory1->getNumJobs();
             int job2 = rand.next() % factory2->getNumJobs();
 
             int choice = rand.next() % prob.size();
             choice = 1;
-            if(choice == 1) {
+            if (choice == 1) {
                 sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
                 factory1->speedUp();
                 factory1->speedDown();
                 factory2->speedUp();
                 factory1->speedDown();
-            }
-
-            else
-            {
+            } else {
                 if (factory1->getNumJobs() - 1 > 0) {
                     sol->insert(factory1Id, factory2Id, factory1->getJob(job1), job2);
-                }
-                else if (factory2->getNumJobs() - 1 > 0){
+                } else if (factory2->getNumJobs() - 1 > 0) {
                     sol->insert(factory2Id, factory1Id, factory2->getJob(job2), job1);
-                }
-                else
+                } else
                     sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
             }
             //factory1->initializeJobsStartTimes();
@@ -897,32 +801,31 @@ vector<Solution*> makeNewPopV2(vector<Solution*> parents, int seed, int n){
     return children;
 }
 
-vector<Solution*> makeNewPopV3(vector<Solution*> parents, int seed, int n){
-    vector<Solution*> children;
+vector<Solution *> makeNewPopV3(vector<Solution *> parents, int seed, int n) {
+    vector<Solution *> children;
     Xoshiro256plus rand(seed);
 
     vector<int> prob{1, 1, 1, 1, 0, 0, 0, 0, 0, 0}; //1 chance of swap 0 chance of insertion
 
-    for(int i =0; i< parents.size(); i++){
+    for (int i = 0; i < parents.size(); i++) {
 
-        Solution* sol = new Solution(parents[i]);
+        Solution *sol = new Solution(parents[i]);
 
-        for(int j=0; j< n/4; j++){
+        for (int j = 0; j < n / 4; j++) {
             int factory1Id = rand.next() % sol->getNumFactories();
             int factory2Id = rand.next() % sol->getNumFactories();
-            Factory* factory1 = sol->getFactory(factory1Id);
-            Factory* factory2 = sol->getFactory(factory2Id);
+            Factory *factory1 = sol->getFactory(factory1Id);
+            Factory *factory2 = sol->getFactory(factory2Id);
             int job1 = rand.next() % factory1->getNumJobs();
             int job2 = rand.next() % factory2->getNumJobs();
 
             int choice = rand.next() % prob.size();
             sol->swap(factory1Id, factory2Id, factory1->getJob(job1), factory2->getJob(job2));
 
-            if(prob[choice] == 1) {
+            if (prob[choice] == 1) {
                 factory1->speedUp();
                 factory2->speedUp();
-            }
-            else{
+            } else {
                 factory1->speedDown();
                 factory2->speedDown();
             }
@@ -937,21 +840,21 @@ vector<Solution*> makeNewPopV3(vector<Solution*> parents, int seed, int n){
     return children;
 }
 
-void Instance::NSGA2NextGen(int seed){
-    vector<Solution*> parents = this->population;
-    vector<Solution*> nextGen;
+void Instance::NSGA2NextGen(int seed) {
+    vector<Solution *> parents = this->population;
+    vector<Solution *> nextGen;
 
 
     //Recombine and mutate parents into this vector
-    vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
+    vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
 
     //join parents and children into this vector
-    vector<Solution*> all = parents;
+    vector<Solution *> all = parents;
     all.reserve(this->population.size() + children.size());
     all.insert(all.end(), children.begin(), children.end());
     this->population = all;
 
-    vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
+    vector<vector<Solution *>> fronts = this->fastNonDominatedSort();
 
     int inserted = 0;
     int n = parents.size();
@@ -959,16 +862,16 @@ void Instance::NSGA2NextGen(int seed){
 
     //insere enquanto o numero de elementos inseridos for menor q n
     int l = 0;
-    for(int i=0; inserted < n && i < fronts.size()-1; i++){
+    for (int i = 0; inserted < n && i < fronts.size() - 1; i++) {
         //nextGen.reserve(nextGen.size() + fronts[i].size());
         ::assignCrowdingDistance(fronts[i]);
 
-        if(inserted+fronts[i].size() > n){
+        if (inserted + fronts[i].size() > n) {
             l = i;
             break;
         }
 
-        for(int j=0; j < fronts[i].size() ; j++){
+        for (int j = 0; j < fronts[i].size(); j++) {
             nextGen.push_back(fronts[i][j]);
             inserted++;
         }
@@ -979,63 +882,82 @@ void Instance::NSGA2NextGen(int seed){
     /*if(nextGen.size() + fronts[l].size() == n){
         nextGen.reserve(fronts[l].size());
         nextGen.insert(nextGen.end(), fronts[l].begin(), fronts[l].end());
-    }*/if(nextGen.size() < n){
+    }*/if (nextGen.size() < n) {
         //nextGen.reserve(n);
         sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
-        for(int i=0; nextGen.size()< n; i++){
+        for (int i = 0; nextGen.size() < n; i++) {
             nextGen.push_back(fronts[l][i]);
         }
     }
 
-    this->population=nextGen;
+    this->population = nextGen;
 }
 
 
-void normalize(vector<Solution*> solutions){
+void normalize(vector<Solution *> solutions,
+               vector<tuple<float, float, int, int>> &refPoints,
+               vector<tuple<float, float, Solution*>> &normalizedSolutions) {
     int numPoints = 10;
-    vector<float> refPointTFTs(numPoints);
-    vector<float> refPointTECs(numPoints);
-    vector<float> TFTs(solutions.size(), 0.0);
-    vector<float> TECs(solutions.size(), 0.0);
+    refPoints.reserve(numPoints);
+    //TFT, TEC, Niche Count, id
+    //vector<tuple<float, float, int, int>> refPoints(numPoints);
+    //TFT, TEC
+    //vector<tuple<float, float, Solution*>> normalizedSolutions(numPoints);
+
+    //vector<float> refPointTFTs(numPoints);
+    //vector<float> refPointTECs(numPoints);
+    //vector<float> TFTs(solutions.size(), 0.0);
+    //vector<float> TECs(solutions.size(), 0.0);
     float minTFT = Util::minTFTSol(solutions)->getTFT();
     float minTEC = Util::minTECSol(solutions)->getTEC();;
     float maxTFT = Util::maxTFTSol(solutions)->getTFT();;
     float maxTEC = Util::maxTECSol(solutions)->getTEC();;
 
-    for(int i=0; i< solutions.size(); i++){
-        TFTs[i] = (solutions[i]->getTFT() - minTFT)/maxTFT;
-        TECs[i] = (solutions[i]->getTEC() - minTEC)/maxTEC;
+    for (int i = 0; i < solutions.size(); i++) {
+        float nTFT = (solutions[i]->getTFT() - minTFT) / maxTFT;
+        float nTEC = (solutions[i]->getTEC() - minTEC) / maxTEC;
+        tuple<float, float, Solution*> ns = make_tuple(nTEC, nTFT, solutions[i]);
+        normalizedSolutions.push_back(ns);
+
+        //TFTs[i] = (solutions[i]->getTFT() - minTFT) / maxTFT;
+        //TECs[i] = (solutions[i]->getTEC() - minTEC) / maxTEC;
     }
 
-    for(int i=0; i<numPoints;i++){
-        refPointTECs.push_back((1/numPoints)*i);
-        refPointTFTs.push_back((1/numPoints)*i);
+    for (int i = 0; i < numPoints; i++) {
+        tuple<float, float, int, int> ref = make_tuple((1 / numPoints) * i, (1 / numPoints) * i, 0, 0);
+        refPoints.push_back(ref);
+        //refPointTECs.push_back((1 / numPoints) * i);
+        //refPointTFTs.push_back((1 / numPoints) * i);
     }
 
 }
 
-void associate(vector<float>normTFTs, vector<float> normTECs, vector<float>refTFTs, vector<float> refTECs){
+void associate(vector<tuple<float, float, int, int>> &refPoints,
+               vector<tuple<float, float, Solution*>> &normSol,
+               vector<tuple<Solution *, float, int>> &assocVec) {
 
-    int numSolutions =  normTFTs.size();
-    int numRefPoints = refTFTs.size();
+    int numSolutions = normSol.size();
+    int numRefPoints = refPoints.size();
 
     vector<int> associationVector(numSolutions, 0);
-    for(int i=0; i<numSolutions; i++){
-        float minDistance =INFINITY;
+    for (int i = 0; i < numSolutions; i++) {
+        float minDistance = INFINITY;
         int refPointPos;
 
-        for(int j=0; j<numRefPoints; j++){
+        for (int j = 0; j < numRefPoints; j++) {
             //compute distance of solution from each line
-            float distance = fabsf(refTECs[j]*normTECs[j] + refTFTs[j]*normTFTs[j])/
-                    sqrtf(powf(refTECs[j], 2) + powf(refTFTs[j], 2));
+            float distance = fabsf(get<1>(refPoints[j]) * get<1>(normSol[j]) + get<0>(refPoints[j]) * get<0>(normSol[j]) /
+                             sqrtf(powf(get<1>(refPoints[j]), 2) + powf(get<0>(refPoints[j]), 2)));
 
-            if(distance<minDistance){
-                minDistance=distance;
-                refPointPos=j;
+            if (distance < minDistance) {
+                minDistance = distance;
+                refPointPos = j;
             }
         }
 
-        associationVector[i] = refPointPos;
+        tuple<Solution *, float, int> assoc = make_tuple(get<2>(normSol[i]), minDistance, refPointPos);
+        assocVec.push_back(assoc);
+        //associationVector[i] = refPointPos;
 
         //assign PI(s) = line w closest from s
         //assign d(s) distance of sol. s to the closest line w
@@ -1045,20 +967,20 @@ void associate(vector<float>normTFTs, vector<float> normTECs, vector<float>refTF
 
 }
 
-bool nicheCompare(vector<tuple<Solution*, float>> &a, vector<tuple<Solution*, float>> &b){
+bool nicheCompare(vector<tuple<Solution *, float>> &a, vector<tuple<Solution *, float>> &b) {
     return a.size() < b.size();
 }
 
-bool distanceCompare(tuple<Solution*, float> &a, tuple<Solution*, float> &b){
+bool distanceCompare(tuple<Solution *, float> &a, tuple<Solution *, float> &b) {
     return get<0>(a) < get<0>(b);
 }
 
-vector<tuple<Solution*, float>> getIntersection(vector<Solution*> &solV, vector<tuple<Solution*, float>> &niche){
-    vector<tuple<Solution*, float>> intersection;
+vector<tuple<Solution *, float>> getIntersection(vector<Solution *> &solV, vector<tuple<Solution *, float>> &niche) {
+    vector<tuple<Solution *, float>> intersection;
 
-    for(Solution* s: solV){
-        for(tuple<Solution*, float> n:niche){
-            if(s==get<0>(n)){
+    for (Solution *s: solV) {
+        for (tuple<Solution *, float> n: niche) {
+            if (s == get<0>(n)) {
                 intersection.push_back(n);
             }
         }
@@ -1067,82 +989,117 @@ vector<tuple<Solution*, float>> getIntersection(vector<Solution*> &solV, vector<
     return intersection;
 }
 
-int minDistanceIndex(vector<tuple<Solution*, float>> v){
+int minDistanceIndex(vector<tuple<Solution *, float>> v) {
 
-    float minDistance=INFINITY;
-    int minDistancePos=0;
-    for(tuple<Solution*, float> t: v){
-        if(get<1>(t)<minDistance){
-            minDistance=get<1>(t);
+    float minDistance = INFINITY;
+    int minDistancePos = 0;
+    for (tuple<Solution *, float> t: v) {
+        if (get<1>(t) < minDistance) {
+            minDistance = get<1>(t);
         }
     }
 
     return minDistancePos;
 }
 
-void niching(int K, vector<vector<tuple<Solution*, float>>> niches, vector<Solution*> lastFront, int seed){
-
-    sort(niches.begin(), niches.end(), nicheCompare);
-    vector<Solution*> selected(K);
-    Xoshiro256plus rand(seed);
-
-    int j =0;
-    int k=0;
-    while(k<K){
-        vector<tuple<Solution*, float>> intersection = getIntersection(lastFront, niches[j]);
-        if(!intersection.empty()){
-            if(niches[j].size()==0){
-                int pos = minDistanceIndex(intersection);
-                selected.push_back(get<0>(intersection[pos]));
-            }
-            else{
-                int pos = rand.next() % intersection.size();
-                selected.push_back(get<0>(intersection[pos]));
-            }
-
-
-            k++;
+vector<int> getLeastNicheCountPoints(vector<tuple<float, float, int, int>> &refPoints) {
+    vector<int> leastNicheCountPoints;
+    int leastNicheCount = INFINITY;
+    for (tuple<float, float, int, int> p: refPoints) {
+        if (get<2>(p) < leastNicheCount) {
+            leastNicheCount = get<2>(p);
         }
-        else{
-
-        }
-
     }
 
-    //enquanto k<K
+    for (int i=0; i< refPoints.size(); i++) {
+        if (get<2>(refPoints[i]) == leastNicheCount) {
+            leastNicheCountPoints.push_back(i);
+        }
+    }
+    return leastNicheCountPoints;
+}
+
+int minDistancePointIndex(vector<tuple<Solution*, float, int>> &assoc){
+    float minDistance = INFINITY;
+    int minDistancePoint;
+
+    for(tuple<Solution*, float, int> p:assoc){
+        if(get<1>(p) < minDistance){
+            minDistance = get<1>(p);
+            minDistancePoint =  get<2>(p);
+        }
+    }
+
+    return minDistancePoint;
+}
+
+void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
+             vector<tuple<Solution *, float, int>> &assoc,
+             vector<Solution *> &lastFront,
+             vector<Solution *> &selected) {
+
+    //vector<Solution *> selected(K);
+    Xoshiro256plus rand(seed);
+
+    int k=0;
+    while(k<K) {
         //conjunto J = pontos com menor niche count
+        vector<int> J = getLeastNicheCountPoints(refPoints);
         //escolhe elemento j aleatório em J
+        int j = J[rand.next() % J.size()];
+
         //conjunto I = elementos de Fl que estão associados a j
+        vector<tuple<Solution *, float, int>> I;
+        for(tuple<Solution *, float, int> el:assoc){
+            for(Solution* s:lastFront) {
+                if (get<0>(el) == s && get<2>(el) == j) {
+                    I.push_back(el);
+                }
+            }
+        }
+
         //se I está vazio
-            //se niche_count(j) == 0
+        if(!I.empty()) {
+            Solution * s;
+            int pos;
+            if(get<2>(refPoints[j])==0) {
                 //seleciona elemento de I com o menor distância ao ponto de referência
-            //else
+                pos = minDistancePointIndex(I);
+            }
+            else{
                 //seleciona elemento aleatório de I
+                pos = rand.next() % I.size();
+            }
+            s = get<0>(I[pos]);
 
             //incrementa niche count de j
+            get<2>(refPoints[j])++;
             //remove elemento selecionado de Fl
-            //k++
+            std::remove(lastFront.begin(), lastFront.end(), s);
+            k++;
+        }
 
-        //else
-            //remove j da lista de pontos de ref.
-
+        else{
+            refPoints.erase(refPoints.begin()+j);
+        }
+    }
 }
 
 
-void Instance::NSGA3NextGen(int seed){
-    vector<Solution*> parents = this->population;
-    vector<Solution*> nextGen;
+void Instance::NSGA3NextGen(int seed) {
+    vector<Solution *> parents = this->population;
+    vector<Solution *> nextGen;
 
     //Recombine and mutate parents into this vector
-    vector<Solution*> children = makeNewPopV3(parents, seed, parents.size());
+    vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
 
     //join parents and children into this vector
-    vector<Solution*> all = parents;
+    vector<Solution *> all = parents;
     all.reserve(this->population.size() + children.size());
     all.insert(all.end(), children.begin(), children.end());
     this->population = all;
 
-    vector<vector<Solution*>> fronts= this->fastNonDominatedSort();
+    vector<vector<Solution *>> fronts = this->fastNonDominatedSort();
 
     int inserted = 0;
     int n = parents.size();
@@ -1150,38 +1107,64 @@ void Instance::NSGA3NextGen(int seed){
 
     //insere enquanto o numero de elementos inseridos for menor q n
     int l = 0;
-    for(int i=0; inserted < n && i < fronts.size()-1; i++){
+    for (int i = 0; inserted < n && i < fronts.size() - 1; i++) {
         //nextGen.reserve(nextGen.size() + fronts[i].size());
-        ::assignCrowdingDistance(fronts[i]);
+        //::assignCrowdingDistance(fronts[i]);
 
-        if(inserted+fronts[i].size() > n){
+        if (inserted + fronts[i].size() > n) {
             l = i;
             break;
         }
 
-        for(int j=0; j < fronts[i].size() ; j++){
+        for (int j = 0; j < fronts[i].size(); j++) {
             nextGen.push_back(fronts[i][j]);
             inserted++;
         }
     }
 
-    if(nextGen.size() < n){
-        sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
-        for(int i=0; nextGen.size()< n; i++){
-            nextGen.push_back(fronts[l][i]);
+    if (nextGen.size() < n) {
+        //sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
+
+
+        // Points to be chosen from Fl: K = N − |Pt+1|
+        int K = n - nextGen.size();
+        //TFT, TEC, niche count, *id
+        vector<tuple<float, float, int, int>> refPoints;
+
+        //normTFT, normTEC, Solution
+        vector<tuple<float, float, Solution*>> normalizedSolutions;
+
+        //Solution, distance to assoc. point, id of point in refPoints
+        vector<tuple<Solution *, float, int>> associationVector;
+
+        //Selected solutions
+        vector<Solution*> selected(K);
+
+        // Normalize objectives and create reference set Zr
+        normalize(parents, refPoints, normalizedSolutions);
+
+        // Associate each member s of St with a reference point
+        associate(refPoints, normalizedSolutions, associationVector);
+
+        // Compute niche count of reference point j ∈ Zr
+        for(Solution *s: nextGen){
+            for(tuple<Solution *, float, int> a:associationVector){
+                if(s==get<0>(a)){
+                    get<2>(refPoints[get<2>(a)])++;
+                }
+            }
+        }
+        // Choose K members one at a time from Fl to construct Pt+1: Niching
+        niching(K, seed, refPoints, associationVector, fronts[l], selected);
+
+        for (int i = 0; nextGen.size() < n; i++) {
+            nextGen.push_back(selected[i]);
         }
     }
 
-    this->population=nextGen;
-
-    // Points to be chosen from Fl: K = N − |Pt+1|
-    // Normalize objectives and create reference set Zr
-    // Associate each member s of St with a reference point
-    // Compute niche count of reference point j ∈ Zr
-    // Choose K members one at a time from Fl to construct Pt+1: Niching
+    this->population = nextGen;
 
 }
-
 
 
 int Instance::nMetric() {
@@ -1192,10 +1175,9 @@ vector<Solution *> Instance::getParetoFront() {
     return this->dominationFronts[0];
 }
 
-void Instance::INGM(Solution *sol, int seed)
-{
+void Instance::INGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
-    Solution* new_sol = new Solution(sol);
+    Solution *new_sol = new Solution(sol);
 
     // Randomly choose the objective for optimization
     int random_obj = rand.next() % 2; // 0 = TFT, 1 = TEC
@@ -1206,19 +1188,16 @@ void Instance::INGM(Solution *sol, int seed)
 
     if (random_obj == 0) // Optimize TFT
     {
-        for (int f = 0; f < this->F; f++)
-        {
+        for (int f = 0; f < this->F; f++) {
             float f_tft = new_sol->getFactory(f)->getTFT();
             if (f_tft > largest) {
                 largest = f_tft;
                 largest_index = f;
             }
         }
-    }
-    else    // Optimize TEC
+    } else    // Optimize TEC
     {
-        for (int f = 0; f < this->F; f++)
-        {
+        for (int f = 0; f < this->F; f++) {
             float f_tec = new_sol->getFactory(f)->getTEC();
             if (f_tec > largest) {
                 largest = f_tec;
@@ -1227,11 +1206,10 @@ void Instance::INGM(Solution *sol, int seed)
         }
     }
 
-    vector<Job*> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
+    vector<Job *> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
     int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
 
-    while(jobs_to_try.size() > largest_f_total_jobs / 2)
-    {
+    while (jobs_to_try.size() > largest_f_total_jobs / 2) {
         // Get a random job and extract from the factory
         int random_job_index = rand.next() % jobs_to_try.size();
         Job *job = jobs_to_try[random_job_index];
@@ -1243,8 +1221,7 @@ void Instance::INGM(Solution *sol, int seed)
         {
             new_sol->getFactory(largest_index)->randSpeedUp(seed);
             new_sol->getFactory(largest_index)->speedUp();
-        }
-        else    // Optimize TEC
+        } else    // Optimize TEC
         {
             new_sol->getFactory(largest_index)->randSpeedDown(seed);
             new_sol->getFactory(largest_index)->speedDown();
@@ -1252,11 +1229,9 @@ void Instance::INGM(Solution *sol, int seed)
         }
 
         // Try inserting the job to every position of every factory until the solution dominates the original one
-        for (int f = 0; f < this->F; f++)
-        {
+        for (int f = 0; f < this->F; f++) {
             int f_num_of_jobs = new_sol->getFactory(f)->getNumJobs();
-            for (int pos = 0; pos < f_num_of_jobs; pos++)
-            {
+            for (int pos = 0; pos < f_num_of_jobs; pos++) {
                 // Insert the job to the factory
                 new_sol->getFactory(f)->insertJobAtPos(job, pos);
 
@@ -1265,14 +1240,14 @@ void Instance::INGM(Solution *sol, int seed)
                 {
                     new_sol->getFactory(f)->randSpeedUp(seed);
                     new_sol->getFactory(f)->speedUp();
-                }
-                else    // Optimize TEC
+                } else    // Optimize TEC
                 {
                     new_sol->getFactory(f)->randSpeedDown(seed);
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if(new_sol->getTFT() > sol->getTFT() && new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->getTFT() > sol->getTFT() &&
+                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
                 {
                     this->new_individuals.push_back(new_sol);
                     return;
@@ -1284,10 +1259,9 @@ void Instance::INGM(Solution *sol, int seed)
     this->new_individuals.push_back(new_sol);
 }
 
-void Instance::SNGM(Solution *sol, int seed)
-{
+void Instance::SNGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
-    Solution* new_sol = new Solution(sol);
+    Solution *new_sol = new Solution(sol);
 
     // Randomly choose the objective for optimization
     int random_obj = rand.next() % 2; // 0 = TFT, 1 = TEC
@@ -1298,19 +1272,16 @@ void Instance::SNGM(Solution *sol, int seed)
 
     if (random_obj == 0) // Optimize TFT
     {
-        for (int f = 0; f < this->F; f++)
-        {
+        for (int f = 0; f < this->F; f++) {
             float f_tft = new_sol->getFactory(f)->getTFT();
             if (f_tft > largest) {
                 largest = f_tft;
                 largest_index = f;
             }
         }
-    }
-    else    // Optimize TEC
+    } else    // Optimize TEC
     {
-        for (int f = 0; f < this->F; f++)
-        {
+        for (int f = 0; f < this->F; f++) {
             float f_tec = new_sol->getFactory(f)->getTEC();
             if (f_tec > largest) {
                 largest = f_tec;
@@ -1319,21 +1290,18 @@ void Instance::SNGM(Solution *sol, int seed)
         }
     }
 
-    vector<Job*> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
+    vector<Job *> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
     int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
-    while(jobs_to_try.size() > largest_f_total_jobs / 2)
-    {
+    while (jobs_to_try.size() > largest_f_total_jobs / 2) {
         // Get a random job
         int random_job_index = rand.next() % jobs_to_try.size();
         Job *job = jobs_to_try[random_job_index];
         jobs_to_try.erase(jobs_to_try.begin() + random_job_index);
 
         // Try inserting the job to every position of every factory until the solution dominates the original one
-        for (int f = 0; f < this->F; f++)
-        {
+        for (int f = 0; f < this->F; f++) {
             int f_num_of_jobs = new_sol->getFactory(f)->getNumJobs();
-            for (int pos = 0; pos < f_num_of_jobs; pos++)
-            {
+            for (int pos = 0; pos < f_num_of_jobs; pos++) {
                 // Swap the job to the factory
                 Job *job2;
                 do {
@@ -1350,8 +1318,7 @@ void Instance::SNGM(Solution *sol, int seed)
 
                     new_sol->getFactory(f)->randSpeedUp(seed);
                     new_sol->getFactory(f)->speedUp();
-                }
-                else    // Optimize TEC
+                } else    // Optimize TEC
                 {
                     new_sol->getFactory(largest_index)->randSpeedDown(seed);
                     new_sol->getFactory(largest_index)->speedDown();
@@ -1361,7 +1328,8 @@ void Instance::SNGM(Solution *sol, int seed)
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if(new_sol->getTFT() > sol->getTFT() && new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->getTFT() > sol->getTFT() &&
+                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
                 {
                     this->new_individuals.push_back(new_sol);
                     return;
@@ -1385,7 +1353,7 @@ void Instance::HNGM(Solution *sol, int seed) {
         this->SNGM(sol, seed);
 }
 
-void Instance::makenewpop_operators(vector<Solution*> parents, int seed) {
+void Instance::makenewpop_operators(vector<Solution *> parents, int seed) {
     Xoshiro256plus rand(seed);
 
     // clear the new_individuals vector
@@ -1394,8 +1362,7 @@ void Instance::makenewpop_operators(vector<Solution*> parents, int seed) {
     // Generate the same number of new individuals as parents size
     // For each solution in parents, generate a neighbour
     int i = 0;
-    while(this->new_individuals.size() < parents.size())
-    {
+    while (this->new_individuals.size() < parents.size()) {
         // Randomly choose which operator will be used to generate a neighbour
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
 
