@@ -145,6 +145,9 @@ string runExperiment2(string path, int iterations, float stopTime, int baseSeed,
     //string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga), GD, IGD, S\n";
     string csv = "";
     vector<vector<Solution*>> paretoArchive;
+    vector<vector<Solution*>> alg1ParetoArchive;
+    vector<vector<Solution*>> alg2ParetoArchive;
+    vector<vector<Solution*>> alg3ParetoArchive;
     vector<Instance*> instances;
     clock_t start, end;
 
@@ -216,6 +219,141 @@ string runExperiment2(string path, int iterations, float stopTime, int baseSeed,
 
 }
 
+vector<vector<Solution*>> getExperimentArchives(string path, int iterations, float stopTime, int baseSeed, int &its, string option){
+
+    //string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga), GD, IGD, S\n";
+    string csv = "";
+    vector<vector<Solution*>> paretoArchive;
+    vector<Instance*> instances;
+    clock_t start, end;
+
+    int nsgaIterationsSum = 0;
+    for(int i=0; i<iterations; i++){
+        Instance *instance = readFile(path);
+        instances.push_back(instance);
+
+        start = clock();
+
+        for (int j = 0; j < 10; j++)
+        {
+            instance->balancedRandomSolutionGenerator(j+baseSeed);
+            instance->randSMinTEC(j+baseSeed);
+            instance->randSMinTFT(j+baseSeed);
+        }
+        instance->minSMinTEC();
+        instance->maxSMinTFT();
+
+        instance->assignCrowdingDistance();
+
+        int counter = 0;
+        while(true)
+        {
+            end = clock();
+            double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+            if (time_taken > instance->get_n()/2)
+            {
+                cout << "Time's up! " << counter << " iterations in " << time_taken << " seconds" << endl;
+                break;
+            }
+
+            if(option == "v3")
+                instance->NSGA2NextGen(nsgaIterationsSum+baseSeed);
+            else if (option == "op")
+                instance->NSGA2NextGen_operators(nsgaIterationsSum+baseSeed);
+            else if (option == "nd")
+                instance->NSGA2NextGen_operators_ND(nsgaIterationsSum+baseSeed);
+
+            nsgaIterationsSum++;
+            counter ++;
+        }
+
+        its = nsgaIterationsSum;
+        instance->fastNonDominatedSort();
+        paretoArchive.push_back(instance->getParetoFront());
+        //csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
+
+        //delete instance;
+    }
+
+    return paretoArchive;
+
+    vector<Solution*> joinedParetoArchive = joinFronts(paretoArchive);
+    vector<Solution*> archiveParetoFront = Util::fastNonDominatedSort(joinedParetoArchive)[0];
+
+    csv += path + "," + to_string(baseSeed)
+           + "," + to_string(iterations)
+           + "," + to_string((float)nsgaIterationsSum/(float)iterations)
+           + "," + to_string(archiveParetoFront.size())
+           + "," + to_string(meanDMetric(paretoArchive, archiveParetoFront))
+           + "," + to_string(meanGDMetric(paretoArchive, archiveParetoFront))
+           + "," + to_string(meanIGDMetric(paretoArchive, archiveParetoFront))
+           + "," + to_string(meanSMetric(paretoArchive, archiveParetoFront))
+           + "\n";
+
+    //for(Instance* i:instances){
+    //    delete i;
+    // }
+
+    Util::deallocate();
+
+   // return csv;
+
+}
+
+string algorithCSV(string path, string alg, int baseSeed, int nsgaIterationsSum,int iterations, int N, vector<Solution*> trueParetoFront, vector<vector<Solution*>> algParetoArchive){
+    return path + ","+alg +"," + to_string(baseSeed)
+           + "," + to_string(iterations)
+           + "," + to_string((float)nsgaIterationsSum/(float)iterations)
+           + "," + to_string(N)
+           + "," + to_string(meanDMetric(algParetoArchive, trueParetoFront))
+           + "," + to_string(meanGDMetric(algParetoArchive, trueParetoFront))
+           + "," + to_string(meanIGDMetric(algParetoArchive, trueParetoFront))
+           + "," + to_string(meanSMetric(algParetoArchive, trueParetoFront))
+           + "\n";
+}
+
+string runExperiment3(string path, int iterations, float stopTime, int baseSeed, string option){
+    string csv = "";
+
+    vector<vector<Solution*>> alg1ParetoFronts;
+    vector<vector<Solution*>> alg2ParetoFronts;
+    vector<vector<Solution*>> alg3ParetoFronts;
+
+    int alg1Its=0;
+    alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "op");
+    int alg2Its=0;
+    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "v3");
+    int alg3Its=0;
+    alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nd");
+
+    vector<Solution*> alg1UnifiedParetoArchive = joinFronts(alg1ParetoFronts);
+    vector<vector<Solution*>> alg1FirstFront = Util::fastNonDominatedSort(alg1UnifiedParetoArchive);
+
+    vector<Solution*> alg2UnifiedParetoArchive = joinFronts(alg2ParetoFronts);
+    vector<vector<Solution*>> alg2FirstFront = Util::fastNonDominatedSort(alg2UnifiedParetoArchive);
+
+    vector<Solution*> alg3UnifiedParetoArchive = joinFronts(alg3ParetoFronts);
+    vector<vector<Solution*>> alg3FirstFront = Util::fastNonDominatedSort(alg3UnifiedParetoArchive);
+
+
+    vector<vector<Solution*>> allAlgsFronts{alg1UnifiedParetoArchive, alg2UnifiedParetoArchive, alg3UnifiedParetoArchive};
+    vector<Solution*> trueParetoFront = joinFronts(allAlgsFronts);
+
+    trueParetoFront = Util::fastNonDominatedSort(trueParetoFront)[0];
+
+    csv += algorithCSV(path, "op", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront, alg1ParetoFronts);
+    csv += algorithCSV(path, "v3", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront, alg2ParetoFronts);
+    csv += algorithCSV(path, "nd", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront, alg3ParetoFronts);
+
+    Util::deallocate();
+
+    return csv;
+
+}
+
+
+
+
 void test_final(){
 
     string csv;
@@ -230,14 +368,26 @@ void test_final(){
     outputToFile("../analysis/results_v3.csv", csv, true);*/
 
 
-    csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+    csv = "id, alg, baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
     outputToFile("../analysis/results_op.csv", csv, false);
 
-    csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
+   /* csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);
 
     csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);*/
+
+    //csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
+    //outputToFile("../analysis/results_op.csv", csv, true);
+
+    //csv = runExperiment3("../instances/928/2-8-20__0.txt", 10, 0.0, 0, "op");
+    //outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/928/2-16-20__0.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);
+
+    //csv = runExperiment3("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
+    //outputToFile("../analysis/results_op.csv", csv, true);
 }
 
 void test5(){
