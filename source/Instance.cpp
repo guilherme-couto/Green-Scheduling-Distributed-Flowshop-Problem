@@ -909,14 +909,14 @@ void normalize(vector<Solution *> solutions,
     //vector<float> TFTs(solutions.size(), 0.0);
     //vector<float> TECs(solutions.size(), 0.0);
     float minTFT = Util::minTFTSol(solutions)->getTFT();
-    float minTEC = Util::minTECSol(solutions)->getTEC();;
-    float maxTFT = Util::maxTFTSol(solutions)->getTFT();;
-    float maxTEC = Util::maxTECSol(solutions)->getTEC();;
+    float minTEC = Util::minTECSol(solutions)->getTEC();
+    float maxTFT = Util::maxTFTSol(solutions)->getTFT();
+    float maxTEC = Util::maxTECSol(solutions)->getTEC();
 
     for (int i = 0; i < solutions.size(); i++) {
-        float nTFT = (solutions[i]->getTFT() - minTFT) / maxTFT;
-        float nTEC = (solutions[i]->getTEC() - minTEC) / maxTEC;
-        tuple<float, float, Solution*> ns = make_tuple(nTEC, nTFT, solutions[i]);
+        float nTFT = (solutions[i]->getTFT() - minTFT) / (maxTFT - minTFT);
+        float nTEC = (solutions[i]->getTEC() - minTEC) / (maxTEC - minTEC);
+        tuple<float, float, Solution*> ns = make_tuple(nTFT, nTEC, solutions[i]);
         normalizedSolutions.push_back(ns);
 
         //TFTs[i] = (solutions[i]->getTFT() - minTFT) / maxTFT;
@@ -948,11 +948,13 @@ void associate(vector<tuple<float, float, int, int>> &refPoints,
 
         for (int j = 0; j < numRefPoints; j++) {
             //compute distance of solution from each line
-            float a = get<0>(refPoints[j]);
-            float b = get<1>(refPoints[j]);
-            float ax0 = a * get<0>(normSol[j]);
-            float by0 =  b * get<1>(normSol[j]);
-            float distance = fabsf(ax0 + by0 / sqrtf(powf(a, 2) + powf(b, 2)));
+            float a = get<1>(refPoints[j]);
+            float b = -get<0>(refPoints[j]);
+            float x0 = get<0>(normSol[i]);
+            float y0 = get<1>(normSol[i]);
+            float ax0 = a * x0;
+            float by0 =  b * y0;
+            float distance = fabsf(ax0 + by0) / sqrtf(powf(a, 2) + powf(b, 2));
 
             if (distance < minDistance) {
                 minDistance = distance;
@@ -1046,6 +1048,8 @@ void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
     //vector<Solution *> selected(K);
     Xoshiro256plus rand(seed);
 
+
+
     int k=0;
     while(k<K) {
         //conjunto J = pontos com menor niche count
@@ -1076,11 +1080,12 @@ void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
                 pos = rand.next() % I.size();
             }
             s = get<0>(I[pos]);
-
+            selected.push_back(s);
             //incrementa niche count de j
             get<2>(refPoints[j])++;
             //remove elemento selecionado de Fl
-            std::remove(lastFront.begin(), lastFront.end(), s);
+            //std::remove(lastFront.begin(), lastFront.end(), s);
+            lastFront.erase(std::remove(lastFront.begin(), lastFront.end(), s), lastFront.end());
             k++;
         }
 
@@ -1130,7 +1135,6 @@ void Instance::NSGA3NextGen(int seed) {
     if (nextGen.size() < n) {
         //sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
 
-
         // Points to be chosen from Fl: K = N − |Pt+1|
         int K = n - nextGen.size();
         //TFT, TEC, niche count, *id
@@ -1143,19 +1147,22 @@ void Instance::NSGA3NextGen(int seed) {
         vector<tuple<Solution *, float, int>> associationVector;
 
         //Selected solutions
-        vector<Solution*> selected(K);
+        vector<Solution*> selected;
+        selected.reserve(K);
 
         // Normalize objectives and create reference set Zr
-        normalize(parents, refPoints, normalizedSolutions);
+        normalize(this->population, refPoints, normalizedSolutions);
 
         // Associate each member s of St with a reference point
         associate(refPoints, normalizedSolutions, associationVector);
 
         // Compute niche count of reference point j ∈ Zr
-        for(Solution *s: nextGen){
-            for(tuple<Solution *, float, int> a:associationVector){
+
+        for(tuple<Solution *, float, int> a:associationVector){
+            for(Solution *s: nextGen){
                 if(s==get<0>(a)){
-                    get<2>(refPoints[get<2>(a)])++;
+                    int assocRefIndex = get<2>(a);
+                    get<2>(refPoints[assocRefIndex])++;
                 }
             }
         }
