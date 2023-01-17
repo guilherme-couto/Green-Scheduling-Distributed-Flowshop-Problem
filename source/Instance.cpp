@@ -1123,7 +1123,10 @@ void Instance::INGM(Solution *sol, int seed)
                     new_sol->getFactory(f)->rightShift();
                 }
                 if(new_sol->getTFT() > sol->getTFT() && new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                {
                     this->new_individuals.push_back(new_sol);
+                    return;
+                }
                 new_sol->getFactory(f)->removeJob(job->getId());
             }
         }
@@ -1209,8 +1212,10 @@ void Instance::SNGM(Solution *sol, int seed)
                     new_sol->getFactory(f)->rightShift();
                 }
                 if(new_sol->getTFT() > sol->getTFT() && new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                {
                     this->new_individuals.push_back(new_sol);
-
+                    return;
+                }
                 new_sol->swap(f, largest_index, job, job2);
             }
         }
