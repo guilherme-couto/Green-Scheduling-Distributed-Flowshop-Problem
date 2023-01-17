@@ -60,6 +60,11 @@ public:
     Solution* SNGM(Solution * sol, int seed); // Swap-based new-individual generation method
     Solution* HNGM(Solution * sol, int seed); // Hybrid-based new-individual generation method
     vector<Solution*> makenewpop_operators(vector<Solution*> parents, int seed);
+
+    Solution* INGM_ND(Solution * sol, int seed); // Insertion-based new-individual generation method
+    Solution* SNGM_ND(Solution * sol, int seed); // Swap-based new-individual generation method
+    Solution* HNGM_ND(Solution * sol, int seed); // Hybrid-based new-individual generation method
+    vector<Solution*> makenewpop_operators_ND(vector<Solution*> parents, int seed);
 };
 
 #endif // MATRICES_HPP
