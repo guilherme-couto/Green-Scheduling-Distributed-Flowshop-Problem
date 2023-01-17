@@ -846,8 +846,7 @@ void Instance::NSGA2NextGen(int seed) {
 
 
     //Recombine and mutate parents into this vector
-    //vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
-    vector<Solution *> children = makenewpop_operators(parents, seed);
+    vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
 
     //join parents and children into this vector
     vector<Solution *> all = parents;
@@ -894,6 +893,58 @@ void Instance::NSGA2NextGen(int seed) {
     this->population = nextGen;
 }
 
+void Instance::NSGA2NextGen_operators(int seed) {
+    vector<Solution *> parents = this->population;
+    vector<Solution *> nextGen;
+
+
+    //Recombine and mutate parents into this vector
+    vector<Solution *> children = makenewpop_operators(parents, seed);
+
+    //join parents and children into this vector
+    vector<Solution *> all = parents;
+    all.reserve(this->population.size() + children.size());
+    all.insert(all.end(), children.begin(), children.end());
+    this->population = all;
+
+    vector<vector<Solution *>> fronts = this->fastNonDominatedSort();
+
+    int inserted = 0;
+    int n = parents.size();
+    nextGen.reserve(n);
+
+    //insere enquanto o numero de elementos inseridos for menor q n
+    int l = 0;
+    for (int i = 0; inserted < n && i < fronts.size() - 1; i++) {
+        //nextGen.reserve(nextGen.size() + fronts[i].size());
+        ::assignCrowdingDistance(fronts[i]);
+
+        if (inserted + fronts[i].size() > n) {
+            l = i;
+            break;
+        }
+
+        for (int j = 0; j < fronts[i].size(); j++) {
+            nextGen.push_back(fronts[i][j]);
+            inserted++;
+        }
+    }
+
+
+    //::assignCrowdingDistance(fronts.back());
+    /*if(nextGen.size() + fronts[l].size() == n){
+        nextGen.reserve(fronts[l].size());
+        nextGen.insert(nextGen.end(), fronts[l].begin(), fronts[l].end());
+    }*/if (nextGen.size() < n) {
+        //nextGen.reserve(n);
+        sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
+        for (int i = 0; nextGen.size() < n; i++) {
+            nextGen.push_back(fronts[l][i]);
+        }
+    }
+
+    this->population = nextGen;
+}
 
 void normalize(vector<Solution *> solutions,
                vector<tuple<float, float, int, int>> &refPoints,
@@ -1260,7 +1311,7 @@ Solution* Instance::INGM(Solution *sol, int seed) {
             }
         }
     }
-    return new_sol;
+    return nullptr;
 }
 
 Solution* Instance::SNGM(Solution *sol, int seed) {
@@ -1353,11 +1404,11 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
             }
         }
     }
-    return new_sol;
+    return nullptr;
 }
 
 Solution* Instance::HNGM(Solution *sol, int seed) {
-    Xoshiro256plus rand(seed);
+    Xoshiro256plus rand(time(NULL));
 
     // Randomly choose INGM or SNGM
     int random_gen = rand.next() % 2; // 0 = INGM, 1 = SNGM
@@ -1374,6 +1425,7 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
     // clear the new_individuals vector
     vector<Solution*> children;
     children.clear();
+    Solution* sol_ptr = nullptr;
 
     // Generate the same number of new individuals as parents size
     // For each solution in parents, generate a neighbour
@@ -1382,17 +1434,19 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
         // Randomly choose which operator will be used to generate a neighbour
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
 
-        if (rand_op == 0)
-            children.push_back(this->INGM(parents[i], seed));
-        else if (rand_op == 1)
-            children.push_back(this->SNGM(parents[i], seed));
-        else
-            children.push_back(this->HNGM(parents[i], seed));
-
-        if (i == parents.size())
-            i = 0;
-        else
+        if (rand_op == 0) {
+            sol_ptr = this->INGM(parents[i], seed);
+        }
+        else if (rand_op == 1) {
+            sol_ptr = this->SNGM(parents[i], seed);
+        }
+        else {
+            sol_ptr = this->HNGM(parents[i], seed);
+        }
+        if (sol_ptr != nullptr) {
+            children.push_back(sol_ptr);
             i++;
+        }
     }
 
     // Return children

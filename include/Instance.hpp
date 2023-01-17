@@ -49,6 +49,7 @@ public:
     string generatePopulationCSVString();
     void NSGA3NextGen(int seed);
     void NSGA2NextGen(int seed);
+    void NSGA2NextGen_operators(int seed);
     //vector<Solution*> makeNewPop(vector<Solution*> parents, int seed);
     int nMetric();
 
