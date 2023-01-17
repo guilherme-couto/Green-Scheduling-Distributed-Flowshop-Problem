@@ -87,26 +87,27 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
             instance->balancedRandomSolutionGenerator(j+baseSeed);
             instance->randSMinTEC(j+baseSeed);
             instance->randSMinTFT(j+baseSeed);
-
         }
         instance->minSMinTEC();
         instance->maxSMinTFT();
+
         instance->assignCrowdingDistance();
 
-        //for (int j = 0; j < 100; j++)
-        nsgaIterationsSum = 0;
+        int counter = 0;
         while(true)
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/20)
+            if (time_taken > instance->get_n()/2)
             {
-                cout << "Time's up! " << nsgaIterationsSum << " iterations in " << time_taken << " seconds" << endl;
+                cout << "Time's up! " << counter << " iterations in " << time_taken << " seconds" << endl;
                 break;
             }
 
             instance->NSGA2NextGen(nsgaIterationsSum+baseSeed);
+
             nsgaIterationsSum++;
+            counter ++;
         }
 
         instance->fastNonDominatedSort();
@@ -137,6 +138,106 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
 
     return csv;
 
+}
+
+string runExperiment2(string path, int iterations, float stopTime, int baseSeed, string option){
+
+    //string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga), GD, IGD, S\n";
+    string csv = "";
+    vector<vector<Solution*>> paretoArchive;
+    vector<Instance*> instances;
+    clock_t start, end;
+
+    int nsgaIterationsSum = 0;
+    for(int i=0; i<iterations; i++){
+        Instance *instance = readFile(path);
+        instances.push_back(instance);
+
+        start = clock();
+
+        for (int j = 0; j < 10; j++)
+        {
+            instance->balancedRandomSolutionGenerator(j+baseSeed);
+            instance->randSMinTEC(j+baseSeed);
+            instance->randSMinTFT(j+baseSeed);
+        }
+        instance->minSMinTEC();
+        instance->maxSMinTFT();
+
+        instance->assignCrowdingDistance();
+
+        int counter = 0;
+        while(true)
+        {
+            end = clock();
+            double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
+            if (time_taken > instance->get_n()/2)
+            {
+                cout << "Time's up! " << counter << " iterations in " << time_taken << " seconds" << endl;
+                break;
+            }
+
+            if(option == "v3")
+                instance->NSGA2NextGen(nsgaIterationsSum+baseSeed);
+            else if (option == "op")
+                instance->NSGA2NextGen_operators(nsgaIterationsSum+baseSeed);
+
+            nsgaIterationsSum++;
+            counter ++;
+        }
+
+        instance->fastNonDominatedSort();
+        paretoArchive.push_back(instance->getParetoFront());
+        //csv += path + "," + to_string(baseSeed) + "," + to_string(nsgaIterations) + "," + to_string(instance->nMetric()) + "\n";
+
+        //delete instance;
+    }
+
+    vector<Solution*> joinedParetoArchive = joinFronts(paretoArchive);
+    vector<Solution*> archiveParetoFront = Util::fastNonDominatedSort(joinedParetoArchive)[0];
+
+    csv += path + "," + to_string(baseSeed)
+           + "," + to_string(iterations)
+           + "," + to_string((float)nsgaIterationsSum/(float)iterations)
+           + "," + to_string(archiveParetoFront.size())
+           + "," + to_string(meanDMetric(paretoArchive, archiveParetoFront))
+           + "," + to_string(meanGDMetric(paretoArchive, archiveParetoFront))
+           + "," + to_string(meanIGDMetric(paretoArchive, archiveParetoFront))
+           + "," + to_string(meanSMetric(paretoArchive, archiveParetoFront))
+           + "\n";
+
+    //for(Instance* i:instances){
+    //    delete i;
+    // }
+
+    Util::deallocate();
+
+    return csv;
+
+}
+
+void test_final(){
+
+    string csv;
+
+    /*csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+    outputToFile("../analysis/results_v3.csv", csv, false);
+
+    csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "v3");
+    outputToFile("../analysis/results_v3.csv", csv, true);
+
+    csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "v3");
+    outputToFile("../analysis/results_v3.csv", csv, true);*/
+
+
+    csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+    outputToFile("../analysis/results_op.csv", csv, false);
+
+    csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
 }
 
 void test5(){
@@ -581,7 +682,7 @@ int main()
 {
     cout << "Hello" << endl;
 
-    test12();
+    test_final();
     return 0;
 
     // inicializa o construtivo
