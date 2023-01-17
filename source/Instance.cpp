@@ -924,7 +924,9 @@ void normalize(vector<Solution *> solutions,
     }
 
     for (int i = 0; i < numPoints; i++) {
-        tuple<float, float, int, int> ref = make_tuple((1 / numPoints) * i, (1 / numPoints) * i, 0, 0);
+        float x = ((float)1 / (float)numPoints) * (float)i;
+        float y = 1-((float)1 / (float)numPoints) * (float)i;
+        tuple<float, float, int, int> ref = make_tuple(x, y, 0, 0);
         refPoints.push_back(ref);
         //refPointTECs.push_back((1 / numPoints) * i);
         //refPointTFTs.push_back((1 / numPoints) * i);
@@ -946,8 +948,11 @@ void associate(vector<tuple<float, float, int, int>> &refPoints,
 
         for (int j = 0; j < numRefPoints; j++) {
             //compute distance of solution from each line
-            float distance = fabsf(get<1>(refPoints[j]) * get<1>(normSol[j]) + get<0>(refPoints[j]) * get<0>(normSol[j]) /
-                             sqrtf(powf(get<1>(refPoints[j]), 2) + powf(get<0>(refPoints[j]), 2)));
+            float a = get<0>(refPoints[j]);
+            float b = get<1>(refPoints[j]);
+            float ax0 = a * get<0>(normSol[j]);
+            float by0 =  b * get<1>(normSol[j]);
+            float distance = fabsf(ax0 + by0 / sqrtf(powf(a, 2) + powf(b, 2)));
 
             if (distance < minDistance) {
                 minDistance = distance;
@@ -1004,7 +1009,7 @@ int minDistanceIndex(vector<tuple<Solution *, float>> v) {
 
 vector<int> getLeastNicheCountPoints(vector<tuple<float, float, int, int>> &refPoints) {
     vector<int> leastNicheCountPoints;
-    int leastNicheCount = INFINITY;
+    int leastNicheCount = std::numeric_limits<int>::max();
     for (tuple<float, float, int, int> p: refPoints) {
         if (get<2>(p) < leastNicheCount) {
             leastNicheCount = get<2>(p);
