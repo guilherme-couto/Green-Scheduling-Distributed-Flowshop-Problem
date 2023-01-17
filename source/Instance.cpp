@@ -846,7 +846,8 @@ void Instance::NSGA2NextGen(int seed) {
 
 
     //Recombine and mutate parents into this vector
-    vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
+    //vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
+    vector<Solution *> children = makenewpop_operators(parents, seed);
 
     //join parents and children into this vector
     vector<Solution *> all = parents;
@@ -1180,7 +1181,7 @@ vector<Solution *> Instance::getParetoFront() {
     return this->dominationFronts[0];
 }
 
-void Instance::INGM(Solution *sol, int seed) {
+Solution* Instance::INGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
     Solution *new_sol = new Solution(sol);
 
@@ -1253,17 +1254,16 @@ void Instance::INGM(Solution *sol, int seed) {
                 if (new_sol->getTFT() > sol->getTFT() &&
                     new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
                 {
-                    this->new_individuals.push_back(new_sol);
-                    return;
+                    return new_sol;
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
             }
         }
     }
-    this->new_individuals.push_back(new_sol);
+    return new_sol;
 }
 
-void Instance::SNGM(Solution *sol, int seed) {
+Solution* Instance::SNGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
     Solution *new_sol = new Solution(sol);
 
@@ -1304,13 +1304,25 @@ void Instance::SNGM(Solution *sol, int seed) {
 
         // Try inserting the job to every position of every factory until the solution dominates the original one
         for (int f = 0; f < this->F; f++) {
+            bool tag = false;
             int f_num_of_jobs = new_sol->getFactory(f)->getNumJobs();
             for (int pos = 0; pos < f_num_of_jobs; pos++) {
                 // Swap the job to the factory
-                Job *job2;
-                do {
-                    job2 = new_sol->getFactory(f)->getJobs().at(pos);
-                } while (job2->getId() == job->getId());    // get a different job to swap
+                Job *job2 = new_sol->getFactory(f)->getJobs().at(pos);
+                while (job2->getId() == job->getId())    // get a different job to swap
+                {
+                    // if all possibilities of positions on f have been tried
+                    if (pos + 1 == f_num_of_jobs)
+                    {
+                        tag = true;
+                        break;
+                    }
+                    else
+                        job2 = new_sol->getFactory(f)->getJobs().at(pos++);
+                }
+                // Needs to change factory
+                if(tag)
+                    break;
 
                 new_sol->swap(largest_index, f, job, job2);
 
@@ -1335,56 +1347,55 @@ void Instance::SNGM(Solution *sol, int seed) {
                 if (new_sol->getTFT() > sol->getTFT() &&
                     new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
                 {
-                    this->new_individuals.push_back(new_sol);
-                    return;
+                    return new_sol;
                 }
                 new_sol->swap(f, largest_index, job, job2);
             }
         }
     }
-    this->new_individuals.push_back(new_sol);
+    return new_sol;
 }
 
-void Instance::HNGM(Solution *sol, int seed) {
+Solution* Instance::HNGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
 
     // Randomly choose INGM or SNGM
     int random_gen = rand.next() % 2; // 0 = INGM, 1 = SNGM
 
     if (random_gen == 0)
-        this->INGM(sol, seed);
-    else
-        this->SNGM(sol, seed);
+        return this->INGM(sol, seed);
+    // else
+    return this->SNGM(sol, seed);
 }
 
-void Instance::makenewpop_operators(vector<Solution *> parents, int seed) {
+vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int seed) {
     Xoshiro256plus rand(seed);
 
     // clear the new_individuals vector
-    this->new_individuals.clear();
+    vector<Solution*> children;
+    children.clear();
 
     // Generate the same number of new individuals as parents size
     // For each solution in parents, generate a neighbour
     int i = 0;
-    while (this->new_individuals.size() < parents.size()) {
+    while (children.size() < parents.size()) {
         // Randomly choose which operator will be used to generate a neighbour
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
 
         if (rand_op == 0)
-            this->INGM(parents[i], seed);
+            children.push_back(this->INGM(parents[i], seed));
         else if (rand_op == 1)
-            this->SNGM(parents[i], seed);
+            children.push_back(this->SNGM(parents[i], seed));
         else
-            this->HNGM(parents[i], seed);
+            children.push_back(this->HNGM(parents[i], seed));
 
         if (i == parents.size())
             i = 0;
         else
             i++;
-
     }
 
-    // Return a generation new_individuals = parents + new_individuals
-    this->new_individuals.insert(this->new_individuals.end(), parents.begin(), parents.end());
+    // Return children
+    return children;
 }
 

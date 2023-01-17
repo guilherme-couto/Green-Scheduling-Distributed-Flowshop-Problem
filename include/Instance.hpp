@@ -55,10 +55,10 @@ public:
     vector<Solution *> getParetoFront();
     static vector<vector<Solution*>> fastNonDominatedSort(vector<Solution*> population);
 
-    void INGM(Solution * sol, int seed); // Insertion-based new-individual generation method
-    void SNGM(Solution * sol, int seed); // Swap-based new-individual generation method
-    void HNGM(Solution * sol, int seed); // Hybrid-based new-individual generation method
-    void makenewpop_operators(vector<Solution*> parents, int seed);
+    Solution* INGM(Solution * sol, int seed); // Insertion-based new-individual generation method
+    Solution* SNGM(Solution * sol, int seed); // Swap-based new-individual generation method
+    Solution* HNGM(Solution * sol, int seed); // Hybrid-based new-individual generation method
+    vector<Solution*> makenewpop_operators(vector<Solution*> parents, int seed);
 };
 
 #endif // MATRICES_HPP
