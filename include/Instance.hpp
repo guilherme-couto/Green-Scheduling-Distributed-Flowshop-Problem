@@ -16,6 +16,7 @@ private:
     vector<vector<Solution *>> dominationFronts;
     struct timeval begin, end;
     vector<Solution *> new_individuals;
+    vector<Solution *> paretoArchive;
 
 public:
     Instance(int F, int n, int m, vector<vector<int>> t); // Constructor (F = number of factories, n = number of jobs, m = number of machines)
@@ -55,6 +56,8 @@ public:
     int nMetric();
 
     vector<Solution *> getParetoFront();
+    vector<Solution *> getParetoArchive();
+    void updateArchive(Solution* sol);
     static vector<vector<Solution*>> fastNonDominatedSort(vector<Solution*> population);
 
     Solution* INGM(Solution * sol, int seed); // Insertion-based new-individual generation method
