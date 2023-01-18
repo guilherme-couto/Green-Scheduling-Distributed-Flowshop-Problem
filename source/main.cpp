@@ -250,18 +250,20 @@ vector<vector<Solution*>> getExperimentArchives(string path, int iterations, flo
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/2)
+            if (time_taken > instance->get_n()/20)
             {
                 cout << "Time's up! " << counter << " iterations in " << time_taken << " seconds" << endl;
                 break;
             }
 
-            if(option == "v3")
+            if(option == "nsga2-v3")
                 instance->NSGA2NextGen(nsgaIterationsSum+baseSeed);
-            else if (option == "op")
+            else if (option == "nsga2-op")
                 instance->NSGA2NextGen_operators(nsgaIterationsSum+baseSeed);
-            else if (option == "nd")
+            else if (option == "nsga2-nd")
                 instance->NSGA2NextGen_operators_ND(nsgaIterationsSum+baseSeed);
+            else if (option == "nsga3-v3")
+                instance->NSGA3NextGen(nsgaIterationsSum+baseSeed);
 
             nsgaIterationsSum++;
             counter ++;
@@ -318,13 +320,16 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
     vector<vector<Solution*>> alg1ParetoFronts;
     vector<vector<Solution*>> alg2ParetoFronts;
     vector<vector<Solution*>> alg3ParetoFronts;
+    vector<vector<Solution*>> alg4ParetoFronts;
 
     int alg1Its=0;
-    alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "op");
+    //alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "nsga2-op");
     int alg2Its=0;
-    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "v3");
+    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-v3");
     int alg3Its=0;
-    alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nd");
+    alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nsga2-nd");
+    int alg4Its=0;
+    alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-v3");
 
     vector<Solution*> alg1UnifiedParetoArchive = joinFronts(alg1ParetoFronts);
     vector<vector<Solution*>> alg1FirstFront = Util::fastNonDominatedSort(alg1UnifiedParetoArchive);
@@ -335,17 +340,22 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
     vector<Solution*> alg3UnifiedParetoArchive = joinFronts(alg3ParetoFronts);
     vector<vector<Solution*>> alg3FirstFront = Util::fastNonDominatedSort(alg3UnifiedParetoArchive);
 
+    vector<Solution*> alg4UnifiedParetoArchive = joinFronts(alg4ParetoFronts);
+    vector<vector<Solution*>> alg4FirstFront = Util::fastNonDominatedSort(alg4UnifiedParetoArchive);
 
-    vector<vector<Solution*>> allAlgsFronts{alg1UnifiedParetoArchive, alg2UnifiedParetoArchive, alg3UnifiedParetoArchive};
+
+    vector<vector<Solution*>> allAlgsFronts{alg1UnifiedParetoArchive, alg2UnifiedParetoArchive, alg3UnifiedParetoArchive, alg4UnifiedParetoArchive};
     vector<Solution*> trueParetoFront = joinFronts(allAlgsFronts);
 
     trueParetoFront = Util::fastNonDominatedSort(trueParetoFront)[0];
 
-    csv += algorithmCSV(path, "op", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront,
-                        alg1ParetoFronts);
-    csv += algorithmCSV(path, "v3", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront,
+    //csv += algorithmCSV(path, "nsga2-op", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront,
+    //                    alg1ParetoFronts);
+    csv += algorithmCSV(path, "nsga3-v3", baseSeed, alg4Its, iterations, alg4FirstFront.size(), trueParetoFront,
+                        alg4ParetoFronts);
+    csv += algorithmCSV(path, "nsga2-v3", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront,
                         alg2ParetoFronts);
-    csv += algorithmCSV(path, "nd", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront,
+    csv += algorithmCSV(path, "nsga2-nd", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront,
                         alg3ParetoFronts);
 
     Util::deallocate();
@@ -380,63 +390,41 @@ void test_final(){
     csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);*/
 
-   // csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
-   // outputToFile("../analysis/results_op.csv", csv, true);
+    //csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
+    //outputToFile("../analysis/results_op.csv", csv, true);
 
-    csv = runExperiment3("../instances/928/2-8-20__0.txt", 10, 0.0, 0, "op");
-    outputToFile("../analysis/results_op.csv", csv, true);
+    //csv = runExperiment3("../instances/928/2-8-20__5.txt", 10, 0.0, 0, "op");
+    //outputToFile("../analysis/results_op.csv", csv, true);
 
-    csv = runExperiment3("../instances/928/2-16-20__0.txt", 10, 0.0, 0, "op");
-    outputToFile("../analysis/results_op.csv", csv, true);
+    //csv = runExperiment3("../instances/928/2-16-20__10.txt", 10, 0.0, 0, "op");
+    //outputToFile("../analysis/results_op.csv", csv, true);
 
     //csv = runExperiment3("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
     //outputToFile("../analysis/results_op.csv", csv, true);
+
+    string folderPath = "../instances/566";
+    for(int i=0; i<10; i++){
+        for(int j=20; j<=100; j+=20){
+            for(int m=4; m<=16; m=m*2){
+                for(int f=2; f<=5; f++){
+                    string jobs = to_string(j);
+                    string mach = to_string(m);
+                    string fac = to_string(f);
+                    string id = to_string(i);
+                    string filePath = folderPath +"/"+ fac+ "-"+mach+"-" +jobs+"__"+id+".txt";
+                    if(i==0){
+                        csv = runExperiment3(filePath, 10, 0.0, 0, "op");
+                        outputToFile("../analysis/results_op.csv", csv, true);
+                    }
+                }
+            }
+        }
+
+
+    }
 }
 
-void test5(){
 
-    //string path =  "../instances/928/2-4-20__0.txt";
-    string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
-
-    outputToFile("../analysis/results.csv", csv, true);
-
-    //outputToFile("../analysis/test_results.csv", csv, true);
-
-    //csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
-    //outputToFile("../analysis/test_results.csv", csv, true);
-
-
-    csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-    csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 0.0, 0);
-    outputToFile("../analysis/results.csv", csv, true);
-
-}
 void test()
 {
     // criar instancia
@@ -629,6 +617,51 @@ void test4(){
     outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
 
     delete instance;
+
+}
+
+void test5(){
+
+    //string path =  "../instances/928/2-4-20__0.txt";
+    string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+
+    outputToFile("../analysis/results.csv", csv, true);
+
+    //outputToFile("../analysis/test_results.csv", csv, true);
+
+    //csv = runExperiment("../instances/test_instance1.txt", 10, 0.0, 0);
+    //outputToFile("../analysis/test_results.csv", csv, true);
+
+
+    csv = runExperiment("../instances/928/2-4-20__0.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-4-40__1.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-4-60__2.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-4-80__3.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-4-100__4.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-20__5.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-40__6.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-60__7.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-80__8.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
+
+    csv = runExperiment("../instances/928/2-8-100__9.txt", 10, 0.0, 0);
+    outputToFile("../analysis/results.csv", csv, true);
 
 }
 
@@ -833,7 +866,7 @@ void test12(){
 
 
 void test13(){
-    string path =  "../instances/928/2-4-20__0.txt";
+    string path =  "../instances/566/5-4-20__0.txt";
     string outputDir = "../analysis/test_13_nsga2/csv/";
     //std::system(("python ./../create_folders.py "+ outputDir).c_str());
 
@@ -848,10 +881,13 @@ void test13(){
     instance->maxSMinTFT();
     instance->assignCrowdingDistance();
     outputToFile(outputDir+"/before.csv", instance->generatePopulationCSVString(), false);
+
     for (int i = 0; i < 100; i++)
     {
+        cout << "Iteration "+ to_string(i)<<endl;
         instance->NSGA2NextGen(i);
         //if(i%5==0) {
+
         outputToFile(outputDir+"/after_" + to_string(i + 1) + ".csv",
                      instance->generatePopulationCSVString(), false);
         //}
@@ -865,7 +901,7 @@ void test13(){
 int main()
 {
     cout << "Hello" << endl;
-    //test13();
+    //test6();
     test_final();
     return 0;
 
