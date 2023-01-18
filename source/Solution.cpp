@@ -12,6 +12,7 @@ Solution::Solution(Solution *sol) {
     for(int i=0; i< sol->factories.size(); i++){
         this->factories.push_back(new Factory(sol->factories[i]));
     }
+    Util::allocate(this);
 
 }
 
