@@ -32,6 +32,26 @@ int Instance::get_m() {
     return this->m;
 }
 
+vector<Solution*> Instance::getParetoArchive(){
+    return this->paretoArchive;
+}
+
+void Instance::updateArchive(Solution *sol) {
+    for(int i=0; i<this->paretoArchive.size(); i++){
+        if(paretoArchive[i]->dominates(sol)){
+            return;
+        }
+    }
+
+    for(int i=0; i<this->paretoArchive.size(); i++){
+        if(sol->dominates(paretoArchive[i])){
+            paretoArchive.erase(paretoArchive.begin()+i);
+        }
+    }
+
+    paretoArchive.push_back(sol);
+}
+
 int Instance::get_t(int machine_id, int job_id) {
     return t[machine_id][job_id];
 }
@@ -841,12 +861,12 @@ vector<Solution *> makeNewPopV3(vector<Solution *> parents, int seed, int n) {
 }
 
 void Instance::NSGA2NextGen(int seed) {
+    Xoshiro256plus rand(seed);
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
 
-
     //Recombine and mutate parents into this vector
-    vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
+    vector<Solution *> children = makeNewPopV3(parents, rand.next()%30000, parents.size());
 
     //join parents and children into this vector
     vector<Solution *> all = parents;
@@ -1118,13 +1138,13 @@ vector<int> getLeastNicheCountPoints(vector<tuple<float, float, int, int>> &refP
     vector<int> leastNicheCountPoints;
     int leastNicheCount = std::numeric_limits<int>::max();
     for (tuple<float, float, int, int> p: refPoints) {
-        if (get<2>(p) < leastNicheCount) {
+        if (get<2>(p) < leastNicheCount && get<3>(p)!=-1) {
             leastNicheCount = get<2>(p);
         }
     }
 
     for (int i=0; i< refPoints.size(); i++) {
-        if (get<2>(refPoints[i]) == leastNicheCount) {
+        if (get<2>(refPoints[i]) == leastNicheCount && get<3>(refPoints[i])!=-1) {
             leastNicheCountPoints.push_back(i);
         }
     }
@@ -1135,10 +1155,11 @@ int minDistancePointIndex(vector<tuple<Solution*, float, int>> &assoc){
     float minDistance = INFINITY;
     int minDistancePoint;
 
-    for(tuple<Solution*, float, int> p:assoc){
+    for(int i=0; i<assoc.size(); i++){
+        tuple<Solution*, float, int> p = assoc[i];
         if(get<1>(p) < minDistance){
             minDistance = get<1>(p);
-            minDistancePoint =  get<2>(p);
+            minDistancePoint = i;
         }
     }
 
@@ -1157,7 +1178,7 @@ void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
 
     int k=0;
     while(k<K) {
-        //conjunto J = pontos com menor niche count
+        //conjunto J = indices dos pontos com menor niche count
         vector<int> J = getLeastNicheCountPoints(refPoints);
         //escolhe elemento j aleatório em J
         int j = J[rand.next() % J.size()];
@@ -1165,14 +1186,16 @@ void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
         //conjunto I = elementos de Fl que estão associados a j
         vector<tuple<Solution *, float, int>> I;
         for(tuple<Solution *, float, int> el:assoc){
-            for(Solution* s:lastFront) {
-                if (get<0>(el) == s && get<2>(el) == j) {
-                    I.push_back(el);
+            if (get<2>(el) == j) {
+                for(Solution *s: lastFront) {
+                    if (get<0>(el) == s){
+                        I.push_back(el);
+                    }
                 }
             }
         }
 
-        //se I está vazio
+        //se I não está vazio
         if(!I.empty()) {
             Solution * s;
             int pos;
@@ -1195,18 +1218,20 @@ void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
         }
 
         else{
-            refPoints.erase(refPoints.begin()+j);
+            get<3>(refPoints[j])=-1;
+            //refPoints.erase(refPoints.begin()+j);
         }
     }
 }
 
 
 void Instance::NSGA3NextGen(int seed) {
+    Xoshiro256plus rand(seed);
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
 
     //Recombine and mutate parents into this vector
-    vector<Solution *> children = makeNewPopV3(parents, seed, parents.size());
+    vector<Solution *> children = makeNewPopV3(parents, rand.next()%30000, parents.size());
 
     //join parents and children into this vector
     vector<Solution *> all = parents;
@@ -1362,10 +1387,12 @@ Solution* Instance::INGM(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->getTFT() > sol->getTFT() &&
-                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->dominates(sol))   // If new_sol dominates sol
                 {
                     return new_sol;
+                }else if(!sol->dominates(new_sol)){
+
+                    this->updateArchive(new_sol);
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
             }
@@ -1455,10 +1482,12 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->getTFT() > sol->getTFT() &&
-                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->dominates(sol))    // If new_sol dominates sol
                 {
                     return new_sol;
+                }else if(!sol->dominates(new_sol)){
+
+                    this->updateArchive(new_sol);
                 }
                 new_sol->swap(f, largest_index, job, job2);
             }
@@ -1490,18 +1519,19 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
     // Generate the same number of new individuals as parents size
     // For each solution in parents, generate a neighbour
     int i = 0;
+    int cont =0;
     while (children.size() < parents.size()) {
         // Randomly choose which operator will be used to generate a neighbour
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
 
         if (rand_op == 0) {
-            sol_ptr = this->INGM(parents[i], seed);
+            sol_ptr = this->INGM(parents[i], rand.next()%30000);
         }
         else if (rand_op == 1) {
-            sol_ptr = this->SNGM(parents[i], seed);
+            sol_ptr = this->SNGM(parents[i], rand.next()%30000);
         }
         else {
-            sol_ptr = this->HNGM(parents[i], seed);
+            sol_ptr = this->HNGM(parents[i], rand.next()%30000);
         }
         i++;
         if (sol_ptr != nullptr) {
@@ -1509,6 +1539,12 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
         }
         if (i == parents.size())
             i = 0;
+
+       // if(cont == 3*parents.size()){
+        //    break;
+        //}
+
+        cont ++;
     }
 
     // Return children
