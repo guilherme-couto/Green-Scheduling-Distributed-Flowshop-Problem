@@ -70,7 +70,6 @@ Solution::~Solution()
         delete f;
     }
 
-    Util::allocate(this);
 }
 
 float Solution::getTEC()
@@ -225,4 +224,8 @@ void Solution::swap(int f1_id, int f2_id, Job *job1, Job *job2)
 
 int Solution::getNumFactories() {
     return this->factories.size();
+}
+
+vector<Factory*> Solution::getFactories(){
+    return this->factories;
 }

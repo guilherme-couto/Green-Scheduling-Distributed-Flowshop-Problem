@@ -369,7 +369,7 @@ void test_final(){
 
 
     csv = "id, alg, baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
-    outputToFile("../analysis/results_op.csv", csv, false);
+    outputToFile("../analysis/results_op.csv", csv, true);
 
    /* csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);
@@ -377,8 +377,8 @@ void test_final(){
     csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);*/
 
-    //csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
-    //outputToFile("../analysis/results_op.csv", csv, true);
+    csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
 
     //csv = runExperiment3("../instances/928/2-8-20__0.txt", 10, 0.0, 0, "op");
     //outputToFile("../analysis/results_op.csv", csv, true);

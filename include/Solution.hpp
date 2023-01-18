@@ -58,6 +58,7 @@ public:
     float getCrowdingDistance();
     void incrementCrowdingDistance(float val);
     void incrementDominationCounter(int val);
+    vector<Factory*> getFactories();
 
     // Operators
     void speedUp(int f_id);
