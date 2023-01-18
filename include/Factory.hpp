@@ -43,6 +43,8 @@ public:
     void addJobAtPosition(Job *job, int pos);
     void setJobs(vector<Job *> jobs);
     void setMachines(int m);
+    void setTECTFTChanged();
+    void setVForJobMachine(int job, int machine, float speed);
 
     void randSpeedDown(int seed);
     void speedDown();

@@ -76,7 +76,7 @@ int Factory::getTotalJobs()
 float Factory::getTEC()
 {
     if(!this->TECChanged){
-        //return this->TEC;
+        return this->TEC;
     }
 
     if (!this->jobs_start_times_initialized)
@@ -137,7 +137,7 @@ float Factory::getTEC()
 float Factory::getTFT()
 {
     if(!this->TFTChanged){
-     //   return this->TFT;
+        return this->TFT;
     }
 
 
@@ -355,15 +355,17 @@ void Factory::speedDown()
             previousSpeed = job->getV(j);
             indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
 
-            for (int v = indexPreviousSpeed /*this->speeds.size() - 1*/; v > 1; v--)
+            for (int v = indexPreviousSpeed; v > 1; v--)
             {
                 newSpeed = Factory::speeds[v - 1];
-                job->setVForMachine(j, newSpeed); // diminui para a próxima velocidade
+                //job->setVForMachine(j, newSpeed); // diminui para a próxima velocidade
+                this->setVForJobMachine(i, j, newSpeed);
                 newTFT = this->getTFT();
 
                 if (newTFT > previousTFT)
                 {
-                    job->setVForMachine(j, previousSpeed); // retorna à velocidade anterior
+                    //job->setVForMachine(j, previousSpeed); // retorna à velocidade anterior
+                    this->setVForJobMachine(i, j, previousSpeed);
                     break;
                 }
                 else
@@ -395,7 +397,8 @@ void Factory::randSpeedDown(int seed)
             int indexPreviousSpeed = auxFindIndex(Factory::speeds, previousSpeed);
             if(indexPreviousSpeed>0){
                 int indexNewSpeed = rand.next() % indexPreviousSpeed;
-                job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+               // job->setVForMachine(j, Factory::speeds[indexNewSpeed]);
+                this->setVForJobMachine(i, j, Factory::speeds[indexNewSpeed]);
             }
         }
     }
@@ -798,4 +801,15 @@ int Factory::getNumMachines()
 Job *Factory::getJob(int id)
 {
     return this->jobs[id];
+}
+
+void Factory::setTECTFTChanged(){
+    this->TECChanged =true;
+    this->TFTChanged=true;
+}
+
+void Factory::setVForJobMachine(int job, int machine, float speed){
+    this->jobs[job]->setVForMachine(machine, speed);
+    this->TECChanged =true;
+    this->TFTChanged=true;
 }
