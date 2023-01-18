@@ -300,7 +300,7 @@ vector<vector<Solution*>> getExperimentArchives(string path, int iterations, flo
 
 }
 
-string algorithCSV(string path, string alg, int baseSeed, int nsgaIterationsSum,int iterations, int N, vector<Solution*> trueParetoFront, vector<vector<Solution*>> algParetoArchive){
+string algorithmCSV(string path, string alg, int baseSeed, int nsgaIterationsSum, int iterations, int N, vector<Solution*> trueParetoFront, vector<vector<Solution*>> algParetoArchive){
     return path + ","+alg +"," + to_string(baseSeed)
            + "," + to_string(iterations)
            + "," + to_string((float)nsgaIterationsSum/(float)iterations)
@@ -341,9 +341,12 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
 
     trueParetoFront = Util::fastNonDominatedSort(trueParetoFront)[0];
 
-    csv += algorithCSV(path, "op", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront, alg1ParetoFronts);
-    csv += algorithCSV(path, "v3", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront, alg2ParetoFronts);
-    csv += algorithCSV(path, "nd", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront, alg3ParetoFronts);
+    csv += algorithmCSV(path, "op", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront,
+                        alg1ParetoFronts);
+    csv += algorithmCSV(path, "v3", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront,
+                        alg2ParetoFronts);
+    csv += algorithmCSV(path, "nd", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront,
+                        alg3ParetoFronts);
 
     Util::deallocate();
 
@@ -377,11 +380,11 @@ void test_final(){
     csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);*/
 
-    csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
-    outputToFile("../analysis/results_op.csv", csv, true);
+   // csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
+   // outputToFile("../analysis/results_op.csv", csv, true);
 
-    //csv = runExperiment3("../instances/928/2-8-20__0.txt", 10, 0.0, 0, "op");
-    //outputToFile("../analysis/results_op.csv", csv, true);
+    csv = runExperiment3("../instances/928/2-8-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
 
     csv = runExperiment3("../instances/928/2-16-20__0.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);
@@ -862,8 +865,8 @@ void test13(){
 int main()
 {
     cout << "Hello" << endl;
-    test13();
-    //test_final();
+    //test13();
+    test_final();
     return 0;
 
     // inicializa o construtivo
