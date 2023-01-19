@@ -15,8 +15,11 @@ Instance::Instance(int F, int n, int m, vector<vector<int>> t) {
 }
 
 Instance::~Instance() {
-    for (int i = 0; i < this->population.size(); i++) {
-        delete this->population[i];
+
+    if(this->population.size() > 0) {
+        for (int i = 0; i < this->population.size(); i++) {
+            delete this->population[i];
+        }
     }
 }
 
@@ -1477,7 +1480,7 @@ Solution* Instance::INGM(Solution *sol, int seed) {
                 }else if(new_sol->getTFT() < sol->getTFT() ||
                          new_sol->getTEC() < sol->getTEC()){
 
-                    //this->updateArchive(new_sol);
+                    this->updateArchive(new_sol);
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
             }
@@ -1576,7 +1579,7 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
                 }else if(new_sol->getTFT() < sol->getTFT() ||
                          new_sol->getTEC() < sol->getTEC()){
 
-                    //this->updateArchive(new_sol);
+                    this->updateArchive(new_sol);
                 }
                 new_sol->swap(f, largest_index, job, job2);
             }
@@ -1710,8 +1713,9 @@ Solution* Instance::INGM_ND(Solution *sol, int seed) {
                     new_sol->getFactory(f)->rightShift();
                 }
                 if (new_sol->getTFT() < sol->getTFT() ||
-                    new_sol->getTEC() < sol->getTEC())    // If new_sol dominates sol
+                    new_sol->getTEC() < sol->getTEC())    // If new_sol is non dominated
                 {
+                    this->updateArchive(new_sol);
                     return new_sol;
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
@@ -1803,8 +1807,9 @@ Solution* Instance::SNGM_ND(Solution *sol, int seed) {
                     new_sol->getFactory(f)->rightShift();
                 }
                 if (new_sol->getTFT() < sol->getTFT() ||
-                    new_sol->getTEC() < sol->getTEC())    // If new_sol dominates sol
+                    new_sol->getTEC() < sol->getTEC())    // If new_sol is non dominated by sol
                 {
+                    this->updateArchive(new_sol);
                     return new_sol;
                 }
                 new_sol->swap(f, largest_index, job, job2);

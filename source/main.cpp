@@ -693,7 +693,7 @@ void test6(){
     }
     //outputToFile("../analysis/after_nsga2_1.csv", instance->generatePopulationCSVString(), false);
 
-    delete instance;
+    //delete instance;
 
 }
 
