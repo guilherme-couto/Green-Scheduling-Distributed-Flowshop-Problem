@@ -1309,6 +1309,89 @@ void Instance::NSGA3NextGen(int seed) {
 }
 
 
+void Instance::NSGA3NextGen_operators_ND(int seed) {
+    Xoshiro256plus rand(seed);
+    vector<Solution *> parents = this->population;
+    vector<Solution *> nextGen;
+
+    //Recombine and mutate parents into this vector
+    vector<Solution *> children = makenewpop_operators_ND(parents, rand.next()%30000, parents.size());
+
+    //join parents and children into this vector
+    vector<Solution *> all = parents;
+    all.reserve(this->population.size() + children.size());
+    all.insert(all.end(), children.begin(), children.end());
+    this->population = all;
+
+    vector<vector<Solution *>> fronts = this->fastNonDominatedSort();
+
+    int inserted = 0;
+    int n = parents.size();
+    nextGen.reserve(n);
+
+    //insere enquanto o numero de elementos inseridos for menor q n
+    int l = 0;
+    for (int i = 0; inserted < n && i < fronts.size() - 1; i++) {
+        //nextGen.reserve(nextGen.size() + fronts[i].size());
+        //::assignCrowdingDistance(fronts[i]);
+
+        if (inserted + fronts[i].size() > n) {
+            l = i;
+            break;
+        }
+
+        for (int j = 0; j < fronts[i].size(); j++) {
+            nextGen.push_back(fronts[i][j]);
+            inserted++;
+        }
+    }
+
+    if (nextGen.size() < n) {
+        //sort(fronts[l].begin(), fronts[l].end(), crowdedCompare);
+
+        // Points to be chosen from Fl: K = N − |Pt+1|
+        int K = n - nextGen.size();
+        //TFT, TEC, niche count, *id
+        vector<tuple<float, float, int, int>> refPoints;
+
+        //normTFT, normTEC, Solution
+        vector<tuple<float, float, Solution*>> normalizedSolutions;
+
+        //Solution, distance to assoc. point, id of point in refPoints
+        vector<tuple<Solution *, float, int>> associationVector;
+
+        //Selected solutions
+        vector<Solution*> selected;
+        selected.reserve(K);
+
+        // Normalize objectives and create reference set Zr
+        normalize(this->population, refPoints, normalizedSolutions);
+
+        // Associate each member s of St with a reference point
+        associate(refPoints, normalizedSolutions, associationVector);
+
+        // Compute niche count of reference point j ∈ Zr
+
+        for(tuple<Solution *, float, int> a:associationVector){
+            for(Solution *s: nextGen){
+                if(s==get<0>(a)){
+                    int assocRefIndex = get<2>(a);
+                    get<2>(refPoints[assocRefIndex])++;
+                }
+            }
+        }
+        // Choose K members one at a time from Fl to construct Pt+1: Niching
+        niching(K, seed, refPoints, associationVector, fronts[l], selected);
+
+        for (int i = 0; nextGen.size() < n; i++) {
+            nextGen.push_back(selected[i]);
+        }
+    }
+
+    this->population = nextGen;
+
+}
+
 int Instance::nMetric() {
     return this->dominationFronts[0].size();
 }

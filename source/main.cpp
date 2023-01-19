@@ -258,12 +258,12 @@ vector<vector<Solution*>> getExperimentArchives(string path, int iterations, flo
 
             if(option == "nsga2-v3")
                 instance->NSGA2NextGen(nsgaIterationsSum+baseSeed);
-            else if (option == "nsga2-op")
-                instance->NSGA2NextGen_operators(nsgaIterationsSum+baseSeed);
             else if (option == "nsga2-nd")
                 instance->NSGA2NextGen_operators_ND(nsgaIterationsSum+baseSeed);
             else if (option == "nsga3-v3")
                 instance->NSGA3NextGen(nsgaIterationsSum+baseSeed);
+            else if (option == "nsga3-nd")
+                instance->NSGA3NextGen_operators_ND(nsgaIterationsSum+baseSeed);
 
             nsgaIterationsSum++;
             counter ++;
@@ -323,13 +323,13 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
     vector<vector<Solution*>> alg4ParetoFronts;
 
     int alg1Its=0;
-    //alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "nsga2-op");
+    alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "nsga2-v3");
     int alg2Its=0;
-    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-v3");
+    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-nd");
     int alg3Its=0;
-    alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nsga2-nd");
+    alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nsga3-v3");
     int alg4Its=0;
-    alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-v3");
+    alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-nd");
 
     vector<Solution*> alg1UnifiedParetoArchive = joinFronts(alg1ParetoFronts);
     vector<vector<Solution*>> alg1FirstFront = Util::fastNonDominatedSort(alg1UnifiedParetoArchive);
@@ -349,14 +349,18 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
 
     trueParetoFront = Util::fastNonDominatedSort(trueParetoFront)[0];
 
-    //csv += algorithmCSV(path, "nsga2-op", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront,
-    //                    alg1ParetoFronts);
-    csv += algorithmCSV(path, "nsga3-v3", baseSeed, alg4Its, iterations, alg4FirstFront.size(), trueParetoFront,
-                        alg4ParetoFronts);
-    csv += algorithmCSV(path, "nsga2-v3", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront,
+    csv += algorithmCSV(path, "nsga2-v3", baseSeed, alg1Its, iterations, alg1FirstFront.size(), trueParetoFront,
+                        alg1ParetoFronts);
+
+    csv += algorithmCSV(path, "nsga2-nd", baseSeed, alg2Its, iterations, alg2FirstFront.size(), trueParetoFront,
                         alg2ParetoFronts);
-    csv += algorithmCSV(path, "nsga2-nd", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront,
+
+    csv += algorithmCSV(path, "nsga3-v3", baseSeed, alg3Its, iterations, alg3FirstFront.size(), trueParetoFront,
                         alg3ParetoFronts);
+
+    csv += algorithmCSV(path, "nsga3-nd", baseSeed, alg4Its, iterations, alg4FirstFront.size(), trueParetoFront,
+                        alg4ParetoFronts);
+
 
     Util::deallocate();
 

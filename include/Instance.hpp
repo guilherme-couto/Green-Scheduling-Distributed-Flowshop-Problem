@@ -49,6 +49,7 @@ public:
     void printPopulation();
     string generatePopulationCSVString();
     void NSGA3NextGen(int seed);
+    void NSGA3NextGen_operators_ND(int seed);
     void NSGA2NextGen(int seed);
     void NSGA2NextGen_operators(int seed);
     void NSGA2NextGen_operators_ND(int seed);
