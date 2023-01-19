@@ -250,7 +250,7 @@ vector<vector<Solution*>> getExperimentArchives(string path, int iterations, flo
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/10)
+            if (time_taken > instance->get_n()/2 || counter >=1000)
             {
                 cout << "Time's up! " << counter << " iterations in " << time_taken << " seconds" << endl;
                 break;
