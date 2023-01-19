@@ -325,11 +325,11 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
     int alg1Its=0;
     alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "nsga2-v3");
     int alg2Its=0;
-    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-nd");
+    //alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-nd");
     int alg3Its=0;
     alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nsga3-v3");
     int alg4Its=0;
-    alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-nd");
+    //alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-nd");
 
     vector<Solution*> alg1UnifiedParetoArchive = joinFronts(alg1ParetoFronts);
     vector<vector<Solution*>> alg1FirstFront = Util::fastNonDominatedSort(alg1UnifiedParetoArchive);
@@ -375,36 +375,8 @@ void test_final(){
 
     string csv;
 
-    /*csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
-    outputToFile("../analysis/results_v3.csv", csv, false);
-
-    csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "v3");
-    outputToFile("../analysis/results_v3.csv", csv, true);
-
-    csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "v3");
-    outputToFile("../analysis/results_v3.csv", csv, true);*/
-
-
     csv = "id, alg, baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
     outputToFile("../analysis/results_op.csv", csv, true);
-
-   /* csv = runExperiment2("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
-    outputToFile("../analysis/results_op.csv", csv, true);
-
-    csv = runExperiment2("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
-    outputToFile("../analysis/results_op.csv", csv, true);*/
-
-    //csv = runExperiment3("../instances/928/2-4-20__0.txt", 10, 0.0, 0, "op");
-    //outputToFile("../analysis/results_op.csv", csv, true);
-
-    //csv = runExperiment3("../instances/928/2-8-20__5.txt", 10, 0.0, 0, "op");
-    //outputToFile("../analysis/results_op.csv", csv, true);
-
-    //csv = runExperiment3("../instances/928/2-16-20__10.txt", 10, 0.0, 0, "op");
-    //outputToFile("../analysis/results_op.csv", csv, true);
-
-    //csv = runExperiment3("../instances/566/4-8-60__1.txt", 10, 0.0, 0, "op");
-    //outputToFile("../analysis/results_op.csv", csv, true);
 
     string folderPath = "../instances/566";
     for(int i=0; i<10; i++){
@@ -426,6 +398,72 @@ void test_final(){
 
 
     }
+}
+
+void test_final_amostra(){
+
+    string csv;
+
+
+    csv = "id, alg, baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+
+    csv = runExperiment3("../instances/566/2-4-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-4-60__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-4-100__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-4-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-4-60__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-4-100__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-60__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-100__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-8-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-8-60__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-8-100__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-60__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-100__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-16-20__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-16-60__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-16-100__0.txt", 10, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+
 }
 
 

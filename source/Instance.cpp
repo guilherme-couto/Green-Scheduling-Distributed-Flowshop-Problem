@@ -1480,7 +1480,7 @@ Solution* Instance::INGM(Solution *sol, int seed) {
                 }else if(new_sol->getTFT() < sol->getTFT() ||
                          new_sol->getTEC() < sol->getTEC()){
 
-                    this->updateArchive(new_sol);
+                    //this->updateArchive(new_sol);
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
             }
@@ -1579,7 +1579,7 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
                 }else if(new_sol->getTFT() < sol->getTFT() ||
                          new_sol->getTEC() < sol->getTEC()){
 
-                    this->updateArchive(new_sol);
+                   // this->updateArchive(new_sol);
                 }
                 new_sol->swap(f, largest_index, job, job2);
             }
@@ -1715,7 +1715,7 @@ Solution* Instance::INGM_ND(Solution *sol, int seed) {
                 if (new_sol->getTFT() < sol->getTFT() ||
                     new_sol->getTEC() < sol->getTEC())    // If new_sol is non dominated
                 {
-                    this->updateArchive(new_sol);
+                    //this->updateArchive(new_sol);
                     return new_sol;
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
@@ -1809,7 +1809,7 @@ Solution* Instance::SNGM_ND(Solution *sol, int seed) {
                 if (new_sol->getTFT() < sol->getTFT() ||
                     new_sol->getTEC() < sol->getTEC())    // If new_sol is non dominated by sol
                 {
-                    this->updateArchive(new_sol);
+                    //this->updateArchive(new_sol);
                     return new_sol;
                 }
                 new_sol->swap(f, largest_index, job, job2);
@@ -1842,6 +1842,7 @@ vector<Solution*> Instance::makenewpop_operators_ND(vector<Solution *> parents, 
     // Generate the same number of new individuals as parents size
     // For each solution in parents, generate a neighbour
     int i = 0;
+    int cont=0;
     while (children.size() < parents.size()) {
         // Randomly choose which operator will be used to generate a neighbour
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
@@ -1858,9 +1859,15 @@ vector<Solution*> Instance::makenewpop_operators_ND(vector<Solution *> parents, 
         i++;
         if (sol_ptr != nullptr) {
             children.push_back(sol_ptr);
+            cont =0;
         }
         if (i == parents.size())
             i = 0;
+
+         if(cont == 10*parents.size()){
+            break;
+        }
+         cont++;
     }
 
     // Return children
