@@ -250,7 +250,7 @@ vector<vector<Solution*>> getExperimentArchives(string path, int iterations, flo
         {
             end = clock();
             double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-            if (time_taken > instance->get_n()/20)
+            if (time_taken > instance->get_n()/10)
             {
                 cout << "Time's up! " << counter << " iterations in " << time_taken << " seconds" << endl;
                 break;
@@ -325,11 +325,11 @@ string runExperiment3(string path, int iterations, float stopTime, int baseSeed,
     int alg1Its=0;
     alg1ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg1Its, "nsga2-v3");
     int alg2Its=0;
-    //alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-nd");
+    alg2ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed, alg2Its, "nsga2-nd");
     int alg3Its=0;
     alg3ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg3Its, "nsga3-v3");
     int alg4Its=0;
-    //alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-nd");
+    alg4ParetoFronts = getExperimentArchives(path, iterations, stopTime, baseSeed,alg4Its, "nsga3-nd");
 
     vector<Solution*> alg1UnifiedParetoArchive = joinFronts(alg1ParetoFronts);
     vector<vector<Solution*>> alg1FirstFront = Util::fastNonDominatedSort(alg1UnifiedParetoArchive);
@@ -463,6 +463,72 @@ void test_final_amostra(){
     csv = runExperiment3("../instances/566/5-16-100__0.txt", 10, 0.0, 0, "op");
     outputToFile("../analysis/results_op.csv", csv, true);
 
+
+}
+
+void test_final_amostra_2_fab(){
+
+    string csv;
+
+    csv = "id, alg, baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-4-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-4-60__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-4-100__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-60__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-100__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-60__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-100__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+
+}
+
+void test_final_amostra_20(){
+
+    string csv;
+
+
+    csv = "id, alg, baseSeed,iterations,nsgaIterations,N,D(antiga),GD,IGD,S\n";
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+
+    csv = runExperiment3("../instances/566/2-4-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-4-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-8-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-8-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/2-16-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
+
+    csv = runExperiment3("../instances/566/5-16-20__0.txt", 5, 0.0, 0, "op");
+    outputToFile("../analysis/results_op.csv", csv, true);
 
 }
 
@@ -943,7 +1009,7 @@ void test13(){
 int main()
 {
     cout << "Hello" << endl;
-    test_final();
+    test_final_amostra_2_fab();
     return 0;
 
     // inicializa o construtivo

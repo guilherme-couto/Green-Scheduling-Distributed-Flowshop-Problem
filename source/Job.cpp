@@ -4,7 +4,7 @@
 Job::Job(Job *j) {
     this->id = j->id;
     this->factory_id = j->factory_id;
-    this->position = j->position;
+    //this->position = j->position;
     this->t = j->t;
     this->v = j->v;
     this->C = j->C;

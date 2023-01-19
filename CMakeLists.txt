@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.20)
 project(Green_Scheduling_Distributed_Flowshop_Problem)
 
 set(CMAKE_CXX_STANDARD 14)
+SET(CMAKE_CXX_FLAGS "-O3")
+SET(CMAKE_C_FLAGS "-O3")
 
 include_directories(include)
 

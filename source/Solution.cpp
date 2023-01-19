@@ -3,8 +3,8 @@
 
 Solution::Solution(Solution *sol) {
     this->V = sol->V;
-    this->EC_f = sol->EC_f;
-    this->FT_f = sol->FT_f;
+    //this->EC_f = sol->EC_f;
+    //this->FT_f = sol->FT_f;
     this->n = sol->n;
     this->m = sol->m;
     this->F = sol->F;
