@@ -1520,7 +1520,7 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
     // For each solution in parents, generate a neighbour
     int i = 0;
     int cont =0;
-    while (children.size() < parents.size()) {
+    while (i < parents.size()) {
         // Randomly choose which operator will be used to generate a neighbour
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
 
@@ -1537,8 +1537,7 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
         if (sol_ptr != nullptr) {
             children.push_back(sol_ptr);
         }
-        if (i == parents.size())
-            i = 0;
+
 
        // if(cont == 3*parents.size()){
         //    break;
@@ -1754,13 +1753,13 @@ vector<Solution*> Instance::makenewpop_operators_ND(vector<Solution *> parents, 
         int rand_op = rand.next() % 3;  // 0 = INGM, 1 = SNGM, 2 = HNGM
 
         if (rand_op == 0) {
-            sol_ptr = this->INGM_ND(parents[i], seed);
+            sol_ptr = this->INGM_ND(parents[i], rand.next()%30000);
         }
         else if (rand_op == 1) {
-            sol_ptr = this->SNGM_ND(parents[i], seed);
+            sol_ptr = this->SNGM_ND(parents[i], rand.next()%30000);
         }
         else {
-            sol_ptr = this->HNGM_ND(parents[i], seed);
+            sol_ptr = this->HNGM_ND(parents[i], rand.next()%30000);
         }
         i++;
         if (sol_ptr != nullptr) {

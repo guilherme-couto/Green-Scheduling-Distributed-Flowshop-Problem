@@ -681,7 +681,7 @@ void test6(){
     outputToFile("../analysis/test_6_nsga2_only_swap/csv/before.csv", instance->generatePopulationCSVString(), false);
     for (int i = 0; i < 100; i++)
     {
-        instance->NSGA2NextGen(i);
+        instance->NSGA2NextGen_operators(i);
         //if(i%5==0) {
             outputToFile("../analysis/test_6_nsga2_only_swap/csv/after_" + to_string(i + 1) + ".csv",
                          instance->generatePopulationCSVString(), false);
@@ -901,8 +901,7 @@ void test13(){
 int main()
 {
     cout << "Hello" << endl;
-    //test6();
-    test_final();
+    test6();
     return 0;
 
     // inicializa o construtivo

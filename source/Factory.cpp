@@ -516,67 +516,104 @@ void Factory::speedUp()
     // The critical job is the last job of the sequence
     int critical_job_id = this->jobs.size() - 1;
 
-    float min_idle_time = INFINITY;
-    int min_idle_time_machine = -1;
+    // if factory has more than one job
+    if(this->getNumJobs() > 1) {
+        float min_idle_time = INFINITY;
+        int min_idle_time_machine = -1;
 
-    // Find where is the smallest idle time between the critical job and its predecessor
-    for (int j = 1; j < this->m; j++)
-    {
-        float idle_time = this->jobs[critical_job_id]->getStartTime(j) - (this->jobs[critical_job_id - 1]->getStartTime(j) + this->jobs[critical_job_id - 1]->getP(j));
-        if (idle_time < min_idle_time && idle_time > 0)
-        {
-            min_idle_time = idle_time;
-            min_idle_time_machine = j;
+        // Find where is the smallest idle time between the critical job and its predecessor
+        for (int j = 1; j < this->m; j++) {
+            float idle_time = this->jobs[critical_job_id]->getStartTime(j) -
+                              (this->jobs[critical_job_id - 1]->getStartTime(j) +
+                               this->jobs[critical_job_id - 1]->getP(j));
+            if (idle_time < min_idle_time && idle_time > 0) {
+                min_idle_time = idle_time;
+                min_idle_time_machine = j;
+            }
+        }
+
+        // Speed up the critical job to the maximum possible speed without overlapping the next machine start time
+        if (min_idle_time_machine != -1) {
+            int j = 0;
+            while (j < min_idle_time_machine) {
+                float speed = this->jobs[critical_job_id]->getV(j);
+
+                // If the job isnt at the maximum speed, speed it up and left shift the critical job on the following machines
+                if (speed < this->speeds[this->speeds.size() - 1]) {
+                    float new_speed = this->speeds[0];
+
+                    // Select the new speed. Will be the closest higher speed to the current one
+                    for (int s = 0; s < this->speeds.size(); s++) {
+                        if (speed == this->speeds[s]) {
+                            new_speed = this->speeds[s + 1];
+                            break;
+                        }
+                    }
+
+                    // Check if the new speed will overlap the available idle time
+                    float actual_job_p = this->jobs[critical_job_id]->getP(j);
+                    float job_t_j = this->jobs[critical_job_id]->getT_j(j);
+                    float new_job_p = job_t_j / new_speed;
+
+                    float reduction = actual_job_p - new_job_p;
+
+                    if (reduction <= min_idle_time) {
+                        // Speed up the job
+                        this->jobs[critical_job_id]->setVForMachine(j, new_speed);
+
+                        // Left shift the critical job on the following machines
+                        for (int k = j + 1; k < this->m; k++) {
+                            float new_start_time = this->jobs[critical_job_id]->getStartTime(k) - reduction;
+                            this->jobs[critical_job_id]->setStartTime(k, new_start_time);
+                        }
+
+                        this->TECChanged = true;
+                        this->TFTChanged = true;
+
+                        return;
+                    }
+                }
+                j++;
+            }
         }
     }
-
-    // Speed up the critical job to the maximum possible speed without overlapping the next machine start time
-    if (min_idle_time_machine != -1)
+    else if (this->getNumJobs() == 1)
     {
+        // First try the first machine
         int j = 0;
-        while (j < min_idle_time_machine)
-        {
+
+        while(j < this->m) {
+
             float speed = this->jobs[critical_job_id]->getV(j);
 
-            // If the job isnt at the maximum speed for the machine, speed it up and left shift the criticaç job on the following machines
-            if (speed < this->speeds[this->speeds.size() - 1])
-            {
-                float new_speed;
+            // If the job isnt at the maximum speed, speed it up and left shift the critical job on the following machines
+            if (speed < this->speeds.back()) {
+
+                float new_speed = this->speeds[0];
 
                 // Select the new speed. Will be the closest higher speed to the current one
-                for (int s = 0; s < this->speeds.size(); s++)
-                {
-                    if (speed == this->speeds[s])
-                    {
+                for (int s = 0; s < this->speeds.size(); s++) {
+                    if (speed == this->speeds[s]) {
                         new_speed = this->speeds[s + 1];
                         break;
                     }
                 }
 
-                // Check if the new speed will overlap the available idle time
                 float actual_job_p = this->jobs[critical_job_id]->getP(j);
                 float job_t_j = this->jobs[critical_job_id]->getT_j(j);
                 float new_job_p = job_t_j / new_speed;
 
                 float reduction = actual_job_p - new_job_p;
 
-                if (reduction <= min_idle_time)
-                {
-                    // Speed up the job
-                    this->jobs[critical_job_id]->setVForMachine(j, new_speed);
-
-                    // Left shift the critical job on the following machines
-                    for (int k = j + 1; k < this->m; k++)
-                    {
-                        float new_start_time = this->jobs[critical_job_id]->getStartTime(k) - reduction;
-                        this->jobs[critical_job_id]->setStartTime(k, new_start_time);
-                    }
-
-                    this->TECChanged = true;
-                    this->TFTChanged = true;
-
-                    return;
+                // Left shift the critical job on the following machines
+                for (int k = j + 1; k < this->m; k++) {
+                    float new_start_time = this->jobs[critical_job_id]->getStartTime(k) - reduction;
+                    this->jobs[critical_job_id]->setStartTime(k, new_start_time);
                 }
+                this->TECChanged = true;
+                this->TFTChanged = true;
+
+                return;
             }
             j++;
         }
@@ -597,67 +634,111 @@ void Factory::randSpeedUp(int seed)
         job_id = rand.next() % this->jobs.size();
     } while (job_id == 0);
 
-    float min_idle_time = INFINITY;
-    int min_idle_time_machine = -1;
+    if(this->getNumJobs() > 1) {
+        float min_idle_time = INFINITY;
+        int min_idle_time_machine = -1;
 
-    // Find where is the smallest idle time between the critical job and its predecessor
-    for (int j = 1; j < this->m; j++)
-    {
-        float idle_time = this->jobs[job_id]->getStartTime(j) - (this->jobs[job_id - 1]->getStartTime(j) + this->jobs[job_id - 1]->getP(j));
+        // Find where is the smallest idle time between the critical job and its predecessor
+        for (int j = 1; j < this->m; j++) {
+            float idle_time = this->jobs[job_id]->getStartTime(j) -
+                              (this->jobs[job_id - 1]->getStartTime(j) + this->jobs[job_id - 1]->getP(j));
 
-        if (idle_time < min_idle_time && idle_time > 0)
-        {
-            min_idle_time = idle_time;
-            min_idle_time_machine = j;
+            if (idle_time < min_idle_time && idle_time > 0) {
+                min_idle_time = idle_time;
+                min_idle_time_machine = j;
+            }
+        }
+
+        // Speed up the critical job to the maximum possible speed without overlapping the next machine start time
+        if (min_idle_time_machine != -1) {
+            int j = 0;
+            while (j < min_idle_time_machine) {
+                float speed = this->jobs[job_id]->getV(j);
+
+                // If the job isnt at the maximum speed for the machine, speed it up and left shift the criticaç job on the following machines
+                if (speed < this->speeds[this->speeds.size() - 1]) {
+                    float new_speed;
+
+                    // Select the new speed. Will be the closest higher speed to the current one
+                    for (int s = 0; s < this->speeds.size(); s++) {
+                        if (speed == this->speeds[s]) {
+                            new_speed = this->speeds[s + 1];
+                            break;
+                        }
+                    }
+
+                    // Check if the new speed will overlap the available idle time
+                    float actual_job_p = this->jobs[job_id]->getP(j);
+                    float job_t_j = this->jobs[job_id]->getT_j(j);
+                    float new_job_p = job_t_j / new_speed;
+
+                    float reduction = actual_job_p - new_job_p;
+
+                    if (reduction <= min_idle_time) {
+                        // Speed up the job
+                        this->jobs[job_id]->setVForMachine(j, new_speed);
+
+                        // Left shift the critical job and its predecessors on the following machines
+                        for (int k = j + 1; k < this->m; k++) {
+
+                            float new_start_time = this->jobs[job_id]->getStartTime(k) - reduction;
+                            this->jobs[job_id]->setStartTime(k, new_start_time);
+                            if (job_id != this->jobs.back()->getId())
+                            {
+                                for (int i = job_id+1; i < this->jobs.size(); ++i) {
+                                    new_start_time = this->jobs[i]->getStartTime(k) - reduction;
+                                    this->jobs[i]->setStartTime(k, new_start_time);
+                                }
+                            }
+                        }
+
+                        this->TECChanged = true;
+                        this->TFTChanged = true;
+                        return;
+                    }
+                }
+                j++;
+            }
         }
     }
-
-    // Speed up the critical job to the maximum possible speed without overlapping the next machine start time
-    if (min_idle_time_machine != -1)
+    else if (this->getNumJobs() == 1)
     {
+        // First try the first machine
         int j = 0;
-        while (j < min_idle_time_machine)
-        {
+
+        while(j < this->m) {
+
             float speed = this->jobs[job_id]->getV(j);
 
-            // If the job isnt at the maximum speed for the machine, speed it up and left shift the criticaç job on the following machines
-            if (speed < this->speeds[this->speeds.size() - 1])
-            {
-                float new_speed;
+            // If the job isnt at the maximum speed, speed it up and left shift the critical job on the following machines
+            if (speed < this->speeds.back()) {
+
+                float new_speed = this->speeds[0];
 
                 // Select the new speed. Will be the closest higher speed to the current one
-                for (int s = 0; s < this->speeds.size(); s++)
-                {
-                    if (speed == this->speeds[s])
-                    {
+                for (int s = 0; s < this->speeds.size(); s++) {
+                    if (speed == this->speeds[s]) {
                         new_speed = this->speeds[s + 1];
                         break;
                     }
                 }
 
-                // Check if the new speed will overlap the available idle time
                 float actual_job_p = this->jobs[job_id]->getP(j);
                 float job_t_j = this->jobs[job_id]->getT_j(j);
                 float new_job_p = job_t_j / new_speed;
 
                 float reduction = actual_job_p - new_job_p;
 
-                if (reduction <= min_idle_time)
-                {
-                    // Speed up the job
-                    this->jobs[job_id]->setVForMachine(j, new_speed);
+                // Left shift the critical job on the following machines
+                for (int k = j + 1; k < this->m; k++) {
+                    float new_start_time = this->jobs[job_id]->getStartTime(k) - reduction;
+                    this->jobs[job_id]->setStartTime(k, new_start_time);
 
-                    // Left shift the critical job on the following machines
-                    for (int k = j + 1; k < this->m; k++)
-                    {
-                        float new_start_time = this->jobs[job_id]->getStartTime(k) - reduction;
-                        this->jobs[job_id]->setStartTime(k, new_start_time);
-                    }
-
-                    this->TECChanged = true;
-                    this->TFTChanged = true;
-                    return;
                 }
+                this->TECChanged = true;
+                this->TFTChanged = true;
+
+                return;
             }
             j++;
         }
