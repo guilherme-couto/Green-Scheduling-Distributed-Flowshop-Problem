@@ -209,7 +209,7 @@ void Solution::insert(int from_f_id, int to_f_id, Job *job, int pos)
 
 void Solution::swap(int f1_id, int f2_id, Job *job1, Job *job2)
 {
-    if(f1_id == f2_id && job1->getId() == job2->getId()){
+    if(job1->getId() == job2->getId()){
         return;
     }
 

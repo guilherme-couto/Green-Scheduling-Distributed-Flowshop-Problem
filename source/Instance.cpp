@@ -1387,12 +1387,14 @@ Solution* Instance::INGM(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->dominates(sol))   // If new_sol dominates sol
+                if (new_sol->getTFT() > sol->getTFT() &&
+                    new_sol->getTEC() > sol->getTEC())   // If new_sol dominates sol
                 {
                     return new_sol;
-                }else if(!sol->dominates(new_sol)){
+                }else if(new_sol->getTFT() > sol->getTFT() ||
+                         new_sol->getTEC() > sol->getTEC()){
 
-                    this->updateArchive(new_sol);
+                    //this->updateArchive(new_sol);
                 }
                 new_sol->insert(f, largest_index, job, random_job_index);
             }
@@ -1455,8 +1457,10 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
                         tag = true;
                         break;
                     }
-                    else
-                        job2 = new_sol->getFactory(f)->getJobs().at(pos++);
+                    else {
+                        pos ++;
+                        job2 = new_sol->getFactory(f)->getJobs().at(pos);
+                    }
                 }
                 // Needs to change factory
                 if(tag)
@@ -1482,12 +1486,14 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->dominates(sol))    // If new_sol dominates sol
+                if (new_sol->getTFT() > sol->getTFT() &&
+                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
                 {
                     return new_sol;
-                }else if(!sol->dominates(new_sol)){
+                }else if(new_sol->getTFT() > sol->getTFT() ||
+                         new_sol->getTEC() > sol->getTEC()){
 
-                    this->updateArchive(new_sol);
+                    //this->updateArchive(new_sol);
                 }
                 new_sol->swap(f, largest_index, job, job2);
             }
