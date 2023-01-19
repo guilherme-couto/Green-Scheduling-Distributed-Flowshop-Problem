@@ -1349,7 +1349,7 @@ Solution* Instance::INGM(Solution *sol, int seed) {
     }
 
     vector<Job *> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
-    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
+    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getNumJobs();
 
     while (jobs_to_try.size() > largest_f_total_jobs / 2) {
         // Get a random job and extract from the factory
@@ -1387,12 +1387,12 @@ Solution* Instance::INGM(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->getTFT() > sol->getTFT() &&
-                    new_sol->getTEC() > sol->getTEC())   // If new_sol dominates sol
+                if (new_sol->getTFT() < sol->getTFT() &&
+                    new_sol->getTEC() < sol->getTEC())   // If new_sol dominates sol
                 {
                     return new_sol;
-                }else if(new_sol->getTFT() > sol->getTFT() ||
-                         new_sol->getTEC() > sol->getTEC()){
+                }else if(new_sol->getTFT() < sol->getTFT() ||
+                         new_sol->getTEC() < sol->getTEC()){
 
                     //this->updateArchive(new_sol);
                 }
@@ -1435,7 +1435,7 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
     }
 
     vector<Job *> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
-    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
+    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getNumJobs();
     while (jobs_to_try.size() > largest_f_total_jobs / 2) {
         // Get a random job
         int random_job_index = rand.next() % jobs_to_try.size();
@@ -1486,12 +1486,12 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->getTFT() > sol->getTFT() &&
-                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->getTFT() < sol->getTFT() &&
+                    new_sol->getTEC() < sol->getTEC())    // If new_sol dominates sol
                 {
                     return new_sol;
-                }else if(new_sol->getTFT() > sol->getTFT() ||
-                         new_sol->getTEC() > sol->getTEC()){
+                }else if(new_sol->getTFT() < sol->getTFT() ||
+                         new_sol->getTEC() < sol->getTEC()){
 
                     //this->updateArchive(new_sol);
                 }
@@ -1588,7 +1588,7 @@ Solution* Instance::INGM_ND(Solution *sol, int seed) {
     }
 
     vector<Job *> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
-    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
+    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getNumJobs();
 
     while (jobs_to_try.size() > largest_f_total_jobs / 2) {
         // Get a random job and extract from the factory
@@ -1626,8 +1626,8 @@ Solution* Instance::INGM_ND(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->getTFT() > sol->getTFT() ||
-                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->getTFT() < sol->getTFT() ||
+                    new_sol->getTEC() < sol->getTEC())    // If new_sol dominates sol
                 {
                     return new_sol;
                 }
@@ -1670,7 +1670,7 @@ Solution* Instance::SNGM_ND(Solution *sol, int seed) {
     }
 
     vector<Job *> jobs_to_try = new_sol->getFactory(largest_index)->getJobs();
-    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getTotalJobs();
+    int largest_f_total_jobs = new_sol->getFactory(largest_index)->getNumJobs();
     while (jobs_to_try.size() > largest_f_total_jobs / 2) {
         // Get a random job
         int random_job_index = rand.next() % jobs_to_try.size();
@@ -1719,8 +1719,8 @@ Solution* Instance::SNGM_ND(Solution *sol, int seed) {
                     new_sol->getFactory(f)->speedDown();
                     new_sol->getFactory(f)->rightShift();
                 }
-                if (new_sol->getTFT() > sol->getTFT() ||
-                    new_sol->getTEC() > sol->getTEC())    // If new_sol dominates sol
+                if (new_sol->getTFT() < sol->getTFT() ||
+                    new_sol->getTEC() < sol->getTEC())    // If new_sol dominates sol
                 {
                     return new_sol;
                 }
