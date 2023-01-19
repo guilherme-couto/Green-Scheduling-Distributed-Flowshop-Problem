@@ -905,7 +905,7 @@ void test13(){
 int main()
 {
     cout << "Hello" << endl;
-    test6();
+    test_final();
     return 0;
 
     // inicializa o construtivo
