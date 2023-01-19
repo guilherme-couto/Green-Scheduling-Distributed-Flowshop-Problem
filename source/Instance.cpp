@@ -1318,7 +1318,7 @@ void Instance::NSGA3NextGen_operators_ND(int seed) {
     vector<Solution *> nextGen;
 
     //Recombine and mutate parents into this vector
-    vector<Solution *> children = makenewpop_operators_ND(parents, rand.next()%30000, parents.size());
+    vector<Solution *> children = makenewpop_operators_ND(parents, rand.next()%30000);
 
     //join parents and children into this vector
     vector<Solution *> all = parents;
