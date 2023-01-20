@@ -10,4 +10,6 @@ cmake --build .
 
 And to execute the experiments:
 
-`.\Green_Scheduling_Distributed_Flowshop_Problem`
+```
+.\Green_Scheduling_Distributed_Flowshop_Problem
+```
