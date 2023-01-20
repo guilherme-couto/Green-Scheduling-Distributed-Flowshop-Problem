@@ -3,8 +3,10 @@ Comparative Study of Green Scheduling Distributed Flowshop Problem using NSGA-II
 
 Our project uses CMake. For compilation, open the project folder and run:
 
-`cmake .`
-`cmake --build .`
+```
+cmake .
+cmake --build .
+```
 
 And to execute the experiments:
 
