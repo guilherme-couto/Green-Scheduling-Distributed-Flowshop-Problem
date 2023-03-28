@@ -621,7 +621,7 @@ void test()
 void test2()
 {
     //string path =  "../instances/test_instance1.txt";
-    string path =  "../instances/928/2-4-20__0.txt";
+    string path =  "../instances/566/2-8-100__0.txt";
     Instance *instance = readFile(path);
     for (int i = 0; i < 100; i++)
     {
@@ -1009,7 +1009,8 @@ void test13(){
 int main()
 {
     cout << "Hello" << endl;
-    test_final_amostra_2_fab();
+    //test_final_amostra_2_fab();
+    test2();
     return 0;
 
     // inicializa o construtivo
