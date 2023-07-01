@@ -1,6 +1,6 @@
 #include "defines.hpp"
 
-Instance::Instance(int F, int n, int m, vector<vector<int>> t) {
+Problem::Problem(int F, int n, int m, vector<vector<int>> t) {
     this->F = F;
     this->n = n;
     this->m = m;
@@ -14,7 +14,7 @@ Instance::Instance(int F, int n, int m, vector<vector<int>> t) {
     Factory::setSpeeds(this->speeds);
 }
 
-Instance::~Instance() {
+Problem::~Problem() {
 
     if(this->population.size() > 0) {
         for (int i = 0; i < this->population.size(); i++) {
@@ -23,23 +23,23 @@ Instance::~Instance() {
     }
 }
 
-int Instance::getF() {
+int Problem::getF() {
     return this->F;
 }
 
-int Instance::get_n() {
+int Problem::get_n() {
     return this->n;
 }
 
-int Instance::get_m() {
+int Problem::get_m() {
     return this->m;
 }
 
-vector<Solution*> Instance::getParetoArchive(){
+vector<Solution*> Problem::getParetoArchive(){
     return this->paretoArchive;
 }
 
-void Instance::updateArchive(Solution *sol) {
+void Problem::updateArchive(Solution *sol) {
     for(int i=0; i<this->paretoArchive.size(); i++){
         if(paretoArchive[i]->dominates(sol)){
             return;
@@ -55,11 +55,11 @@ void Instance::updateArchive(Solution *sol) {
     paretoArchive.push_back(sol);
 }
 
-int Instance::get_t(int machine_id, int job_id) {
+int Problem::get_t(int machine_id, int job_id) {
     return t[machine_id][job_id];
 }
 
-void Instance::construtivo() {
+void Problem::construtivo() {
 
     for (int i = 0; i < 4; i++) {
         this->balancedRandomSolutionGenerator(i);
@@ -78,7 +78,7 @@ bool compareSolutionsByTEC(Solution *a, Solution *b) {
     return a->getTEC() < b->getTEC();
 }
 
-Solution *Instance::maxSMinTFT() {
+Solution *Problem::maxSMinTFT() {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
     int highestSpeed = this->speeds.size() - 1;
@@ -150,7 +150,7 @@ Solution *Instance::maxSMinTFT() {
     return solution;
 }
 
-Solution *Instance::randSMinTFT(int seed) {
+Solution *Problem::randSMinTFT(int seed) {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
     Xoshiro256plus rand(/*time(NULL) +*/ seed);
@@ -225,7 +225,7 @@ Solution *Instance::randSMinTFT(int seed) {
     return solution;
 }
 
-Solution *Instance::minSMinTEC() {
+Solution *Problem::minSMinTEC() {
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
     vector<Job *> jobs(this->get_n());
 
@@ -296,7 +296,7 @@ Solution *Instance::minSMinTEC() {
     return solution;
 }
 
-Solution *Instance::randSMinTEC(int seed) {
+Solution *Problem::randSMinTEC(int seed) {
     Xoshiro256plus rand(/*time(NULL) +*/ seed);
 
     Solution *solution = new Solution(this->get_n(), this->get_m(), this->getF());
@@ -370,7 +370,7 @@ Solution *Instance::randSMinTEC(int seed) {
     return solution;
 }
 
-void Instance::balancedRandomSolutionGenerator(int s) {
+void Problem::balancedRandomSolutionGenerator(int s) {
     Xoshiro256plus rand(/*time(NULL) +*/ s);
 
     Solution *sol = new Solution(this->n, this->m, this->F);
@@ -428,7 +428,7 @@ void Instance::balancedRandomSolutionGenerator(int s) {
     }
 }
 
-void Instance::totalRandomSolutionGenerator(int s) {
+void Problem::totalRandomSolutionGenerator(int s) {
     Xoshiro256plus rand(/*time(NULL) +*/ s);
 
     Solution *sol = new Solution(this->n, this->m, this->F);
@@ -493,7 +493,7 @@ void Instance::totalRandomSolutionGenerator(int s) {
     }
 }
 
-void Instance::printPopulation() {
+void Problem::printPopulation() {
     cout << "\nPOPULATION "
          << "(with " << this->population.size() << " solutions)" << endl;
 
@@ -503,7 +503,7 @@ void Instance::printPopulation() {
     }
 }
 
-string Instance::generatePopulationCSVString() {
+string Problem::generatePopulationCSVString() {
     string str = "id, TFT, TEC, level, cd\n";
     Solution *solution;
 
@@ -518,7 +518,7 @@ string Instance::generatePopulationCSVString() {
     return str;
 }
 
-vector<vector<Solution *>> Instance::fastNonDominatedSort(vector<Solution *> population) {
+vector<vector<Solution *>> Problem::fastNonDominatedSort(vector<Solution *> population) {
 
     vector<vector<int>> fronts(1);
     vector<vector<int>> dominatedBy(population.size());
@@ -581,7 +581,7 @@ vector<vector<Solution *>> Instance::fastNonDominatedSort(vector<Solution *> pop
     return solutionFronts;
 }
 
-vector<vector<Solution *>> Instance::fastNonDominatedSort() {
+vector<vector<Solution *>> Problem::fastNonDominatedSort() {
 
     vector<vector<int>> fronts(1);
     vector<vector<int>> dominatedBy(population.size());
@@ -644,7 +644,7 @@ vector<vector<Solution *>> Instance::fastNonDominatedSort() {
     return solutionFronts;
 }
 
-void Instance::assignCrowdingDistance() {
+void Problem::assignCrowdingDistance() {
     int numObjectives = 2;
 
     for (int i = 0; i < population.size(); i++) {
@@ -863,7 +863,7 @@ vector<Solution *> makeNewPopV3(vector<Solution *> parents, int seed, int n) {
     return children;
 }
 
-void Instance::NSGA2NextGen(int seed) {
+void Problem::NSGA2NextGen(int seed) {
     Xoshiro256plus rand(seed);
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
@@ -916,7 +916,7 @@ void Instance::NSGA2NextGen(int seed) {
     this->population = nextGen;
 }
 
-void Instance::NSGA2NextGen_operators(int seed) {
+void Problem::NSGA2NextGen_operators(int seed) {
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
 
@@ -969,7 +969,7 @@ void Instance::NSGA2NextGen_operators(int seed) {
     this->population = nextGen;
 }
 
-void Instance::NSGA2NextGen_operators_ND(int seed) {
+void Problem::NSGA2NextGen_operators_ND(int seed) {
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
 
@@ -1228,7 +1228,7 @@ void niching(int K, int seed, vector<tuple<float, float, int, int>> &refPoints,
 }
 
 
-void Instance::NSGA3NextGen(int seed) {
+void Problem::NSGA3NextGen(int seed) {
     Xoshiro256plus rand(seed);
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
@@ -1312,7 +1312,7 @@ void Instance::NSGA3NextGen(int seed) {
 }
 
 
-void Instance::NSGA3NextGen_operators_ND(int seed) {
+void Problem::NSGA3NextGen_operators_ND(int seed) {
     Xoshiro256plus rand(seed);
     vector<Solution *> parents = this->population;
     vector<Solution *> nextGen;
@@ -1395,15 +1395,15 @@ void Instance::NSGA3NextGen_operators_ND(int seed) {
 
 }
 
-int Instance::nMetric() {
+int Problem::nMetric() {
     return this->dominationFronts[0].size();
 }
 
-vector<Solution *> Instance::getParetoFront() {
+vector<Solution *> Problem::getParetoFront() {
     return this->dominationFronts[0];
 }
 
-Solution* Instance::INGM(Solution *sol, int seed) {
+Solution* Problem::INGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
     Solution *new_sol = new Solution(sol);
 
@@ -1489,7 +1489,7 @@ Solution* Instance::INGM(Solution *sol, int seed) {
     return nullptr;
 }
 
-Solution* Instance::SNGM(Solution *sol, int seed) {
+Solution* Problem::SNGM(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
     Solution *new_sol = new Solution(sol);
 
@@ -1588,7 +1588,7 @@ Solution* Instance::SNGM(Solution *sol, int seed) {
     return nullptr;
 }
 
-Solution* Instance::HNGM(Solution *sol, int seed) {
+Solution* Problem::HNGM(Solution *sol, int seed) {
     Xoshiro256plus rand(time(NULL));
 
     // Randomly choose INGM or SNGM
@@ -1600,7 +1600,7 @@ Solution* Instance::HNGM(Solution *sol, int seed) {
     return this->SNGM(sol, seed);
 }
 
-vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int seed) {
+vector<Solution*> Problem::makenewpop_operators(vector<Solution *> parents, int seed) {
     Xoshiro256plus rand(seed);
 
     // clear the new_individuals vector
@@ -1642,7 +1642,7 @@ vector<Solution*> Instance::makenewpop_operators(vector<Solution *> parents, int
     return children;
 }
 
-Solution* Instance::INGM_ND(Solution *sol, int seed) {
+Solution* Problem::INGM_ND(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
     Solution *new_sol = new Solution(sol);
 
@@ -1725,7 +1725,7 @@ Solution* Instance::INGM_ND(Solution *sol, int seed) {
     return nullptr;
 }
 
-Solution* Instance::SNGM_ND(Solution *sol, int seed) {
+Solution* Problem::SNGM_ND(Solution *sol, int seed) {
     Xoshiro256plus rand(seed);
     Solution *new_sol = new Solution(sol);
 
@@ -1819,7 +1819,7 @@ Solution* Instance::SNGM_ND(Solution *sol, int seed) {
     return nullptr;
 }
 
-Solution* Instance::HNGM_ND(Solution *sol, int seed) {
+Solution* Problem::HNGM_ND(Solution *sol, int seed) {
     Xoshiro256plus rand(time(NULL));
 
     // Randomly choose INGM or SNGM
@@ -1831,7 +1831,7 @@ Solution* Instance::HNGM_ND(Solution *sol, int seed) {
     return this->SNGM_ND(sol, seed);
 }
 
-vector<Solution*> Instance::makenewpop_operators_ND(vector<Solution *> parents, int seed) {
+vector<Solution*> Problem::makenewpop_operators_ND(vector<Solution *> parents, int seed) {
     Xoshiro256plus rand(seed);
 
     // clear the new_individuals vector

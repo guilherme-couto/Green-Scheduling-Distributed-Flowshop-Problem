@@ -72,12 +72,12 @@ string runExperiment(string path, int iterations, float stopTime, int baseSeed){
     //string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga), GD, IGD, S\n";
     string csv = "";
     vector<vector<Solution*>> paretoArchive;
-    vector<Instance*> instances;
+    vector<Problem*> instances;
     clock_t start, end;
 
     int nsgaIterationsSum = 0;
     for(int i=0; i<iterations; i++){
-        Instance *instance = readFile(path);
+        Problem *instance = readFile(path);
         instances.push_back(instance);
 
         start = clock();
@@ -148,12 +148,12 @@ string runExperiment2(string path, int iterations, float stopTime, int baseSeed,
     vector<vector<Solution*>> alg1ParetoArchive;
     vector<vector<Solution*>> alg2ParetoArchive;
     vector<vector<Solution*>> alg3ParetoArchive;
-    vector<Instance*> instances;
+    vector<Problem*> instances;
     clock_t start, end;
 
     int nsgaIterationsSum = 0;
     for(int i=0; i<iterations; i++){
-        Instance *instance = readFile(path);
+        Problem *instance = readFile(path);
         instances.push_back(instance);
 
         start = clock();
@@ -224,12 +224,12 @@ vector<vector<Solution*>> getExperimentArchives(string path, int iterations, flo
     //string csv = "id,baseSeed,iterations,nsgaIterations,N,D(antiga), GD, IGD, S\n";
     string csv = "";
     vector<vector<Solution*>> paretoArchive;
-    vector<Instance*> instances;
+    vector<Problem*> instances;
     clock_t start, end;
 
     int nsgaIterationsSum = 0;
     for(int i=0; i<iterations; i++){
-        Instance *instance = readFile(path);
+        Problem *instance = readFile(path);
         instances.push_back(instance);
 
         start = clock();
@@ -537,7 +537,7 @@ void test()
 {
     // criar instancia
 
-    Instance *instance = readFile("../instances/928/2-4-20__0.txt");
+    Problem *instance = readFile("../instances/928/2-4-20__0.txt");
     Solution *test = instance->maxSMinTFT();
     Solution *test2 = instance->randSMinTFT(0);
 
@@ -622,7 +622,7 @@ void test2()
 {
     //string path =  "../instances/test_instance1.txt";
     string path =  "../instances/566/2-8-100__0.txt";
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 100; i++)
     {
         instance->totalRandomSolutionGenerator(i);
@@ -638,7 +638,7 @@ void test2()
 
 
 
-    Instance *instance2 = readFile(path);
+    Problem *instance2 = readFile(path);
     instance2->maxSMinTFT();
     ofstream output2("../analysis/max_s_min_tft.csv");
     output2 << instance2->generatePopulationCSVString();
@@ -646,7 +646,7 @@ void test2()
 
     delete instance2;
 
-    Instance *instance3 = readFile(path);
+    Problem *instance3 = readFile(path);
     for (int i = 0; i < 100; i++)
     {
         instance3->randSMinTFT(i);
@@ -660,7 +660,7 @@ void test2()
 
 
 
-    Instance *instance5 = readFile(path);
+    Problem *instance5 = readFile(path);
     for (int i = 0; i < 100; i++)
     {
         instance5->randSMinTEC(i);
@@ -676,7 +676,7 @@ void test2()
 
 
 
-    Instance *instance4 = readFile(path);
+    Problem *instance4 = readFile(path);
     instance4->minSMinTEC();
     ofstream output4("../analysis/min_s_min_tec.csv");
     output4 << instance4->generatePopulationCSVString();
@@ -689,7 +689,7 @@ void test2()
 }
 
 void test3(){
-    Instance *instance = readFile("../instances/test_instance1.txt");
+    Problem *instance = readFile("../instances/test_instance1.txt");
     for (int i = 0; i < 100; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -706,7 +706,7 @@ void test3(){
 
 void test4(){
     string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 10; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -775,7 +775,7 @@ void test5(){
 
 void test6(){
     string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -803,7 +803,7 @@ void test6(){
 
 void test7(){
     string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -831,7 +831,7 @@ void test7(){
 
 void test8(){
     string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -858,7 +858,7 @@ void test8(){
 
 void test9(){
     string path =  "../instances/928/2-4-20__0.txt";
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -888,7 +888,7 @@ void test10(){
     string outputDir = "../analysis/test_10_nsga2_swap_insert/csv/";
     //std::system(("python ./../create_folders.py "+ outputDir).c_str());
 
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -917,7 +917,7 @@ void test11(){
     string outputDir = "../analysis/test_11_ingm_sngm_hngm_rand/csv/";
     //std::system(("python ./../create_folders.py "+ outputDir).c_str());
 
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -947,7 +947,7 @@ void test12(){
     string outputDir = "../analysis/test_12_nsga3_mnpv3/csv/";
     //std::system(("python ./../create_folders.py "+ outputDir).c_str());
 
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -978,7 +978,7 @@ void test13(){
     string outputDir = "../analysis/test_13_nsga2/csv/";
     //std::system(("python ./../create_folders.py "+ outputDir).c_str());
 
-    Instance *instance = readFile(path);
+    Problem *instance = readFile(path);
     for (int i = 0; i < 7; i++)
     {
         instance->balancedRandomSolutionGenerator(i);
@@ -1019,7 +1019,7 @@ int main()
 
     cout << "Iniciando leitura da instância...\n"
          << endl;
-    Instance *inst = readFile("./instances/294/3-4-20__15.txt");
+    Problem *inst = readFile("./instances/294/3-4-20__15.txt");
     cout << "Instância lida com sucesso!\n"
          << endl;
 

@@ -19,7 +19,7 @@
 #include "Job.hpp"
 #include "Machine.hpp"  
 #include "Factory.hpp"
-#include "Instance.hpp"
+#include "Problem.hpp"
 #include "read.hpp"
 #include "Solution.hpp"
 #include "Util.h"

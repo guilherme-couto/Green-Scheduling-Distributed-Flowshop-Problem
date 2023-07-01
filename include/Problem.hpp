@@ -4,7 +4,7 @@
 #include "defines.hpp"
 #include "Solution.hpp"
 
-class Instance
+class Problem
 {
 private:
     int F;                         // Number of factories
@@ -19,8 +19,8 @@ private:
     vector<Solution *> paretoArchive;
 
 public:
-    Instance(int F, int n, int m, vector<vector<int>> t); // Constructor (F = number of factories, n = number of jobs, m = number of machines)
-    ~Instance();
+    Problem(int F, int n, int m, vector<vector<int>> t); // Constructor (F = number of factories, n = number of jobs, m = number of machines)
+    ~Problem();
 
     int getF();
     int get_n();

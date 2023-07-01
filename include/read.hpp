@@ -2,6 +2,6 @@
 #define READ_HPP
 
 #include "defines.hpp"
-Instance *readFile(string path);
+Problem *readFile(string path);
 
 #endif // READ_HPP
